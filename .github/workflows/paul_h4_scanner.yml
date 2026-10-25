@@ -1,0 +1,52 @@
+name: 📡 Paul Pro V4 - Free Cloud H4 Scanner & Telegram Alert
+
+on:
+  schedule:
+    # Runs automatically 3 minutes after every H4 candle close (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+    # Thai Time (UTC+7): 07:03, 11:03, 15:03, 19:03, 23:03, 03:03 (Monday - Friday)
+    - cron: '3 0,4,8,12,16,20 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'ส่งข้อความทดสอบเรดาร์ทั้ง 6 คู่เงินเข้า Telegram ทันที'
+        required: false
+        default: 'true'
+
+permissions:
+  contents: write
+
+jobs:
+  scan-and-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: 📡 Run Paul Pro V4 H4 Scanner & Send Telegram Alert
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+        run: |
+          if [ "${{ github.event.inputs.test_mode }}" = "true" ]; then
+            python telegram_notifier.py --test --force
+          else
+            python telegram_notifier.py
+          fi
+
+      - name: 💾 Save Updated Live Charts & Alert State to Cloud
+        run: |
+          git config user.name "Paul-FTMO-Cloud-Bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add forward_live_scanner.json paul_system_dashboard.html cot_historical_2023_2026.json telegram_alert_state.json || true
+          git diff --staged --quiet || git commit -m "🔄 Auto-update H4 Live Charts & Signals [skip ci]"
+          git push || true
