@@ -12,7 +12,7 @@ import urllib.request
 import urllib.parse
 from datetime import datetime, timezone, timedelta
 
-if sys.stdout.encoding != 'utf-8':
+if sys.stdout and getattr(sys.stdout, 'encoding', None) != 'utf-8':
     try:
         sys.stdout.reconfigure(encoding='utf-8')
     except Exception:
@@ -376,4 +376,7 @@ if __name__ == '__main__':
         is_test=args.test,
         force=args.force
     )
-    print(f"[Telegram Notifier] Configured={result['configured']} | Sent={result['sent_messages']} | Errors={result['errors']}")
+    try:
+        print(f"[Telegram Notifier] Configured={result['configured']} | Sent={result['sent_messages']} | Errors={result['errors']}")
+    except Exception:
+        pass

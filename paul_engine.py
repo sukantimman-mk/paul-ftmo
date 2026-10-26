@@ -21,7 +21,7 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime
 
-if sys.stdout.encoding != 'utf-8':
+if sys.stdout and getattr(sys.stdout, 'encoding', None) != 'utf-8':
     try:
         sys.stdout.reconfigure(encoding='utf-8')
     except Exception:
