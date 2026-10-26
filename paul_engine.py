@@ -2247,7 +2247,7 @@ def build_full_suite():
                     headers: {{ 'Content-Type': 'application/json' }},
                     body: JSON.stringify({{
                         chat_id: chatId,
-                        text: lines.join('\n'),
+                        text: lines.join(String.fromCharCode(10)),
                         parse_mode: 'HTML',
                         disable_web_page_preview: true
                     }})
@@ -2291,7 +2291,7 @@ def build_full_suite():
                 `• <b>TP 1 (+1.5R แบ่งปิด 50%):</b> <code>${{tk.tp1}}</code> <i>(เลื่อน SL -> ${{tk.lock1}})</i>`,
                 `• <b>Stage 2 (+2.5R):</b> <code>${{tk.stage2}}</code> <i>(เลื่อน SL -> ${{tk.lock2}})</i>`,
                 `• <b>TP 2 (+3.5R ปิดที่เหลือ):</b> <code>${{tk.tp2}}</code>`
-            ].join('\n');
+            ].join(String.fromCharCode(10));
 
             try {{
                 const resp = await fetch(`https://api.telegram.org/bot${{token}}/sendMessage`, {{
