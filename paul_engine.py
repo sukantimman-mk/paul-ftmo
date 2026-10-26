@@ -1286,7 +1286,8 @@ def build_full_suite():
                     </div>
                     <div class="text-lg font-extrabold text-amber-400 mono mt-0.5">${{ls.latest_price.toFixed(ls.dec)}}</div>
                     <div class="flex items-center justify-between text-[10px] mono text-slate-300 mt-1">
-                        <span>ไฟ 1-2-3: ${{dot1}}${{dot2}}${{dot3}}</span>
+                        <span>ไฟ: ${{dot1}}${{dot2}}${{dot3}}</span>
+                        <span class="px-1.5 py-0.2 rounded bg-slate-800 text-amber-300 font-extrabold">COT ${{ls.cot ? ls.cot.pair_idx_equiv : '-'}}%</span>
                         <span>RSI ${{ls.h4_rsi}}</span>
                     </div>
                     ${{statusBadge}}
@@ -1368,8 +1369,13 @@ def build_full_suite():
                         </div>
 
                         <!-- 1.2 อธิบาย COT ยอดสะสม vs เงินไหลสัปดาห์ล่าสุด -->
-                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
-                            <div class="text-cyan-300 font-extrabold mb-1">🏦 รายงานกองทุนสถาบัน CFTC COT (ทำไมแผนเทรดถึงตรงข้ามกับยอดสะสม?):</div>
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1.5">
+                            <div class="flex flex-wrap items-center justify-between gap-1">
+                                <span class="text-cyan-300 font-extrabold">🏦 รายงานกองทุนสถาบัน CFTC COT:</span>
+                                <span class="px-2.5 py-0.5 rounded bg-amber-500/20 border border-amber-400 text-amber-300 font-extrabold text-[11px] mono">
+                                    📍 COT 3-Year Index: ${{cotIdx}}%
+                                </span>
+                            </div>
                             • <b>1) ยอดสะสมรวมในอดีต (Stock Inventory):</b> กองทุนถือครองสุทธิ <code class="text-white">${{cotNet >= 0 ? '+' : ''}}${{cotNet.toLocaleString()}}</code> สัญญา (COT 3-Yr Index = <code class="text-amber-300 font-bold">${{cotIdx}}%</code>) ➔ <i>ระดับ ${{cotIdx}}% อยู่ในโซนสมดุลกลาง (Neutral 35%–65%) ไม่ได้ตึงตัวสุดขีด จึงเปิดทางให้เล่นตามเทรนด์ H4 ได้เต็มที่</i><br>
                             • <b>2) กระแสเงินไหลล่าสุดสัปดาห์นี้ (Weekly Flow Shift):</b> กองทุนใหญ่ <b>${{cotChg < 0 ? 'เทขายลดสถานะ Long ลงถึง ' + cotChg.toLocaleString() + ' สัญญา (เม็ดเงินไหลออก)' : 'เปิดสถานะ Long เพิ่ม ' + cotChg.toLocaleString() + ' สัญญา (เม็ดเงินไหลเข้า)'}}</b><br>
                             • <b>สรุปการประสานพลัง:</b> แม้ยอดสะสมรวมหลายปีจะเป็นบวกตามธรรมชาติของทองคำ แต่ <b>"สัปดาห์นี้กองทุนใหญ่เทขาย (${{cotChg.toLocaleString()}}) + เทรนด์ H4 หลุดเป็นขาลง (EMA50 < EMA200)"</b> ระบบจึงเทรดตามแรงทุบจริงของตลาดด้วยแผน <b>${{ls.planned_dir}}</b>!
