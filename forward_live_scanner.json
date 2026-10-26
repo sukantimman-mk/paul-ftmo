@@ -5,46 +5,46 @@
     "dec": 2,
     "last_bar_utc": "2026-10-26 00:00 UTC",
     "session_label": "Off-Session (00:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
-    "latest_price": 3998.2,
+    "latest_price": 4005.8,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
-    "ema50": 4112.27,
-    "ema200": 4219.47,
+    "ema50": 4112.56,
+    "ema200": 4219.54,
     "atr14": 29.36,
     "bos_high": 4020.5,
     "bos_low": 4003.1,
     "bos_trigger_level": 4003.1,
-    "h4_rsi": 9.3,
+    "h4_rsi": 9.7,
     "overall_signal": "WAIT_PULLBACK",
-    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (4112.27)",
+    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (4112.56)",
     "gates": {
       "g1_pass": true,
       "g1_price_ok": true,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (4112.27) < EMA200 (4219.47) | ราคา (3998.2) อยู่ใต้ EMA50 | COT Net +199,865 (Δ -8,014 | Idx 47.0%)",
+      "g1_text": "EMA50 (4112.56) < EMA200 (4219.54) | ราคา (4005.8) อยู่ใต้ EMA50 | COT Net +199,865 (Δ -8,014 | Idx 47.0%)",
       "g2_pass": false,
       "g2_touched_ema": false,
       "g2_cooldown_ok": true,
       "g2_bars_since_exit": 9,
       "g2_text": "ยังไม่แตะ EMA50 ใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 9 แท่ง H4",
       "g3_pass": false,
-      "g3_bos_ok": true,
+      "g3_bos_ok": false,
       "g3_rsi_ok": false,
       "g3_session_ok": false,
-      "g3_text": "จุดเบรก 3-Bar Low = 4003.1 | H4 RSI(14) = 9.3 (กรอบ 32–55)"
+      "g3_text": "จุดเบรก 3-Bar Low = 4003.1 | H4 RSI(14) = 9.7 (กรอบ 32–55)"
     },
     "planned_ticket": {
       "dir": "SELL",
-      "entry": 3998.2,
+      "entry": 4003.1,
       "sl": 4027.84,
-      "tp1": 3953.74,
-      "lock1": 3989.31,
-      "stage2": 3924.1,
-      "lock2": 3953.74,
-      "tp2": 3894.46,
-      "risk_dist": 29.64,
-      "atr_mult": 1.01,
-      "lots_100k": 0.25
+      "tp1": 3965.99,
+      "lock1": 3995.68,
+      "stage2": 3941.25,
+      "lock2": 3965.99,
+      "tp2": 3916.51,
+      "risk_dist": 24.74,
+      "atr_mult": 0.84,
+      "lots_100k": 0.3
     },
     "cot": {
       "contract": "GOLD",
@@ -864,10 +864,10 @@
         4010.6,
         4011.1,
         3996.6,
-        3998.2,
-        9.3,
-        4112.27,
-        4219.47
+        4005.8,
+        9.7,
+        4112.56,
+        4219.54
       ]
     ]
   },
@@ -877,7 +877,7 @@
     "dec": 3,
     "last_bar_utc": "2026-10-26 00:00 UTC",
     "session_label": "Off-Session (00:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
-    "latest_price": 157.098,
+    "latest_price": 157.097,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
     "ema50": 157.668,
@@ -893,7 +893,7 @@
       "g1_pass": true,
       "g1_price_ok": true,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (157.668) < EMA200 (157.763) | ราคา (157.098) อยู่ใต้ EMA50 | COT Net -69,878 (Δ -19,671 | Idx 17.8%)",
+      "g1_text": "EMA50 (157.668) < EMA200 (157.763) | ราคา (157.097) อยู่ใต้ EMA50 | COT Net -69,878 (Δ -19,671 | Idx 17.8%)",
       "g2_pass": false,
       "g2_touched_ema": false,
       "g2_cooldown_ok": true,
@@ -1736,7 +1736,7 @@
         156.828,
         157.158,
         156.78,
-        157.098,
+        157.097,
         29.8,
         157.668,
         157.763
@@ -1749,7 +1749,7 @@
     "dec": 4,
     "last_bar_utc": "2026-10-26 00:00 UTC",
     "session_label": "Off-Session (00:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
-    "latest_price": 1.4011,
+    "latest_price": 1.401,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
     "ema50": 1.4084,
@@ -1758,14 +1758,14 @@
     "bos_high": 1.4016,
     "bos_low": 1.3964,
     "bos_trigger_level": 1.3964,
-    "h4_rsi": 37.3,
+    "h4_rsi": 36.7,
     "overall_signal": "WAIT_PULLBACK",
     "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (1.4084)",
     "gates": {
       "g1_pass": true,
       "g1_price_ok": true,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (1.4084) < EMA200 (1.4097) | ราคา (1.4011) อยู่ใต้ EMA50 | COT Net +74,709 (Δ -20,056 | Idx 51.5%)",
+      "g1_text": "EMA50 (1.4084) < EMA200 (1.4097) | ราคา (1.401) อยู่ใต้ EMA50 | COT Net +74,709 (Δ -20,056 | Idx 51.5%)",
       "g2_pass": false,
       "g2_touched_ema": false,
       "g2_cooldown_ok": true,
@@ -1775,7 +1775,7 @@
       "g3_bos_ok": false,
       "g3_rsi_ok": true,
       "g3_session_ok": false,
-      "g3_text": "จุดเบรก 3-Bar Low = 1.3964 | H4 RSI(14) = 37.3 (กรอบ 32–55)"
+      "g3_text": "จุดเบรก 3-Bar Low = 1.3964 | H4 RSI(14) = 36.7 (กรอบ 32–55)"
     },
     "planned_ticket": {
       "dir": "SELL",
@@ -2608,8 +2608,8 @@
         1.4013,
         1.4016,
         1.4007,
-        1.4011,
-        37.3,
+        1.401,
+        36.7,
         1.4084,
         1.4097
       ]
@@ -2621,7 +2621,7 @@
     "dec": 4,
     "last_bar_utc": "2026-10-26 00:00 UTC",
     "session_label": "Off-Session (00:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
-    "latest_price": 0.8244,
+    "latest_price": 0.8243,
     "weekly_trend": "BULLISH",
     "planned_dir": "BUY",
     "ema50": 0.8255,
@@ -2630,14 +2630,14 @@
     "bos_high": 0.8256,
     "bos_low": 0.8219,
     "bos_trigger_level": 0.8256,
-    "h4_rsi": 50.0,
+    "h4_rsi": 49.7,
     "overall_signal": "WAIT_PULLBACK",
     "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (0.8255)",
     "gates": {
       "g1_pass": false,
       "g1_price_ok": false,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (0.8255) > EMA200 (0.8247) | ราคา (0.8244) ยังไม่ผ่าน EMA50 | COT Net +18,150 (Δ -3,928 | Idx 0.0%)",
+      "g1_text": "EMA50 (0.8255) > EMA200 (0.8247) | ราคา (0.8243) ยังไม่ผ่าน EMA50 | COT Net +18,150 (Δ -3,928 | Idx 0.0%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
@@ -2647,7 +2647,7 @@
       "g3_bos_ok": false,
       "g3_rsi_ok": true,
       "g3_session_ok": false,
-      "g3_text": "จุดเบรก 3-Bar High = 0.8256 | H4 RSI(14) = 50.0 (กรอบ 45–68)"
+      "g3_text": "จุดเบรก 3-Bar High = 0.8256 | H4 RSI(14) = 49.7 (กรอบ 45–68)"
     },
     "planned_ticket": {
       "dir": "BUY",
@@ -3480,8 +3480,8 @@
         0.8238,
         0.8247,
         0.8238,
-        0.8244,
-        50.0,
+        0.8243,
+        49.7,
         0.8255,
         0.8247
       ]
@@ -3502,7 +3502,7 @@
     "bos_high": 1.3388,
     "bos_low": 1.3362,
     "bos_trigger_level": 1.3388,
-    "h4_rsi": 43.3,
+    "h4_rsi": 43.4,
     "overall_signal": "WAIT_PULLBACK",
     "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (1.3341)",
     "gates": {
@@ -3519,7 +3519,7 @@
       "g3_bos_ok": false,
       "g3_rsi_ok": false,
       "g3_session_ok": false,
-      "g3_text": "จุดเบรก 3-Bar High = 1.3388 | H4 RSI(14) = 43.3 (กรอบ 45–68)"
+      "g3_text": "จุดเบรก 3-Bar High = 1.3388 | H4 RSI(14) = 43.4 (กรอบ 45–68)"
     },
     "planned_ticket": {
       "dir": "BUY",
@@ -4353,7 +4353,7 @@
         1.338,
         1.3374,
         1.3378,
-        43.3,
+        43.4,
         1.3341,
         1.3334
       ]
@@ -4365,7 +4365,7 @@
     "dec": 4,
     "last_bar_utc": "2026-10-26 00:00 UTC",
     "session_label": "Off-Session (00:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
-    "latest_price": 1.1218,
+    "latest_price": 1.122,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
     "ema50": 1.122,
@@ -4374,14 +4374,14 @@
     "bos_high": 1.1213,
     "bos_low": 1.1192,
     "bos_trigger_level": 1.1192,
-    "h4_rsi": 43.5,
-    "overall_signal": "READY_WAIT_BOS",
-    "overall_badge": "⚡ เตรียมพร้อม! รอเบรก Low 1.1192",
+    "h4_rsi": 44.0,
+    "overall_signal": "WAIT_PULLBACK",
+    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (1.122)",
     "gates": {
-      "g1_pass": true,
-      "g1_price_ok": true,
+      "g1_pass": false,
+      "g1_price_ok": false,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (1.122) < EMA200 (1.1316) | ราคา (1.1218) อยู่ใต้ EMA50 | COT Net -134,524 (Δ +3,049 | Idx 1.0%)",
+      "g1_text": "EMA50 (1.122) < EMA200 (1.1316) | ราคา (1.122) ยังไม่ผ่าน EMA50 | COT Net -134,524 (Δ +3,049 | Idx 1.0%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
@@ -4391,7 +4391,7 @@
       "g3_bos_ok": false,
       "g3_rsi_ok": true,
       "g3_session_ok": false,
-      "g3_text": "จุดเบรก 3-Bar Low = 1.1192 | H4 RSI(14) = 43.5 (กรอบ 32–55)"
+      "g3_text": "จุดเบรก 3-Bar Low = 1.1192 | H4 RSI(14) = 44.0 (กรอบ 32–55)"
     },
     "planned_ticket": {
       "dir": "SELL",
@@ -5224,8 +5224,8 @@
         1.1221,
         1.1222,
         1.1217,
-        1.1218,
-        43.5,
+        1.122,
+        44.0,
         1.122,
         1.1316
       ]
