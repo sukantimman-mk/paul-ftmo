@@ -1340,21 +1340,40 @@ def build_full_suite():
             const b3 = g.g3_pass ? 'border-emerald-400 bg-emerald-950/30' : 'border-cyan-400 bg-slate-950';
 
             const dirName = ls.planned_dir === 'BUY' ? '▲ แผนรอ BUY (ฝั่งซื้อตามเทรนด์)' : '▼ แผนรอ SELL (ฝั่งขายตามเทรนด์)';
-            const trendDesc = ls.planned_dir === 'BUY'
-                ? `เส้นฟ้า EMA50 (${{ls.ema50.toFixed(dec)}}) ยืนเหนือเส้นม่วง EMA200 (${{ls.ema200.toFixed(dec)}}) ➔ เทรนด์ระยะกลางเหนือระยะยาว = ตลาดเป็นขาขึ้น (BULLISH)`
-                : `เส้นฟ้า EMA50 (${{ls.ema50.toFixed(dec)}}) อยู่ใต้เส้นม่วง EMA200 (${{ls.ema200.toFixed(dec)}}) ➔ เทรนด์ระยะกลางต่ำกว่าระยะยาว = ตลาดเป็นขาลง (BEARISH)`;
+            const diffEma = ls.ema50 - ls.ema200;
+            const diffPrice = ls.latest_price - ls.ema50;
+            const cotChg = ls.cot.pair_chg_equiv;
+            const cotNet = ls.cot.pair_net_equiv;
+            const cotIdx = ls.cot.pair_idx_equiv;
 
             document.getElementById('liveGatesBody').innerHTML = `
                 <!-- ด่านที่ 1 -->
-                <div class="p-3 rounded-lg border-l-4 ${{b1}} border border-slate-800 space-y-1">
+                <div class="p-3.5 rounded-xl border-l-4 ${{b1}} border border-slate-800 space-y-2">
                     <div class="flex justify-between items-center font-extrabold text-xs">
-                        <span class="text-cyan-300">ด่านที่ 1️⃣: กำหนดทิศทางหลัก (ดูว่ารอ BUY หรือ SELL)</span>
-                        <span>${{g.g1_pass ? '🟢 ผ่าน (ทิศทางชัด)' : '🔴 ยังไม่ครบเงื่อนไข'}}</span>
+                        <span class="text-cyan-300 font-bold flex items-center gap-1.5">
+                            ด่านที่ 1️⃣: กำหนดทิศทางหลัก (Macro Trend & COT Bias)
+                        </span>
+                        <span class="px-2 py-0.5 rounded text-[11px] font-extrabold ${{g.g1_pass ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-500/40' : 'bg-rose-900/60 text-rose-300 border border-rose-500/40'}}">
+                            ${{g.g1_pass ? '🟢 ผ่านเกณฑ์ (ทิศทางชัดเจน)' : '🔴 ยังไม่ครบเงื่อนไข'}}
+                        </span>
                     </div>
-                    <div class="text-[11px] text-slate-300 leading-relaxed">
-                        • <b>ตลาดกำลังเป็นอย่างไร:</b> ${{trendDesc}}<br>
-                        • <b>ทำไมตัดสินใจแบบนี้:</b> กฎเหล็กของระบบคือห้ามเทรดสวนทางเทรนด์ใหญ่ ➔ <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}} font-extrabold">ตัดสินใจล็อกแผนเป็น "${{dirName}}"</b><br>
-                        • <b>กองทุนสถาบัน COT:</b> ยอดสะสม Net ${{ls.cot.pair_net_equiv >= 0 ? '+' : ''}}${{ls.cot.pair_net_equiv.toLocaleString()}} สัญญา (Index ${{ls.cot.pair_idx_equiv}}% | สัปดาห์ล่าสุดเปลี่ยน ${{ls.cot.pair_chg_equiv >= 0 ? '+' : ''}}${{ls.cot.pair_chg_equiv.toLocaleString()}}) ➔ <i>${{ls.cot.verdict}}</i>
+                    <div class="text-[11px] text-slate-300 leading-relaxed space-y-2">
+                        <!-- 1.1 เกณฑ์ตัดสิน Trend ชัดเจนด้วยตัวเลข -->
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                            <div class="text-amber-300 font-extrabold mb-1">📐 เกณฑ์ตัดสิน Trend (EMA 50 vs EMA 200 บน H4):</div>
+                            • <b>ตัวเลขเส้นค่าเฉลี่ย:</b> เส้นฟ้า EMA50 = <code class="text-cyan-300 font-bold">${{ls.ema50.toFixed(dec)}}</code> | เส้นม่วง EMA200 = <code class="text-purple-300 font-bold">${{ls.ema200.toFixed(dec)}}</code><br>
+                            • <b>ผลต่างทางคณิตศาสตร์ (Spread):</b> <code class="text-white font-bold">${{diffEma >= 0 ? '+' : ''}}${{diffEma.toFixed(dec)}}</code> ➔ ${{diffEma < 0 ? 'เส้นสั้นอยู่ต่ำกว่าเส้นยาว = โครงสร้างตลาดเป็นขาลง (BEARISH REGIME 100%)' : 'เส้นสั้นอยู่เหนือเส้นยาว = โครงสร้างตลาดเป็นขาขึ้น (BULLISH REGIME 100%)'}}<br>
+                            • <b>ราคาปิดล่าสุด:</b> <code class="text-emerald-300 font-bold">${{ls.latest_price.toFixed(dec)}}</code> (${{diffPrice < 0 ? 'อยู่ต่ำกว่าเส้นฟ้า EMA50 เป็นระยะ ' + Math.abs(diffPrice).toFixed(dec) : 'อยู่สูงกว่าเส้นฟ้า EMA50 เป็นระยะ ' + Math.abs(diffPrice).toFixed(dec)}})<br>
+                            • <b>กฎเหล็กของพอล (FTMO Rule):</b> ห้ามเทรดสวนทางเทรนด์ใหญ่เด็ดขาด ➔ <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}} font-extrabold">ระบบจึงล็อกแผนเทรดเป็น "${{dirName}}"</b>
+                        </div>
+
+                        <!-- 1.2 อธิบาย COT ยอดสะสม vs เงินไหลสัปดาห์ล่าสุด -->
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                            <div class="text-cyan-300 font-extrabold mb-1">🏦 รายงานกองทุนสถาบัน CFTC COT (ทำไมแผนเทรดถึงตรงข้ามกับยอดสะสม?):</div>
+                            • <b>1) ยอดสะสมรวมในอดีต (Stock Inventory):</b> กองทุนถือครองสุทธิ <code class="text-white">${{cotNet >= 0 ? '+' : ''}}${{cotNet.toLocaleString()}}</code> สัญญา (COT 3-Yr Index = <code class="text-amber-300 font-bold">${{cotIdx}}%</code>) ➔ <i>ระดับ ${{cotIdx}}% อยู่ในโซนสมดุลกลาง (Neutral 35%–65%) ไม่ได้ตึงตัวสุดขีด จึงเปิดทางให้เล่นตามเทรนด์ H4 ได้เต็มที่</i><br>
+                            • <b>2) กระแสเงินไหลล่าสุดสัปดาห์นี้ (Weekly Flow Shift):</b> กองทุนใหญ่ <b>${{cotChg < 0 ? 'เทขายลดสถานะ Long ลงถึง ' + cotChg.toLocaleString() + ' สัญญา (เม็ดเงินไหลออก)' : 'เปิดสถานะ Long เพิ่ม ' + cotChg.toLocaleString() + ' สัญญา (เม็ดเงินไหลเข้า)'}}</b><br>
+                            • <b>สรุปการประสานพลัง:</b> แม้ยอดสะสมรวมหลายปีจะเป็นบวกตามธรรมชาติของทองคำ แต่ <b>"สัปดาห์นี้กองทุนใหญ่เทขาย (${{cotChg.toLocaleString()}}) + เทรนด์ H4 หลุดเป็นขาลง (EMA50 < EMA200)"</b> ระบบจึงเทรดตามแรงทุบจริงของตลาดด้วยแผน <b>${{ls.planned_dir}}</b>!
+                        </div>
                     </div>
                 </div>
 
