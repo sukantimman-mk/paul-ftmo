@@ -1334,9 +1334,6 @@ def build_full_suite():
 
             document.getElementById('liveSessionBadge').textContent = ls.session_label;
 
-            // Render Live 1-2-3-4 Gate Checklist
-            const b1 = g.g1_pass ? 'border-emerald-400 bg-emerald-950/20' : 'border-rose-500 bg-rose-950/20';
-            const b2 = g.g2_pass ? 'border-emerald-400 bg-emerald-950/20' : 'border-amber-400 bg-amber-950/20';
             // Render Live 1-2-3-4 Gate Checklist with Clear "Why & How" Rationale
             const b1 = g.g1_pass ? 'border-emerald-400 bg-emerald-950/30' : 'border-rose-500 bg-rose-950/30';
             const b2 = g.g2_pass ? 'border-emerald-400 bg-emerald-950/30' : 'border-amber-400 bg-amber-950/30';
