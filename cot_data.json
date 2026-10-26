@@ -147,7 +147,14 @@
           "nonrept_chg": -4715
         }
       ],
-      "rank": 1
+      "rank": 1,
+      "cot_index": 47.0,
+      "cot_index_52w": 47.0,
+      "min_52w": 154260,
+      "max_52w": 251238,
+      "cot_index_3y": 52.6,
+      "min_3y": 71433,
+      "max_3y": 315390
     },
     {
       "code": "JPY",
@@ -279,7 +286,14 @@
           "nonrept_chg": -3887
         }
       ],
-      "rank": 2
+      "rank": 2,
+      "cot_index": 82.2,
+      "cot_index_52w": 82.2,
+      "min_52w": -163412,
+      "max_52w": 120359,
+      "cot_index_3y": 69.9,
+      "min_3y": -184223,
+      "max_3y": 179212
     },
     {
       "code": "BRL",
@@ -411,7 +425,14 @@
           "nonrept_chg": -739
         }
       ],
-      "rank": 3
+      "rank": 3,
+      "cot_index": 27.0,
+      "cot_index_52w": 27.0,
+      "min_52w": 17617,
+      "max_52w": 72813,
+      "cot_index_3y": 63.6,
+      "min_3y": -54883,
+      "max_3y": 82558
     },
     {
       "code": "XAG",
@@ -543,7 +564,14 @@
           "nonrept_chg": -1383
         }
       ],
-      "rank": 4
+      "rank": 4,
+      "cot_index": 0.0,
+      "cot_index_52w": 0.0,
+      "min_52w": 19795,
+      "max_52w": 44709,
+      "cot_index_3y": 36.8,
+      "min_3y": -7782,
+      "max_3y": 67174
     },
     {
       "code": "MXN",
@@ -675,7 +703,14 @@
           "nonrept_chg": -2258
         }
       ],
-      "rank": 5
+      "rank": 5,
+      "cot_index": 6.4,
+      "cot_index_52w": 6.4,
+      "min_52w": 10701,
+      "max_52w": 109301,
+      "cot_index_3y": 37.4,
+      "min_3y": -56376,
+      "max_3y": 139691
     },
     {
       "code": "USD",
@@ -807,7 +842,14 @@
           "nonrept_chg": 156
         }
       ],
-      "rank": 6
+      "rank": 6,
+      "cot_index": 80.8,
+      "cot_index_52w": 80.8,
+      "min_52w": -16347,
+      "max_52w": 22499,
+      "cot_index_3y": 80.8,
+      "min_3y": -16347,
+      "max_3y": 22499
     },
     {
       "code": "ZAR",
@@ -939,7 +981,14 @@
           "nonrept_chg": 179
         }
       ],
-      "rank": 7
+      "rank": 7,
+      "cot_index": 70.3,
+      "cot_index_52w": 70.3,
+      "min_52w": 2837,
+      "max_52w": 17200,
+      "cot_index_3y": 60.9,
+      "min_3y": -18404,
+      "max_3y": 33053
     },
     {
       "code": "BTC",
@@ -1071,7 +1120,14 @@
           "nonrept_chg": -48
         }
       ],
-      "rank": 8
+      "rank": 8,
+      "cot_index": 68.0,
+      "cot_index_52w": 68.0,
+      "min_52w": -734,
+      "max_52w": 3904,
+      "cot_index_3y": 76.7,
+      "min_3y": -2486,
+      "max_3y": 3904
     },
     {
       "code": "ETH",
@@ -1203,7 +1259,14 @@
           "nonrept_chg": -237
         }
       ],
-      "rank": 9
+      "rank": 9,
+      "cot_index": 31.2,
+      "cot_index_52w": 31.2,
+      "min_52w": 436,
+      "max_52w": 5281,
+      "cot_index_3y": 51.2,
+      "min_3y": -1554,
+      "max_3y": 5281
     },
     {
       "code": "CHF",
@@ -1335,7 +1398,14 @@
           "nonrept_chg": 841
         }
       ],
-      "rank": 10
+      "rank": 10,
+      "cot_index": 100.0,
+      "cot_index_52w": 100.0,
+      "min_52w": -44198,
+      "max_52w": -18150,
+      "cot_index_3y": 64.1,
+      "min_3y": -49793,
+      "max_3y": -435
     },
     {
       "code": "NZD",
@@ -1467,7 +1537,14 @@
           "nonrept_chg": -648
         }
       ],
-      "rank": 11
+      "rank": 11,
+      "cot_index": 9.3,
+      "cot_index_52w": 9.3,
+      "min_52w": -65189,
+      "max_52w": 10518,
+      "cot_index_3y": 7.3,
+      "min_3y": -65189,
+      "max_3y": 30743
     },
     {
       "code": "CAD",
@@ -1599,7 +1676,14 @@
           "nonrept_chg": -8105
         }
       ],
-      "rank": 12
+      "rank": 12,
+      "cot_index": 48.5,
+      "cot_index_52w": 48.5,
+      "min_52w": -179095,
+      "max_52w": 36159,
+      "cot_index_3y": 52.3,
+      "min_3y": -196263,
+      "max_3y": 36159
     },
     {
       "code": "GBP",
@@ -1731,7 +1815,14 @@
           "nonrept_chg": -4695
         }
       ],
-      "rank": 13
+      "rank": 13,
+      "cot_index": 28.5,
+      "cot_index_52w": 28.5,
+      "min_52w": -106964,
+      "max_52w": -13911,
+      "cot_index_3y": 10.7,
+      "min_3y": -106964,
+      "max_3y": 142183
     },
     {
       "code": "AUD",
@@ -1863,7 +1954,14 @@
           "nonrept_chg": -2763
         }
       ],
-      "rank": 14
+      "rank": 14,
+      "cot_index": 0.0,
+      "cot_index_52w": 0.0,
+      "min_52w": -127292,
+      "max_52w": 85644,
+      "cot_index_3y": 0.0,
+      "min_3y": -127292,
+      "max_3y": 85644
     },
     {
       "code": "EUR",
@@ -1995,7 +2093,14 @@
           "nonrept_chg": -688
         }
       ],
-      "rank": 15
+      "rank": 15,
+      "cot_index": 1.0,
+      "cot_index_52w": 1.0,
+      "min_52w": -137573,
+      "max_52w": 180305,
+      "cot_index_3y": 0.9,
+      "min_3y": -137573,
+      "max_3y": 187089
     }
   ],
   "trade_setups": [

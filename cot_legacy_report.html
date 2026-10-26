@@ -387,6 +387,7 @@
               <th class="py-3 px-3 text-right text-bullgreen font-bold bg-bullgreen/5">Non-Comm Long</th>
               <th class="py-3 px-3 text-right text-bearred font-bold bg-bearred/5">Non-Comm Short</th>
               <th class="py-3 px-3 text-right font-black bg-neoncyan/10 text-neoncyan">Net Position</th>
+              <th class="py-3 px-3 text-right font-black bg-amber-500/10 text-amber-300">COT Index (52W) ℹ️</th>
               <th class="py-3 px-3 text-right">1-Week Chg</th>
               <th class="py-3 px-3 text-right text-gray-400">Comm Long</th>
               <th class="py-3 px-3 text-right text-gray-400">Comm Short</th>
@@ -573,6 +574,23 @@
               </div>
             </div>
 
+            <!-- Step 4: COT Index with formula and substitution -->
+            <div class="p-2.5 rounded-xl bg-black/50 border border-amber-500/30">
+              <div class="text-amber-400 text-[10px] font-semibold flex items-center justify-between">
+                <span>ขั้นตอนที่ 4: คำนวณ COT 52-Week Index พร้อมแทนค่า</span>
+                <span id="proofCotIdxBadge" class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold">47.0%</span>
+              </div>
+              <div class="text-[11px] text-gray-300 mt-1 font-mono">
+                สูตร: <span class="text-cyan-300">COT Index = [(Net - Min52W) / (Max52W - Min52W)] × 100</span>
+              </div>
+              <div class="text-white font-bold mt-1 text-xs font-mono">
+                แทนค่า: <span id="proofCotCalc" class="text-amber-200">[ (199,865 - 154,260) / (251,238 - 154,260) ] × 100</span>
+              </div>
+              <div class="text-xs font-mono mt-1 text-gray-300">
+                ผลลัพธ์: <span id="proofCotStep" class="text-cyan-300">(45,605 / 96,978) × 100</span> = <span id="proofCotResult" class="text-amber-300 font-black text-sm">47.0%</span> (<span id="proofCotZone">Neutral Zone โซนกลาง</span>)
+              </div>
+            </div>
+
             <!-- Verification Status -->
             <div class="p-2.5 rounded-xl bg-bullgreen/10 border border-bullgreen/30 text-bullgreen font-sans text-xs flex items-center gap-2">
               <span class="text-base">🎯</span>
@@ -617,6 +635,8 @@
 
   <!-- Script Logic -->
   <script>
+    window.COT_INDICES = {"GOLD": {"net": 199865, "min52": 154260, "max52": 251238, "idx52": 47.0, "min3y": 71433, "max3y": 315390, "idx3y": 52.6, "weeks": 200}, "JAPANESE YEN": {"net": 69878, "min52": -163412, "max52": 120359, "idx52": 82.2, "min3y": -184223, "max3y": 179212, "idx3y": 69.9, "weeks": 200}, "BRAZILIAN REAL": {"net": 32518, "min52": 17617, "max52": 72813, "idx52": 27.0, "min3y": -54883, "max3y": 82558, "idx3y": 63.6, "weeks": 200}, "SILVER": {"net": 19795, "min52": 19795, "max52": 44709, "idx52": 0.0, "min3y": -7782, "max3y": 67174, "idx3y": 36.8, "weeks": 200}, "MEXICAN PESO": {"net": 17023, "min52": 10701, "max52": 109301, "idx52": 6.4, "min3y": -56376, "max3y": 139691, "idx3y": 37.4, "weeks": 200}, "USD INDEX": {"net": 15044, "min52": -16347, "max52": 22499, "idx52": 80.8, "min3y": -16347, "max3y": 22499, "idx3y": 80.8, "weeks": 200}, "SO AFRICAN RAND": {"net": 12928, "min52": 2837, "max52": 17200, "idx52": 70.3, "min3y": -18404, "max3y": 33053, "idx3y": 60.9, "weeks": 200}, "BITCOIN": {"net": 2418, "min52": -734, "max52": 3904, "idx52": 68.0, "min3y": -2486, "max3y": 3904, "idx3y": 76.7, "weeks": 200}, "ETHER CASH SETTLED": {"net": 1947, "min52": 436, "max52": 5281, "idx52": 31.2, "min3y": -1554, "max3y": 5281, "idx3y": 51.2, "weeks": 200}, "SWISS FRANC": {"net": -18150, "min52": -44198, "max52": -18150, "idx52": 100.0, "min3y": -49793, "max3y": -435, "idx3y": 64.1, "weeks": 200}, "NZ DOLLAR": {"net": -58149, "min52": -65189, "max52": 10518, "idx52": 9.3, "min3y": -65189, "max3y": 30743, "idx3y": 7.3, "weeks": 200}, "CANADIAN DOLLAR": {"net": -74709, "min52": -179095, "max52": 36159, "idx52": 48.5, "min3y": -196263, "max3y": 36159, "idx3y": 52.3, "weeks": 200}, "BRITISH POUND": {"net": -80420, "min52": -106964, "max52": -13911, "idx52": 28.5, "min3y": -106964, "max3y": 142183, "idx3y": 10.7, "weeks": 200}, "AUSTRALIAN DOLLAR": {"net": -127292, "min52": -127292, "max52": 85644, "idx52": 0.0, "min3y": -127292, "max3y": 85644, "idx3y": 0.0, "weeks": 200}, "EURO FX": {"net": -134524, "min52": -137573, "max52": 180305, "idx52": 1.0, "min3y": -137573, "max3y": 187089, "idx3y": 0.9, "weeks": 200}};
+    const COT_INDICES = window.COT_INDICES;
     const EMBEDDED_COT_DATA = {
   "metadata": {
     "title": "CFTC COT Institutional Money Flow Matrix (Paul FTMO Pro Edition)",
@@ -3880,6 +3900,42 @@
         const isSelected = c.code === selectedRawCode;
         const chgPositive = c.weekly_change >= 0;
 
+        // Calculate COT Index & Hover Formula Metadata
+        const stat = (window.COT_INDICES && window.COT_INDICES[c.contract]) || (typeof COT_INDICES !== 'undefined' && COT_INDICES[c.contract]) || {
+          net: c.net_position,
+          min52: c.min_52w !== undefined ? c.min_52w : c.net_position - 50000,
+          max52: c.max_52w !== undefined ? c.max_52w : c.net_position + 50000,
+          idx52: c.cot_index_52w !== undefined ? c.cot_index_52w : 50.0
+        };
+        const min52 = stat.min52;
+        const max52 = stat.max52;
+        const range52 = max52 - min52 || 1;
+        const num52 = c.net_position - min52;
+        const idxVal = stat.idx52;
+        const isHigh = idxVal >= 65;
+        const isLow = idxVal <= 35;
+        const zoneLabel = isHigh ? 'Bullish' : (isLow ? 'Bearish' : 'Neutral');
+        const zoneDesc = isHigh 
+          ? 'โซนสูง (>65%) กองทุนสะสม Long หนาแน่น หนุนฝั่งซื้อ' 
+          : (isLow ? 'โซนต่ำ (<35%) กองทุนสะสม Short หนาแน่น หนุนฝั่งขาย' : 'โซนกลาง (35%–65%) ถือครองระดับปกติ สถาบันไม่สกัดกั้น');
+        const idxColor = isHigh ? 'text-bullgreen bg-bullgreen/10' : (isLow ? 'text-bearred bg-bearred/10' : 'text-amber-300 bg-amber-500/10');
+        const idxBorder = isHigh ? 'border-bullgreen/30' : (isLow ? 'border-bearred/30' : 'border-amber-500/30');
+        const statusColor = isHigh ? 'text-bullgreen' : (isLow ? 'text-bearred' : 'text-amber-300');
+
+        const tooltipText = `📐 สูตรคำนวณ COT Index:\nCOT Index = [(Net - Min) / (Max - Min)] × 100\n\n🔍 การแทนค่าจริง (ย้อนหลัง 52 สัปดาห์):\n• Net ปัจจุบัน = ${c.net_position >= 0 ? '+' : ''}${c.net_position.toLocaleString()} สัญญา\n• Min Net (52W) = ${min52.toLocaleString()}\n• Max Net (52W) = ${max52.toLocaleString()}\n• กรอบแกว่งตัว = ${range52.toLocaleString()}\n• การแทนค่า = [(${c.net_position.toLocaleString()} - (${min52.toLocaleString()})) / ${range52.toLocaleString()}] × 100\n• คำนวณได้ = (${num52.toLocaleString()} / ${range52.toLocaleString()}) × 100 = ${idxVal}%\n• แปลความหมาย = ${zoneDesc}`;
+
+        c.cot_min52 = min52;
+        c.cot_max52 = max52;
+        c.cot_range52 = range52;
+        c.cot_num = num52;
+        c.cot_idx_val = idxVal;
+        c.cot_zone_label = zoneLabel;
+        c.cot_zone_desc = zoneDesc;
+        c.cot_idx_color = idxColor;
+        c.cot_idx_border = idxBorder;
+        c.cot_status_color = statusColor;
+        c.cot_tooltip_text = tooltipText;
+
         const row = document.createElement('tr');
         row.className = `cursor-pointer transition hover:bg-neoncyan/[0.08] ${isSelected ? 'bg-neoncyan/[0.12] border-l-4 border-l-neoncyan' : ''}`;
         row.onclick = () => selectRawCurrency(c.code);
@@ -3905,6 +3961,64 @@
           <td class="py-2.5 px-3 text-right font-bold text-bearred bg-bearred/5 font-mono">${(r.noncomm_short || 0).toLocaleString()}</td>
           <td class="py-2.5 px-3 text-right font-black ${isBull ? 'text-bullgreen' : 'text-bearred'} bg-neoncyan/5 font-mono">
             ${isBull ? '+' : ''}${c.net_position.toLocaleString()}
+          </td>
+          <!-- COT INDEX CELL WITH HOVER FORMULA & EXACT VALUE SUBSTITUTION -->
+          <td class="py-2.5 px-3 text-right font-mono relative group" title="${c.cot_tooltip_text}">
+            <div class="inline-flex items-center gap-1.5 cursor-pointer">
+              <span class="px-2 py-0.5 rounded font-black text-xs ${c.cot_idx_color} border ${c.cot_idx_border} bg-black/60 shadow">
+                ${c.cot_idx_val}%
+              </span>
+              <span class="text-[10px] ${c.cot_status_color} font-sans hidden sm:inline font-bold">(${c.cot_zone_label})</span>
+              <span class="text-[11px] text-amber-400 opacity-60 group-hover:opacity-100 transition">ℹ️</span>
+            </div>
+
+            <!-- Custom Floating Tooltip Card (Pop-up on hover) -->
+            <div class="absolute right-0 top-full mt-1.5 hidden group-hover:block z-50 w-80 sm:w-96 p-3.5 rounded-xl bg-slate-950/95 border-2 border-amber-500/70 shadow-2xl backdrop-blur-md text-left text-xs pointer-events-none transition-all">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
+                <div class="font-extrabold text-amber-300 flex items-center gap-1.5">
+                  <span>📐 สูตรและการแทนค่า COT Index</span>
+                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200 border border-amber-500/30 font-bold">${c.code}</span>
+                </div>
+                <span class="text-[10px] text-gray-400 font-mono">${c.contract}</span>
+              </div>
+
+              <!-- Formula Box -->
+              <div class="p-2 rounded-lg bg-black/60 border border-white/5 mb-2 font-mono text-[11px] text-cyan-300">
+                <div class="text-[10px] text-gray-400 font-sans font-semibold mb-0.5">สูตรคำนวณมาตรฐาน (Williams COT Index):</div>
+                <div class="font-bold">COT Index = [(Net - Min) / (Max - Min)] × 100</div>
+              </div>
+
+              <!-- Value Substitution -->
+              <div class="space-y-1 text-[11px] text-gray-300 font-mono mb-2">
+                <div class="text-[10px] text-amber-400 font-sans font-semibold">การแทนค่าจริงย้อนหลัง 52 สัปดาห์ (1 ปี):</div>
+                <div class="flex justify-between py-0.5 border-b border-white/5">
+                  <span>• Net Position ปัจจุบัน:</span>
+                  <b class="${c.net_position >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${c.net_position >= 0 ? '+' : ''}${c.net_position.toLocaleString()}</b>
+                </div>
+                <div class="flex justify-between py-0.5 border-b border-white/5">
+                  <span>• Min Net (จุดต่ำสุด 52W):</span>
+                  <b class="text-rose-300">${c.cot_min52.toLocaleString()}</b>
+                </div>
+                <div class="flex justify-between py-0.5 border-b border-white/5">
+                  <span>• Max Net (จุดสูงสุด 52W):</span>
+                  <b class="text-emerald-300">${c.cot_max52.toLocaleString()}</b>
+                </div>
+                <div class="flex justify-between py-0.5 border-b border-white/5">
+                  <span>• กรอบแกว่งตัว (Max - Min):</span>
+                  <b class="text-white">${c.cot_range52.toLocaleString()}</b>
+                </div>
+              </div>
+
+              <!-- Calculation Result -->
+              <div class="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-[11px] font-mono leading-relaxed">
+                <div><b>แทนค่าลงในสูตร:</b></div>
+                <div class="text-white mt-0.5">[(${c.net_position.toLocaleString()} - (${c.cot_min52.toLocaleString()})) / ${c.cot_range52.toLocaleString()}] × 100</div>
+                <div class="mt-1 text-cyan-300 font-bold">= [${c.cot_num.toLocaleString()} / ${c.cot_range52.toLocaleString()}] × 100 = <span class="text-amber-300 text-sm font-black">${c.cot_idx_val}%</span></div>
+                <div class="mt-1.5 pt-1 border-t border-amber-500/20 text-[10px] text-gray-300 font-sans">
+                  🎯 <b>ความหมาย:</b> ${c.cot_zone_desc}
+                </div>
+              </div>
+            </div>
           </td>
           <td class="py-2.5 px-3 text-right font-mono ${chgPositive ? 'text-bullgreen' : 'text-bearred'}">
             ${chgPositive ? '▲ +' : '▼ '}${Math.abs(c.weekly_change).toLocaleString()}
@@ -3973,6 +4087,35 @@
       document.getElementById('proofCalc').innerText = `${(r.noncomm_long || 0).toLocaleString()} - ${(r.noncomm_short || 0).toLocaleString()}`;
       document.getElementById('proofResult').innerText = `${noncommNet > 0 ? '+' : ''}${noncommNet.toLocaleString()}`;
       document.getElementById('proofResult').className = `font-black ${noncommNet > 0 ? 'text-bullgreen' : 'text-bearred'}`;
+
+      // Populate Step 4: COT Index Formula & Substitution
+      const cotStat = (window.COT_INDICES && window.COT_INDICES[cur.contract]) || (typeof COT_INDICES !== 'undefined' && COT_INDICES[cur.contract]) || {
+        min52: cur.min_52w !== undefined ? cur.min_52w : noncommNet - 50000,
+        max52: cur.max_52w !== undefined ? cur.max_52w : noncommNet + 50000,
+        idx52: cur.cot_index_52w !== undefined ? cur.cot_index_52w : 50.0
+      };
+      const cMin = cotStat.min52;
+      const cMax = cotStat.max52;
+      const cRange = cMax - cMin || 1;
+      const cNum = noncommNet - cMin;
+      const cIdx = cotStat.idx52;
+      const cZone = cIdx >= 65 
+        ? 'Extreme Bullish (สถาบันสะสม Long หนาแน่น)' 
+        : (cIdx <= 35 ? 'Extreme Bearish (สถาบันสะสม Short หนาแน่น)' : 'Neutral Zone (โซนกลาง 35%-65% ไม่ขัดขวางเทรนด์)');
+
+      const elBadge = document.getElementById('proofCotIdxBadge');
+      if (elBadge) {
+        elBadge.innerText = `${cIdx}%`;
+        elBadge.className = `px-1.5 py-0.2 rounded font-bold ${cIdx >= 65 ? 'bg-emerald-500/20 text-emerald-300' : (cIdx <= 35 ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300')}`;
+      }
+      const elCalc = document.getElementById('proofCotCalc');
+      if (elCalc) elCalc.innerText = `[ (${noncommNet.toLocaleString()} - (${cMin.toLocaleString()})) / ${cRange.toLocaleString()} ] × 100`;
+      const elStep = document.getElementById('proofCotStep');
+      if (elStep) elStep.innerText = `(${cNum.toLocaleString()} / ${cRange.toLocaleString()}) × 100`;
+      const elRes = document.getElementById('proofCotResult');
+      if (elRes) elRes.innerText = `${cIdx}%`;
+      const elZone = document.getElementById('proofCotZone');
+      if (elZone) elZone.innerText = cZone;
 
       // Populate Raw JSON code
       document.getElementById('rawJsonCode').innerText = JSON.stringify(r, null, 2);
