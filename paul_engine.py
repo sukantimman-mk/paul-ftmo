@@ -940,7 +940,7 @@ def build_full_suite():
                 <!-- Live Ready-to-Trade Order Ticket & Lot Size Calculator -->
                 <div class="bg-slate-950 rounded-xl border-2 border-amber-500/40 p-4 space-y-3">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                        <h3 class="text-sm font-extrabold text-amber-400">🎫 ใบสั่งเทรดจริง (Order Ticket & Lot Calculator)</h3>
+                        <h3 class="text-sm font-extrabold text-amber-400">🎫 ด่านที่ 4️⃣: ใบสั่งเทรดจริง & คุมความเสี่ยง (Order Ticket & Risk)</h3>
                         <div class="flex items-center gap-1 text-xs mono">
                             <span class="text-slate-400">พอร์ต $:</span>
                             <input id="livePortInput" type="number" value="100000" oninput="renderLivePair()" class="w-24 bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-amber-300 font-bold text-right">
@@ -1384,20 +1384,26 @@ def build_full_suite():
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-[11px]">
-                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                            <div class="text-slate-400 text-[10px]">เทรนด์ H4 (EMA 50 vs 200)</div>
-                            <div class="font-extrabold ${{trendColor}} text-xs mt-0.5">${{trendName}}</div>
-                            <div class="text-[10px] text-slate-400 mt-0.5">EMA50: <span class="text-white">${{ls.ema50.toFixed(dec)}}</span></div>
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-400">เทรนด์ H4 (EMA 50 vs 200)</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-cyan-300 mono font-bold">เกณฑ์: ${{ls.planned_dir === 'BUY' ? '50 > 200' : '50 < 200'}}</span>
+                            </div>
+                            <div class="font-extrabold ${{trendColor}} text-xs">${{trendName}}</div>
+                            <div class="text-[10px] text-slate-400">EMA50: <span class="text-white">${{ls.ema50.toFixed(dec)}}</span> | EMA200: <span class="text-slate-300">${{ls.ema200.toFixed(dec)}}</span></div>
                         </div>
-                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                            <div class="text-slate-400 text-[10px]">COT 3-Year Index</div>
-                            <div class="font-extrabold text-amber-300 text-xs mt-0.5">${{cotIdx}}% (Neutral Zone)</div>
-                            <div class="text-[10px] text-slate-400 mt-0.5">เงินสัปดาห์นี้: <span class="${{cotChg < 0 ? 'text-rose-400' : 'text-emerald-400'}}">${{cotChg < 0 ? cotChg.toLocaleString() : '+' + cotChg.toLocaleString()}}</span></div>
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-400">COT 3-Year Index</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-amber-300 mono font-bold">เกณฑ์: 35% – 65%</span>
+                            </div>
+                            <div class="font-extrabold text-amber-300 text-xs">${{cotIdx}}% (${{cotIdx >= 35 && cotIdx <= 65 ? 'Neutral โซนกลาง' : (cotIdx > 65 ? 'Extreme Bull กองทุนซื้อ' : 'Extreme Bear กองทุนขาย')}})</div>
+                            <div class="text-[10px] text-slate-400">เงินสัปดาห์นี้: <span class="${{cotChg < 0 ? 'text-rose-400' : 'text-emerald-400'}}">${{cotChg < 0 ? cotChg.toLocaleString() : '+' + cotChg.toLocaleString()}}</span></div>
                         </div>
                     </div>
 
                     <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-[11px] text-slate-300 leading-relaxed">
-                        👉 <b>ข้อสรุปด่าน 1:</b> ${{diffEma < 0 ? 'โครงสร้างราคาหลุดเป็นขาลง (EMA50 < 200) กองทุนใหญ่ขายออก สอดคล้องฝั่ง' : 'โครงสร้างราคาเป็นขาขึ้น (EMA50 > 200) กองทุนหนุน สอดคล้องฝั่ง'}} <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}}">${{ls.planned_dir}}</b> (COT 3-Yr อยู่ที่ ${{cotIdx}}% โซนกลาง ไม่ขัดขวางเทรนด์)
+                        👉 <b>เกณฑ์ Threshold & ข้อสรุปด่าน 1:</b> ${{diffEma < 0 ? 'เทรนด์หลุดเป็นขาลง (EMA50 < 200) สอดคล้องฝั่ง' : 'เทรนด์เป็นขาขึ้น (EMA50 > 200) สอดคล้องฝั่ง'}} <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}}">${{ls.planned_dir}}</b> (COT 3-Yr อยู่ที่ ${{cotIdx}}% เกณฑ์โซนกลาง 35-65% สถาบันไม่สกัดกั้น)
                     </div>
                 </div>
 
@@ -1406,7 +1412,7 @@ def build_full_suite():
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-2">
                             <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 font-black text-xs flex items-center justify-center">2</span>
-                            <span class="text-xs font-black text-white">ด่านที่ 2️⃣: จังหวะราคาย่อตัว (Pullback)</span>
+                            <span class="text-xs font-black text-white">ด่านที่ 2️⃣: จังหวะราคาย่อตัว (Pullback & Cooldown)</span>
                         </div>
                         <span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold ${{g.g2_pass ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}}">
                             ${{g.g2_pass ? '🟢 ย่อแตะโซนแล้ว' : '⏳ รอย่อตัวเข้าโซน'}}
@@ -1414,17 +1420,25 @@ def build_full_suite():
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-[11px]">
-                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                            <div class="text-slate-400 text-[10px]">แตะแนวรับ EMA50</div>
-                            <div class="font-extrabold ${{g.g2_touched_ema ? 'text-emerald-400' : 'text-amber-400'}} text-xs mt-0.5">
-                                ${{g.g2_touched_ema ? '✅ แตะแล้ว (ได้ต้นทุนดี)' : '⏳ ยังไม่แตะ (ห้ามไล่ราคา)'}}
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-400">แตะแนวรับ EMA50</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-amber-300 mono font-bold">Limit: ≤ 10 แท่ง</span>
                             </div>
+                            <div class="font-extrabold ${{g.g2_touched_ema ? 'text-emerald-400' : 'text-amber-400'}} text-xs">
+                                ${{g.g2_touched_ema ? '✅ แตะแล้ว (ได้ต้นทุนดี ไม่ไล่ราคา)' : '⏳ ยังไม่แตะ (รอราคาย่อหาเส้นฟ้า)'}}
+                            </div>
+                            <div class="text-[10px] text-slate-400">เกณฑ์: ราคาต้องแตะ EMA50 ย้อนหลัง ≤ 10 แท่ง H4</div>
                         </div>
-                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                            <div class="text-slate-400 text-[10px]">เว้นระยะคูลดาวน์</div>
-                            <div class="font-extrabold ${{g.g2_cooldown_ok ? 'text-emerald-400' : 'text-amber-400'}} text-xs mt-0.5">
-                                ${{g.g2_cooldown_ok ? '✅ ห่างไม้ก่อน ' + g.g2_bars_since_exit + ' แท่ง' : '⏳ รอครบ 8 แท่ง (' + g.g2_bars_since_exit + '/8)'}}
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-400">เว้นระยะคูลดาวน์</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-amber-300 mono font-bold">Limit: ≥ 8 แท่ง (32 ชม.)</span>
                             </div>
+                            <div class="font-extrabold ${{g.g2_cooldown_ok ? 'text-emerald-400' : 'text-amber-400'}} text-xs">
+                                ${{g.g2_cooldown_ok ? '✅ ห่างไม้ก่อน ' + g.g2_bars_since_exit + ' แท่ง' : '⏳ รอครบ 8 แท่ง (' + g.g2_bars_since_exit + '/8 แท่ง)'}}
+                            </div>
+                            <div class="text-[10px] text-slate-400">เกณฑ์: เว้นระยะอย่างน้อย 32 ชม. ป้องกันอาการหัวร้อน</div>
                         </div>
                     </div>
                 </div>
@@ -1442,23 +1456,31 @@ def build_full_suite():
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-[11px]">
-                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                            <div class="text-slate-400 text-[10px]">เงื่อนไขเบรก 3-Bar BOS</div>
-                            <div class="font-extrabold text-white text-xs mt-0.5">
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-400">เงื่อนไขเบรก 3-Bar BOS</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-cyan-300 mono font-bold">เกณฑ์: เบรก 3 แท่งก่อน</span>
+                            </div>
+                            <div class="font-extrabold text-white text-xs">
                                 ${{ls.planned_dir === 'BUY' ? 'ปิดเขียว > ' + ls.bos_high.toFixed(dec) : 'ปิดแดง < ' + ls.bos_low.toFixed(dec)}}
                             </div>
+                            <div class="text-[10px] text-slate-400">เกณฑ์: แท่ง H4 ปิด${{ls.planned_dir === 'BUY' ? 'เขียวทะลุ High สูงสุด' : 'แดงหลุด Low ต่ำสุด'}} 3 แท่งก่อน</div>
                         </div>
-                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                            <div class="text-slate-400 text-[10px]">โมเมนตัม RSI(14)</div>
-                            <div class="font-extrabold ${{g.g3_rsi_ok ? 'text-emerald-400' : 'text-amber-400'}} text-xs mt-0.5">
-                                ${{ls.h4_rsi}} ${{g.g3_rsi_ok ? '✅ (สมดุล)' : '⏳ (ไม่อยู่ในโซน)'}}
+                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-400">โมเมนตัม RSI(14)</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-emerald-300 mono font-bold">Limit: ${{ls.planned_dir === 'BUY' ? '45 – 68' : '32 – 55'}}</span>
                             </div>
+                            <div class="font-extrabold ${{g.g3_rsi_ok ? 'text-emerald-400' : 'text-amber-400'}} text-xs">
+                                ${{ls.h4_rsi}} ${{g.g3_rsi_ok ? '✅ (อยู่ในกรอบสมดุล)' : '⏳ (ไม่อยู่ในกรอบเกณฑ์)'}}
+                            </div>
+                            <div class="text-[10px] text-slate-400">เกณฑ์: ${{ls.planned_dir === 'BUY' ? 'RSI 45–68 (ไม่ซื้อ Overbought)' : 'RSI 32–55 (ไม่ขาย Oversold)'}}</div>
                         </div>
                     </div>
                 </div>
             `;
 
-                        // Render Live Order Ticket (Active Open Trade OR Planned Trigger Ticket)
+            // Render Live Order Ticket (Active Open Trade OR Planned Trigger Ticket)
             if (ls.active_open_trade) {{
                 const ot = ls.active_open_trade;
                 const flColor = ot.floating_usd >= 0 ? 'text-emerald-400' : 'text-rose-400';
@@ -1467,41 +1489,77 @@ def build_full_suite():
                         🔥 กำลังถือออเดอร์จริงในตลาด (${{ot.dir}} ตั้งแต่ ${{ot.entry_time}})
                         <div class="text-sm ${{flColor}} mt-1">กำไร/ขาดทุนลอยตัว: ${{ot.floating_r >= 0 ? '+' : ''}}${{ot.floating_r}}R (${{ot.floating_usd >= 0 ? '+' : ''}}$${{(ot.floating_usd * scaleFactor).toFixed(0)}})</div>
                     </div>
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span>ขนาด Lot (Risk 0.75%):</span><b class="text-white">${{(ot.lots_100k * scaleFactor).toFixed(2)}} Lots</b></div>
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-cyan-300">ราคาที่เข้า (Entry):</span><b class="text-white">${{ot.entry.toFixed(dec)}}</b></div>
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-rose-400">SL ปัจจุบัน (Stage ${{ot.stage}}):</span><b class="text-rose-400">${{ot.current_sl.toFixed(dec)}}</b></div>
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-yellow-300">TP1 (+1.5R ปิด 50%):</span><b class="text-yellow-300">${{ot.tp1.toFixed(dec)}}</b></div>
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-teal-300">Stage 2 (+2.5R ล็อก +1.5R):</span><b class="text-teal-300">${{ot.stage2.toFixed(dec)}}</b></div>
-                    <div class="flex justify-between py-1"><span class="text-emerald-400">TP2 (+3.5R เป้าหลัก):</span><b class="text-emerald-400">${{ot.tp.toFixed(dec)}}</b></div>
+                    <div class="flex justify-between py-1 border-b border-slate-800">
+                        <span>ขนาด Lot <span class="text-[10px] text-slate-400">(Limit: Risk 0.75% = $${{riskUsd.toFixed(0)}}):</span></span>
+                        <b class="text-white">${{(ot.lots_100k * scaleFactor).toFixed(2)}} Lots</b>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-800">
+                        <span class="text-cyan-300">ราคาที่เข้า (Entry):</span>
+                        <b class="text-white">${{ot.entry.toFixed(dec)}}</b>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-800">
+                        <span class="text-rose-400">SL ปัจจุบัน <span class="text-[10px] text-slate-400">(Stage ${{ot.stage}}):</span></span>
+                        <b class="text-rose-400">${{ot.current_sl.toFixed(dec)}}</b>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-800">
+                        <span class="text-yellow-300">TP1 <span class="text-[10px] text-slate-400">(เกณฑ์: +1.5R ปิด 50% ล็อก SL +0.3R):</span></span>
+                        <b class="text-yellow-300">${{ot.tp1.toFixed(dec)}}</b>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-800">
+                        <span class="text-teal-300">Stage 2 <span class="text-[10px] text-slate-400">(เกณฑ์: +2.5R ล็อก SL +1.5R):</span></span>
+                        <b class="text-teal-300">${{ot.stage2.toFixed(dec)}}</b>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span class="text-emerald-400">TP2 <span class="text-[10px] text-slate-400">(เกณฑ์: +3.5R เป้าหลัก ปิด 100%):</span></span>
+                        <b class="text-emerald-400">${{ot.tp.toFixed(dec)}}</b>
+                    </div>
                 `;
             }} else {{
                 document.getElementById('liveOrderTicketBody').innerHTML = `
-                    <div class="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 text-[11px]">
-                        💡 <b>ขั้นที่ 4️⃣ (แผนตั้งรับปัจจุบัน):</b> เมื่อแท่ง H4 ปิด${{ls.planned_dir === 'BUY' ? 'เหนือ' : 'ต่ำกว่า'}} <b class="text-cyan-300">${{tk.entry.toFixed(dec)}}</b> ให้กดเข้าตามค่าด้านล่างทันที:
+                    <div class="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 text-[11px] leading-relaxed">
+                        💡 <b>ด่านที่ 4️⃣ (ใบสั่งเทรด & แผนบริหารความเสี่ยง):</b> เมื่อแท่ง H4 ปิด${{ls.planned_dir === 'BUY' ? 'เหนือ' : 'ต่ำกว่า'}} <b class="text-cyan-300">${{tk.entry.toFixed(dec)}}</b> ให้ตั้งออเดอร์ตามเกณฑ์ด้านล่าง:
                     </div>
-                    <div class="flex justify-between items-center py-1 border-b border-slate-800">
-                        <span class="text-amber-300 font-bold">📦 ขนาด Lot (Risk 0.75% = $${{riskUsd.toFixed(0)}}):</span>
+                    <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
+                        <div>
+                            <span class="text-amber-300 font-bold">📦 ขนาด Lot:</span>
+                            <div class="text-[10px] text-slate-400 mono">เกณฑ์ Limit: Risk 0.75% ($${{riskUsd.toFixed(0)}})</div>
+                        </div>
                         <span class="text-sm font-extrabold text-white">${{lotsScaled}} Lots</span>
                     </div>
-                    <div class="flex justify-between items-center py-1 border-b border-slate-800">
-                        <span class="text-cyan-300">🎯 จุดเข้า (BOS Trigger Entry):</span>
-                        <button onclick="copyText('${{tk.entry.toFixed(dec)}}')" class="text-white font-bold hover:text-cyan-300">${{tk.entry.toFixed(dec)}} 📋</button>
+                    <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
+                        <div>
+                            <span class="text-cyan-300 font-bold">🎯 จุดเข้า (BOS Trigger):</span>
+                            <div class="text-[10px] text-slate-400 mono">เกณฑ์: รอแท่ง H4 ปิดเบรกยืนยัน</div>
+                        </div>
+                        <button onclick="copyText('${{tk.entry.toFixed(dec)}}')" class="text-white font-bold hover:text-cyan-300 px-2 py-0.5 rounded bg-slate-800">${{tk.entry.toFixed(dec)}} 📋</button>
                     </div>
-                    <div class="flex justify-between items-center py-1 border-b border-slate-800">
-                        <span class="text-rose-400">🛑 Stop Loss (-1.0R | ${{tk.atr_mult}}x ATR):</span>
-                        <button onclick="copyText('${{tk.sl.toFixed(dec)}}')" class="text-rose-400 font-bold hover:underline">${{tk.sl.toFixed(dec)}} 📋</button>
+                    <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
+                        <div>
+                            <span class="text-rose-400 font-bold">🛑 Stop Loss:</span>
+                            <div class="text-[10px] text-slate-400 mono">เกณฑ์ Limit: -1.0R (${{tk.atr_mult}}x ATR นอกสวิง)</div>
+                        </div>
+                        <button onclick="copyText('${{tk.sl.toFixed(dec)}}')" class="text-rose-400 font-bold hover:underline px-2 py-0.5 rounded bg-slate-800">${{tk.sl.toFixed(dec)}} 📋</button>
                     </div>
-                    <div class="flex justify-between items-center py-1 border-b border-slate-800">
-                        <span class="text-yellow-300">💰 TP1 (+1.5R แบ่งปิด 50%):</span>
-                        <button onclick="copyText('${{tk.tp1.toFixed(dec)}}')" class="text-yellow-300 font-bold hover:underline">${{tk.tp1.toFixed(dec)}} (เลื่อน SL ➔ ${{tk.lock1.toFixed(dec)}}) 📋</button>
+                    <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
+                        <div>
+                            <span class="text-yellow-300 font-bold">💰 TP1 (Stage 1):</span>
+                            <div class="text-[10px] text-slate-400 mono">เกณฑ์: +1.5R (ปิด 50% & SL ➔ ${{tk.lock1.toFixed(dec)}})</div>
+                        </div>
+                        <button onclick="copyText('${{tk.tp1.toFixed(dec)}}')" class="text-yellow-300 font-bold hover:underline px-2 py-0.5 rounded bg-slate-800">${{tk.tp1.toFixed(dec)}} 📋</button>
                     </div>
-                    <div class="flex justify-between items-center py-1 border-b border-slate-800">
-                        <span class="text-teal-300">🛡️ Stage 2 (+2.5R):</span>
-                        <span class="text-teal-300 font-bold">${{tk.stage2.toFixed(dec)}} (เลื่อน SL ➔ ${{tk.lock2.toFixed(dec)}})</span>
+                    <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
+                        <div>
+                            <span class="text-teal-300 font-bold">🛡️ Stage 2 Trail:</span>
+                            <div class="text-[10px] text-slate-400 mono">เกณฑ์: +2.5R (เลื่อน SL ➔ ${{tk.lock2.toFixed(dec)}})</div>
+                        </div>
+                        <span class="text-teal-300 font-bold px-2 py-0.5 rounded bg-slate-800">${{tk.stage2.toFixed(dec)}}</span>
                     </div>
-                    <div class="flex justify-between items-center py-1">
-                        <span class="text-emerald-400">🏆 Final TP2 (+3.5R เป้าหลัก):</span>
-                        <button onclick="copyText('${{tk.tp2.toFixed(dec)}}')" class="text-emerald-400 font-bold hover:underline">${{tk.tp2.toFixed(dec)}} 📋</button>
+                    <div class="flex justify-between items-center py-1.5">
+                        <div>
+                            <span class="text-emerald-400 font-bold">🏆 Final TP2:</span>
+                            <div class="text-[10px] text-slate-400 mono">เกณฑ์: +3.5R (เป้าหลัก ปิด 100%)</div>
+                        </div>
+                        <button onclick="copyText('${{tk.tp2.toFixed(dec)}}')" class="text-emerald-400 font-bold hover:underline px-2 py-0.5 rounded bg-slate-800">${{tk.tp2.toFixed(dec)}} 📋</button>
                     </div>
                 `;
             }}
@@ -1906,35 +1964,50 @@ def build_full_suite():
                 : `เส้นฟ้า EMA50 (${{formatPrice(t.ema50_val, t.dec)}}) < เส้นม่วง EMA200 (${{formatPrice(t.ema200_val, t.dec)}}) ➔ เทรนด์หลักเป็นขาลง (BEARISH)`;
 
             document.getElementById('checklistBody').innerHTML = `
-                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-cyan-400 border border-slate-800 space-y-1">
-                    <div class="text-xs font-extrabold text-cyan-300">ขั้นที่ 1️⃣: กำหนดทิศทางใหญ่ & กองทุนสถาบัน (Macro Trend & COT)</div>
+                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-cyan-400 border border-slate-800 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs font-extrabold text-cyan-300">ขั้นที่ 1️⃣: กำหนดทิศทางใหญ่ & กองทุนสถาบัน (Macro Trend & COT)</div>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 mono font-bold">เกณฑ์: BUY(50>200) | SELL(50<200)</span>
+                    </div>
                     <div class="text-[11px] text-slate-300 leading-relaxed">
+                        • <b>เกณฑ์ Threshold ด่าน 1:</b> BUY ต้อง EMA50 > EMA200 | SELL ต้อง EMA50 < EMA200 และ COT Index สอดคล้อง (Neutral 35%-65% ไม่ขัดขวาง)<br>
                         • <b>ตลาดตอนนั้น:</b> ${{histTrendWhy}}<br>
-                        • <b>ทำไมตัดสินใจเข้าฝั่งนี้:</b> เทรดตามเทรนด์สถาบัน ห้ามสวนเส้นค่าเฉลี่ย ➔ <b class="${{t.dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}} font-extrabold">ตัดสินใจเข้า "${{histDirName}}"</b><br>
-                        • <b>รายงาน CFTC COT (ประกาศศุกร์ ${{t.cot.published_friday}}):</b> ยอดสะสม Net ${{t.cot.raw_net >= 0 ? '+' : ''}}${{t.cot.raw_net.toLocaleString()}} สัญญา | Index ${{t.cot.raw_cot_idx}}% (กองทุนถือทิศทางเดียวกับไม้เทรด)
+                        • <b>การตัดสินใจ:</b> เทรดตามเทรนด์สถาบัน ห้ามสวนเส้นค่าเฉลี่ย ➔ <b class="${{t.dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}} font-extrabold">เข้า "${{histDirName}}"</b><br>
+                        • <b>รายงาน CFTC COT (ประกาศศุกร์ ${{t.cot.published_friday}}):</b> Net ${{t.cot.raw_net >= 0 ? '+' : ''}}${{t.cot.raw_net.toLocaleString()}} สัญญา | Index ${{t.cot.raw_cot_idx}}% (เกณฑ์ Neutral 35-65% สถาบันไม่สกัดกั้น)
                     </div>
                 </div>
 
-                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-amber-400 border border-slate-800 space-y-1">
-                    <div class="text-xs font-extrabold text-amber-300">ขั้นที่ 2️⃣: เช็คการย่อตัวเข้าโซนคุณค่า & คูลดาวน์ (Pullback & Cooldown)</div>
+                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-amber-400 border border-slate-800 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs font-extrabold text-amber-300">ขั้นที่ 2️⃣: เช็คการย่อตัวเข้าโซนคุณค่า & คูลดาวน์ (Pullback & Cooldown)</div>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30 mono font-bold">Limit: แตะ ≤ 10 แท่ง | Cooldown ≥ 8 แท่ง</span>
+                    </div>
                     <div class="text-[11px] text-slate-300 leading-relaxed">
-                        • <b>ทำไมไม่ไล่ราคา:</b> รอให้ราคาย่อกลับมาหาโซนเส้นฟ้า EMA50 (ย่อลึก ${{t.pullback_pct}}% ของกรอบ Swing) เพื่อให้ได้ต้นทุนราคาที่ดีและปลอดภัย ไม่ดอยไม่ก้นเหว<br>
-                        • <b>การเว้นระยะ:</b> ผ่านกฎ Cooldown เว้นระยะห่าง >= 8 แท่ง H4 (32 ชม.) จากไม้ก่อนหน้า ป้องกันอาการหัวร้อนเทรดซ้ำซ้อน
+                        • <b>เกณฑ์ Limit ด่าน 2:</b> ราคาต้องแตะ EMA50 ย้อนหลัง ≤ 10 แท่ง (ไม่ไล่ราคา) & ห่างไม้ก่อนหน้า ≥ 8 แท่ง H4 (32 ชม.)<br>
+                        • <b>ผลการตรวจสอบ:</b> ราคาย่อลึก ${{t.pullback_pct}}% ของกรอบ Swing แตะเส้นฟ้า EMA50 ได้ต้นทุนดี และผ่านเกณฑ์ Cooldown ป้องกันอาการหัวร้อน
                     </div>
                 </div>
 
-                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-emerald-400 border border-slate-800 space-y-1">
-                    <div class="text-xs font-extrabold text-emerald-300">ขั้นที่ 3️⃣: จุดไกปืนสั่งเข้าออเดอร์ (3-Bar BOS + RSI + Session)</div>
+                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-emerald-400 border border-slate-800 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs font-extrabold text-emerald-300">ขั้นที่ 3️⃣: จุดไกปืนสั่งเข้าออเดอร์ (3-Bar BOS + RSI + Session)</div>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 mono font-bold">เกณฑ์: ปิดเบรก 3 แท่ง | RSI 45-68/32-55</span>
+                    </div>
                     <div class="text-[11px] text-slate-300 leading-relaxed">
-                        • <b>ทำไมถึงเข้าแท่งนี้:</b> แท่งเทียน H4 ปิด ${{t.dir === 'BUY' ? 'เขียวทะลุ High 3 แท่งก่อนหน้า' : 'แดงหลุด Low 3 แท่งก่อนหน้า'}} (${{formatPrice(t.bos_level, t.dec)}}) ยืนยันว่าแรงจริงกลับเข้ามาคุมตลาดแล้ว<br>
-                        • <b>โมเมนตัม & ช่วงเวลา:</b> H4 RSI(14) = <b>${{t.entry_rsi}}</b> (กรอบโมเมนตัมปลอดภัย) | ช่วงเวลา: <b>${{t.session}}</b> (ตลาดลอนดอน/นิวยอร์กที่มีโวลุ่มสถาบันจริง)
+                        • <b>เกณฑ์ Threshold ด่าน 3:</b> แท่ง H4 ปิดเบรก High/Low 3 แท่งก่อนหน้า + RSI ในกรอบปลอดภัย (BUY: 45-68 | SELL: 32-55)<br>
+                        • <b>จุดเบรก BOS:</b> แท่งเทียน H4 ปิด ${{t.dir === 'BUY' ? 'เขียวทะลุ High 3 แท่งก่อนหน้า' : 'แดงหลุด Low 3 แท่งก่อนหน้า'}} (${{formatPrice(t.bos_level, t.dec)}}) ยืนยันแรงสถาบันจริง<br>
+                        • <b>โมเมนตัม & เซสชัน:</b> H4 RSI(14) = <b>${{t.entry_rsi}}</b> (อยู่ในกรอบเกณฑ์) | ช่วงเวลา: <b>${{t.session}}</b> (ลอนดอน/นิวยอร์ก)
                     </div>
                 </div>
 
-                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-rose-400 border border-slate-800 space-y-1">
-                    <div class="text-xs font-extrabold text-rose-300">ขั้นที่ 4️⃣: คุมความเสี่ยง & แผนบริหาร 3 ระยะ (Universal ATR & Trailing)</div>
+                <div class="p-3 rounded-lg bg-slate-950/90 border-l-4 border-rose-400 border border-slate-800 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs font-extrabold text-rose-300">ขั้นที่ 4️⃣: คุมความเสี่ยง & แผนบริหาร 3 ระยะ (Universal ATR & Trailing)</div>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/30 mono font-bold">Limit: Risk 0.75% | TP1 +1.5R | TP2 +3.5R</span>
+                    </div>
                     <div class="text-[11px] text-slate-300 leading-relaxed">
-                        • <b>การตั้ง SL:</b> ใช้ Universal ATR = ${{formatPrice(t.atr_val, t.dec)}} x ${{t.atr_mult_used}} เท่า เพื่อให้ระยะ SL มีพื้นที่หายใจพ้น Noise ของตลาด และคำนวณ Lot Size เสี่ยงพอดี 0.75% ($750)<br>
+                        • <b>เกณฑ์ Limit ด่าน 4:</b> เสี่ยง 0.75% ($750) | SL 0.8-1.5x ATR (-1.0R) | TP1 +1.5R (ปิด 50% Lock +0.3R) | Stage 2 +2.5R (Lock +1.5R) | TP2 +3.5R (ปิด 100%)<br>
+                        • <b>การตั้ง SL:</b> Universal ATR = ${{formatPrice(t.atr_val, t.dec)}} x ${{t.atr_mult_used}} เท่า (-1.0R = $750 พอดี)<br>
                         • <b>เส้นทางบริหารออเดอร์จริง:</b><br>
                         <div class="pt-1 border-t border-slate-800 text-slate-200">${{stagePathHtml}}</div>
                     </div>
