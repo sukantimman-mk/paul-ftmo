@@ -762,7 +762,7 @@ def build_full_suite():
             <button onclick="toggleTelegramPanel()" class="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-xs font-extrabold border border-sky-400/50 flex items-center gap-1.5 shadow-md">
                 📲 แจ้งเตือน Telegram ฟรี (ปิดคอมได้ 100%)
             </button>
-            <a href="cot_legacy_report.html" class="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 text-xs font-bold border border-amber-500/30">🏛️ ตารางดิบ CFTC COT (15 สัญญา)</a>
+            <a href="cot_legacy_report.html#raw" class="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 text-xs font-bold border border-amber-500/30">🏛️ ตารางดิบ CFTC COT (15 สัญญา)</a>
         </div>
 
         <!-- Global Chart Size & Zoom Controls (Works in BOTH Live & Historical Modes!) -->
