@@ -748,104 +748,111 @@ def build_full_suite():
 <body class="p-3 md:p-5 min-h-screen space-y-4">
 
     <!-- ========================================================================= -->
-    <!-- STICKY TOP COMMAND BAR: MODE SWITCHER + CHART RESIZER + LIVE REFRESH      -->
+    <!-- CLEAN COCKPIT HEADER: MODE TABS + LIVE MARKET STATUS + ESSENTIAL UTILITIES  -->
     <!-- ========================================================================= -->
-    <header class="sticky top-2 z-50 glass-card p-3 border-2 border-slate-700/80 shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
-        <!-- Mode Switcher Tabs -->
-        <div class="flex flex-wrap items-center gap-2">
-            <button id="modeBtn_LIVE" onclick="switchMode('LIVE')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-extrabold bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/25 transition flex items-center gap-1.5">
-                📡 1. ฐานบัญชาการเทรดจริง (ดูกราฟตลาดปัจจุบันสด 6 คู่เงิน)
-            </button>
-            <button id="modeBtn_HIST" onclick="switchMode('HIST')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-extrabold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
-                🕯️ 2. คลังกราฟย้อนหลัง ({len(df_csv)} ไม้) & ตรวจสอบระบบ
-            </button>
-            <button onclick="toggleTelegramPanel()" class="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-xs font-extrabold border border-sky-400/50 flex items-center gap-1.5 shadow-md">
-                📲 แจ้งเตือน Telegram ฟรี (ปิดคอมได้ 100%)
-            </button>
-            <a href="cot_legacy_report.html#raw" class="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 text-xs font-bold border border-amber-500/30">🏛️ ตารางดิบ CFTC COT (15 สัญญา)</a>
+    <header class="sticky top-2 z-40 glass-card p-3 md:px-5 border border-slate-700/60 shadow-2xl flex flex-col lg:flex-row justify-between items-center gap-3">
+        <!-- Brand & Live Market Pulse -->
+        <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
+            <div class="flex items-center gap-2">
+                <span class="text-xl md:text-2xl font-black bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-300 bg-clip-text text-transparent">PAUL 4-GATE</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-black uppercase tracking-wider">FTMO PRO</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="flex h-2.5 w-2.5 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span id="liveLastUpdateText" class="text-xs mono text-slate-300 font-semibold">{gen_time_str}</span>
+            </div>
         </div>
 
-        <!-- Global Chart Size & Zoom Controls (Works in BOTH Live & Historical Modes!) -->
-        <div class="flex flex-wrap items-center gap-3 bg-slate-950/90 px-3.5 py-2 rounded-xl border border-slate-800 w-full xl:w-auto justify-between xl:justify-end">
-            <div class="flex items-center gap-2">
-                <span class="text-[11px] font-bold text-cyan-300">📐 ขนาดกราฟ:</span>
-                <button onclick="toggleWideChart()" id="wideChartBtn" class="px-2.5 py-1 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold">
-                    🖥️ ขยายกราฟกว้างเต็มจอ
-                </button>
-            </div>
-            <div class="flex items-center gap-1.5">
-                <span class="text-[11px] text-slate-400">ความสูง:</span>
-                <input id="chartHeightSlider" type="range" min="450" max="1050" step="25" value="650" oninput="updateChartSize()" class="w-24 accent-emerald-400 cursor-pointer">
-                <span id="chartHeightLabel" class="mono text-[11px] text-emerald-400 font-bold">650px</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-                <span class="text-[11px] text-slate-400">ซูมแท่งเทียน:</span>
-                <input id="candleZoomSlider" type="range" min="20" max="80" step="5" value="55" oninput="updateCandleZoom()" class="w-24 accent-amber-400 cursor-pointer">
-                <span id="candleZoomLabel" class="mono text-[11px] text-amber-400 font-bold">55 แท่ง</span>
-            </div>
+        <!-- Mode Switcher Tabs (Live Terminal vs Historical Replay) -->
+        <div class="flex items-center p-1 bg-slate-950/90 rounded-2xl border border-slate-800">
+            <button id="modeBtn_LIVE" onclick="switchMode('LIVE')" class="px-4 py-2 rounded-xl text-xs font-black bg-emerald-500 text-slate-950 shadow-md transition flex items-center gap-1.5">
+                <span>📡 หน้าเทรดสด 6 คู่เงิน</span>
+            </button>
+            <button id="modeBtn_HIST" onclick="switchMode('HIST')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+                <span>🕯️ คลังย้อนหลัง ({len(df_csv)} ไม้)</span>
+            </button>
+        </div>
+
+        <!-- Clean Quick Utility Toolbar -->
+        <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+            <button id="liveRefreshBtn" onclick="fetchFreshLiveMarket()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-extrabold flex items-center gap-1.5 transition shadow-sm">
+                <span>🔄 รีเฟรชสด</span>
+            </button>
+            <select id="autoRefreshSelect" onchange="toggleAutoLiveRefresh()" class="bg-slate-900 text-xs font-bold text-slate-300 px-2.5 py-1.5 rounded-xl border border-slate-700 cursor-pointer">
+                <option value="0">⏱️ อัปเดต: ปิด</option>
+                <option value="60000">⏱️ ทุก 1 นาที</option>
+                <option value="300000">⏱️ ทุก 5 นาที</option>
+            </select>
+            <button onclick="toggleTelegramPanel()" class="px-3 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-xs font-bold border border-sky-400/40 flex items-center gap-1.5 transition">
+                <span>📲 Telegram</span>
+            </button>
+            <a href="cot_legacy_report.html#raw" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 text-xs font-bold border border-amber-500/30 transition">
+                <span>🏛️ COT 15 สัญญา</span>
+            </a>
+            <button onclick="toggleChartControlPanel()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700">
+                <span>⚙️ ปรับกราฟ</span>
+            </button>
         </div>
     </header>
 
-    <!-- ========================================================================= -->
-    <!-- MODE 1: LIVE TRADING COMMAND CENTER (ฐานในการเทรดจริง - ข้อมูลปัจจุบันสด)  -->
-    <!-- ========================================================================= -->
-    <div id="liveTradingView" class="space-y-4">
-        <!-- Live Status Bar & Refresh Button -->
-        <div class="glass-card p-4 border-2 border-emerald-500/40 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
-            <div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs font-extrabold border border-emerald-500/40 animate-pulse">● LIVE MARKET BASE (ฐานบัญชาการเทรดจริง)</span>
-                    <span id="liveLastUpdateText" class="text-xs mono text-cyan-300 font-bold">ข้อมูลอัปเดตล่าสุด: {gen_time_str}</span>
-                </div>
-                <h2 class="text-lg md:text-xl font-extrabold text-white mt-1">📡 สแกนเนอร์ไฟจราจร 1-2-3-4 & กราฟ H4 ปัจจุบันสดทั้ง 6 คู่เงิน (คลิกการ์ดคู่เงินเพื่อดูกราฟปัจจุบันและใบสั่งเทรด)</h2>
+    <!-- FLOATING CHART CONTROLS BAR (Collapsible Drawer) -->
+    <div id="chartControlsDrawer" class="hidden glass-card p-3 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-950/95">
+        <div class="flex items-center gap-2">
+            <span class="font-bold text-cyan-300">📐 ขนาดกราฟ:</span>
+            <button onclick="toggleWideChart()" id="wideChartBtn" class="px-3 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-bold">
+                🖥️ ขยายกราฟเต็มจอ
+            </button>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <span class="text-slate-400">ความสูง:</span>
+                <input id="chartHeightSlider" type="range" min="450" max="1050" step="25" value="650" oninput="updateChartSize()" class="w-24 accent-emerald-400 cursor-pointer">
+                <span id="chartHeightLabel" class="mono text-emerald-400 font-bold">650px</span>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <button onclick="toggleTelegramPanel()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold shadow-lg shadow-sky-500/20 flex items-center gap-1.5">
-                    📲 ตั้งค่า & ทดสอบแจ้งเตือน Telegram (ปิดคอมได้ 100% / ฟรี 0 บาท)
-                </button>
-                <button id="liveRefreshBtn" onclick="fetchFreshLiveMarket()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold shadow-lg shadow-emerald-500/20 flex items-center gap-1.5">
-                    🔄 ดึงราคาและกราฟปัจจุบันสดเดี๋ยวนี้ (Live Refresh)
-                </button>
-                <select id="autoRefreshSelect" onchange="toggleAutoLiveRefresh()" class="bg-slate-900 text-xs font-bold text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
-                    <option value="0">⏱️ อัปเดตอัตโนมัติ: ปิด</option>
-                    <option value="60000">⏱️ อัปเดตสดทุก 1 นาที</option>
-                    <option value="300000">⏱️ อัปเดตสดทุก 5 นาที</option>
-                </select>
+            <div class="flex items-center gap-2">
+                <span class="text-slate-400">ซูมแท่งเทียน:</span>
+                <input id="candleZoomSlider" type="range" min="20" max="80" step="5" value="55" oninput="updateCandleZoom()" class="w-24 accent-amber-400 cursor-pointer">
+                <span id="candleZoomLabel" class="mono text-amber-400 font-bold">55 แท่ง</span>
             </div>
         </div>
+        <button onclick="toggleChartControlPanel()" class="text-slate-400 hover:text-white font-bold">✕ ปิด</button>
+    </div>
 
-        <!-- TELEGRAM CLOUD ALERT CONTROL PANEL (Visible by default for easy setup) -->
-        <div id="telegramCloudPanel" class="glass-card p-5 border-2 border-sky-400/60 bg-slate-950/95 space-y-4">
+    <!-- TELEGRAM CLOUD ALERT MODAL (Clean, Dismissible Floating Overlay) -->
+    <div id="telegramCloudPanel" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-card max-w-4xl w-full p-6 border-2 border-sky-400/60 bg-slate-950 max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl rounded-2xl relative">
             <div class="flex flex-wrap justify-between items-start gap-2 border-b border-slate-800 pb-3">
                 <div>
-                    <span class="px-2.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-xs font-extrabold border border-sky-400/40">☁️ ZERO-COST CLOUD SCANNER (0 บาทตลอดชีพ | ปิดคอมถอดปลั๊กได้ 100%)</span>
-                    <h3 class="text-lg font-extrabold text-white mt-1">📲 ระบบแจ้งเตือนสัญญาณ 1-2-3-4 & ใบสั่งเทรดเข้ามือถืออัตโนมัติทุกปิดแท่ง H4 (@my_paul_FTMO_bot)</h3>
-                    <p class="text-xs text-slate-300 mt-0.5">เมื่อแท่ง H4 ปิด (07:03, 11:03, 15:03, 19:03, 23:03, 03:03 น. เวลาไทย) ระบบจะสแกนทั้ง 6 คู่เงินแล้วยิงใบสั่งเทรดเข้ามือถือคุณทันทีโดยไม่ต้องเปิดคอม!</p>
+                    <span class="px-2.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-xs font-extrabold border border-sky-400/40">☁️ ZERO-COST CLOUD SCANNER (0 บาทตลอดชีพ | ปิดคอมได้ 100%)</span>
+                    <h3 class="text-lg font-extrabold text-white mt-1">📲 ตั้งค่าระบบแจ้งเตือนสัญญาณ 4 ด่านเข้ามือถือ (@my_paul_FTMO_bot)</h3>
                 </div>
-                <button onclick="toggleTelegramPanel()" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700">✖ ซ่อน/แสดงหน้าต่างนี้</button>
+                <button onclick="toggleTelegramPanel()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-extrabold border border-slate-700">✖ ปิดหน้าต่าง</button>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <!-- Left: Interactive Bot Token & Chat ID Tester -->
                 <div class="lg:col-span-7 bg-slate-900/90 p-4 rounded-xl border border-sky-500/30 space-y-3">
-                    <div class="text-xs font-extrabold text-sky-300 uppercase">⚡ เชื่อมต่อบอท @my_paul_FTMO_bot เข้ากับมือถือของคุณ (ทำครั้งเดียวใช้ได้ตลอด)</div>
+                    <div class="text-xs font-extrabold text-sky-300 uppercase">⚡ เชื่อมต่อบอทเข้ากับมือถือของคุณ</div>
                     <div class="flex flex-col sm:flex-row items-center gap-4 bg-slate-950 p-3 rounded-xl border border-amber-500/40">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://t.me/my_paul_FTMO_bot?start=connect" alt="QR @my_paul_FTMO_bot" class="w-24 h-24 rounded-lg border-2 border-white bg-white p-1 shrink-0">
                         <div class="space-y-1.5 text-xs">
-                            <div class="font-extrabold text-amber-300 text-sm">👉 ขั้นตอนสำคัญ: ส่งข้อความแรกเข้าบอท `@my_paul_FTMO_bot`</div>
-                            <p class="text-slate-300">1. ใช้กล้องมือถือสแกน QR Code ด้านซ้าย (หรือค้นหาชื่อ <b><code>@my_paul_FTMO_bot</code></b> ในแอป Telegram บนมือถือ)<br>
-                            2. เมื่อห้องแชท <b>My Paul FTMO Alert</b> เปิดขึ้นมา ให้กดปุ่ม <b>START</b> ด้านล่างจอ แล้ว<b>พิมพ์เลข <code>1</code> หรือคำว่า <code>สวัสดี</code> ส่งเข้าไปในแชท 1 ครั้ง</b><br>
-                            3. พอกดส่งข้อความในแชทแล้ว ให้กดปุ่มสีเหลือง <b>🔍 ดึง Chat ID อัตโนมัติ</b> ด้านล่างนี้ได้เลย!</p>
+                            <div class="font-extrabold text-amber-300 text-sm">👉 สแกน QR แล้วทักแชทบอท 1 ครั้ง:</div>
+                            <p class="text-slate-300">1. สแกน QR หรือค้นหา <b><code>@my_paul_FTMO_bot</code></b> ในแอป Telegram<br>
+                            2. กด <b>START</b> แล้วพิมพ์เลข <code>1</code> หรือ <code>สวัสดี</code> ส่งเข้าไป 1 ครั้ง<br>
+                            3. กดปุ่มสีเหลือง <b>🔍 ดึง Chat ID อัตโนมัติ</b> ด้านล่างนี้!</p>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] text-slate-300 font-bold mb-1">1. Telegram Bot Token ของคุณ (ใส่ไว้ให้เรียบร้อยแล้ว):</label>
-                        <input id="tgBotTokenInput" type="text" value="8783621696:AAHGYLyU5PWBXByFUvG7i-qpmGMeLNaOXcI" placeholder="เช่น 7123456789:AAHxyz..." class="w-full bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
+                        <label class="block text-[11px] text-slate-300 font-bold mb-1">1. Telegram Bot Token:</label>
+                        <input id="tgBotTokenInput" type="text" value="8783621696:AAHGYLyU5PWBXByFUvG7i-qpmGMeLNaOXcI" class="w-full bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
                     </div>
                     <div>
-                        <label class="block text-[11px] text-slate-300 font-bold mb-1">2. Telegram Chat ID ของคุณ (ทักแชทบอทแล้วกดปุ่มสีเหลืองด้านขวา):</label>
+                        <label class="block text-[11px] text-slate-300 font-bold mb-1">2. Telegram Chat ID:</label>
                         <div class="flex gap-2">
-                            <input id="tgChatIdInput" type="text" value="1394691513" placeholder="กดปุ่ม 🔍 ดึง Chat ID อัตโนมัติ หรือพิมพ์เลข Chat ID..." class="flex-1 bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
+                            <input id="tgChatIdInput" type="text" value="1394691513" placeholder="กดปุ่ม 🔍 ดึง Chat ID อัตโนมัติ..." class="flex-1 bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
                             <button onclick="autoDetectTelegramChatId()" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold whitespace-nowrap shadow-lg">
                                 🔍 ดึง Chat ID อัตโนมัติ
                             </button>
@@ -856,7 +863,7 @@ def build_full_suite():
                             🚀 บันทึก & ยิงเรดาร์ 6 คู่เงินเข้ามือถือเดี๋ยวนี้!
                         </button>
                         <button onclick="sendCurrentPairTicketToTelegram()" class="px-3.5 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold">
-                            🎯 ส่งใบสั่งเทรดคู่ที่เลือกอยู่เข้ามือถือ
+                            🎯 ส่งใบสั่งเทรดคู่ที่เลือกอยู่
                         </button>
                     </div>
                     <div id="tgStatusBox" class="hidden p-2.5 rounded-lg text-xs mono border"></div>
@@ -864,27 +871,30 @@ def build_full_suite():
 
                 <!-- Right: 1-2-3 Step Guide for 100% Free Cloud (PC Off) -->
                 <div class="lg:col-span-5 bg-slate-900/90 p-4 rounded-xl border border-emerald-500/30 space-y-2.5 text-xs">
-                    <div class="font-extrabold text-emerald-300 uppercase">☁️ วิธีเปิดโหมดรันบน Cloud ฟรี 100% (ปิดคอมถอดปลั๊กได้เลย ไม่เสียเงินสักบาท)</div>
+                    <div class="font-extrabold text-emerald-300 uppercase">☁️ วิธีเปิดโหมด Cloud ฟรี 24 ชม. (ปิดคอมได้เลย)</div>
                     <div class="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800">
-                        <span class="font-bold text-amber-300">ขั้นที่ 1: ทดสอบรับข้อความในมือถือก่อน</span>
-                        <p class="text-slate-300 mt-0.5">สแกน QR Code ทักแชท <b>@my_paul_FTMO_bot</b> พิมพ์ <code>สวัสดี</code> ➔ กดปุ่ม <b>🔍 ดึง Chat ID อัตโนมัติ</b> ➔ กด <b>🚀 บันทึก & ยิงเรดาร์ 6 คู่เงิน</b></p>
+                        <span class="font-bold text-amber-300">ขั้นที่ 1: รับข้อความในมือถือ</span>
+                        <p class="text-slate-300 mt-0.5">ทักแชท <b>@my_paul_FTMO_bot</b> ➔ กดดึง Chat ID ➔ กดบันทึก</p>
                     </div>
                     <div class="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800">
-                        <span class="font-bold text-cyan-300">ขั้นที่ 2: ให้เซิร์ฟเวอร์ GitHub Actions รันแทนคอมคุณฟรี 24 ชม.</span>
-                        <p class="text-slate-300 mt-0.5">ดับเบิลคลิกไฟล์ <b><code>deploy_free_cloud_alert.bat</code></b> ในโฟลเดอร์ <code>D:\\cot_dashboard</code> เพื่ออัปโหลดโค้ดขึ้นบัญชี GitHub ฟรีของคุณ</p>
+                        <span class="font-bold text-cyan-300">ขั้นที่ 2: รันผ่าน GitHub Actions</span>
+                        <p class="text-slate-300 mt-0.5">ดับเบิลคลิกไฟล์ <b><code>deploy_free_cloud_alert.bat</code></b> ใน <code>D:\cot_dashboard</code></p>
                     </div>
                     <div class="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800">
-                        <span class="font-bold text-emerald-300">ขั้นที่ 3: ใส่รหัสใน GitHub Secrets (ปลอดภัย 100%)</span>
-                        <p class="text-slate-300 mt-0.5">ไปที่เว็บ GitHub ของคุณ ➔ แท็บ <b>Settings</b> ➔ <b>Secrets and variables</b> ➔ <b>Actions</b> ➔ กด <b>New repository secret</b> ใส่ 2 ค่านี้:<br>
-                        • ชื่อ <code>TELEGRAM_BOT_TOKEN</code> = <code>8783621696:AAHGYLyU5PWBXByFUvG7i-qpmGMeLNaOXcI</code><br>
-                        • ชื่อ <code>TELEGRAM_CHAT_ID</code> = ใส่เลข Chat ID ของคุณ<br>
-                        <b>เสร็จสิ้น!</b> ต่อจากนี้คุณปิดคอมพิวเตอร์ได้เลย เซิร์ฟเวอร์ของ GitHub จะตื่นมาสแกนกราฟทุกๆ 4 ชั่วโมงแล้วยิงแจ้งเตือนเข้ามือถือคุณฟรีตลอดชีพ!</p>
+                        <span class="font-bold text-emerald-300">ขั้นที่ 3: ใส่ Secrets ใน GitHub</span>
+                        <p class="text-slate-300 mt-0.5">ไปที่ GitHub Repo ➔ <b>Settings</b> ➔ <b>Secrets</b> ➔ ใส่ <code>TELEGRAM_BOT_TOKEN</code> และ <code>TELEGRAM_CHAT_ID</code><br>
+                        <b>เสร็จสิ้น!</b> GitHub จะสแกนกราฟทุกๆ 4 ชั่วโมงและยิงเข้ามือถือฟรีตลอดชีพ!</p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 6 Live Pair Cards Selector -->
+    <!-- ========================================================================= -->
+    <!-- MODE 1: LIVE TRADING COMMAND CENTER (ฐานในการเทรดจริง - ข้อมูลปัจจุบันสด)  -->
+    <!-- ========================================================================= -->
+    <div id="liveTradingView" class="space-y-4">
+    <!-- 6 Live Pair Cards Selector -->
         <div id="livePairCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3"></div>
 
         <!-- Live Chart + Live 1-2-3-4 Inspector + Ready Order Ticket -->
@@ -1259,38 +1269,50 @@ def build_full_suite():
         function renderLivePairCards() {{
             const grid = document.getElementById('livePairCardsGrid');
             let html = '';
+            const flagMap = {{
+                'GC=F': '🥇', 'USDJPY=X': '🇯🇵', 'USDCAD=X': '🇨🇦',
+                'USDCHF=X': '🇨🇭', 'GBPUSD=X': '🇬🇧', 'EURUSD=X': '🇪🇺'
+            }};
             LIVE_STATES.forEach((ls, idx) => {{
-                const activeCls = idx === selectedLiveIdx ? 'active' : '';
+                const activeCls = idx === selectedLiveIdx ? 'active border-2 border-emerald-400 ring-2 ring-emerald-500/30 bg-emerald-950/20' : 'border border-slate-800 hover:border-slate-700 hover:bg-slate-900/60';
                 const g = ls.gates;
                 const dot1 = g.g1_pass ? '🟢' : '🔴';
                 const dot2 = g.g2_pass ? '🟢' : '⏳';
                 const dot3 = g.g3_pass ? '🟢' : '⏳';
-                const dirCls = ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400';
+                const flag = flagMap[ls.symbol] || '💵';
+                const dirCls = ls.planned_dir === 'BUY' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-rose-400 bg-rose-500/10 border-rose-500/30';
 
                 let statusBadge = '';
                 if (ls.overall_signal === 'ACTIVE_OPEN') {{
-                    statusBadge = `<div class="mt-1.5 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400 text-amber-300 text-[10px] font-extrabold truncate">${{ls.overall_badge}}</div>`;
+                    statusBadge = `<div class="mt-2.5 px-2 py-1 rounded-lg bg-amber-500/20 border border-amber-400/60 text-amber-300 text-[10px] font-black text-center truncate shadow-sm">🔥 ${{ls.overall_badge}}</div>`;
                 }} else if (ls.overall_signal === 'EXECUTE_NOW') {{
-                    statusBadge = `<div class="mt-1.5 px-2 py-0.5 rounded bg-emerald-500 text-slate-950 text-[10px] font-extrabold truncate">${{ls.overall_badge}}</div>`;
+                    statusBadge = `<div class="mt-2.5 px-2 py-1 rounded-lg bg-emerald-500 text-slate-950 text-[10px] font-black text-center truncate shadow-lg shadow-emerald-500/30 animate-pulse">🚀 ${{ls.overall_badge}}</div>`;
                 }} else if (ls.overall_signal === 'READY_WAIT_BOS') {{
-                    statusBadge = `<div class="mt-1.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400 text-cyan-300 text-[10px] font-bold truncate">${{ls.overall_badge}}</div>`;
+                    statusBadge = `<div class="mt-2.5 px-2 py-1 rounded-lg bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 text-[10px] font-extrabold text-center truncate">⏳ ${{ls.overall_badge}}</div>`;
                 }} else {{
-                    statusBadge = `<div class="mt-1.5 px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] truncate">${{ls.overall_badge}}</div>`;
+                    statusBadge = `<div class="mt-2.5 px-2 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-400 text-[10px] font-bold text-center truncate">⚪ ${{ls.overall_badge}}</div>`;
                 }}
 
                 html += `
-                <div onclick="selectLivePair(${{idx}})" class="live-pair-card ${{activeCls}} glass-card p-3 cursor-pointer hover:bg-slate-800/80 transition">
-                    <div class="flex justify-between items-center">
-                        <span class="font-extrabold text-white text-sm">${{ls.symbol.replace('=X','')}}</span>
-                        <span class="text-xs font-extrabold ${{dirCls}} mono">${{ls.planned_dir}}</span>
+                <div onclick="selectLivePair(${{idx}})" class="live-pair-card ${{activeCls}} glass-card p-3.5 rounded-2xl cursor-pointer transition flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex justify-between items-center gap-1">
+                            <span class="font-black text-white text-sm flex items-center gap-1.5 truncate">
+                                <span>${{flag}}</span>
+                                <span>${{ls.symbol.replace('=X','')}}</span>
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${{dirCls}} border mono shrink-0">${{ls.planned_dir}}</span>
+                        </div>
+                        <div class="text-xl font-black text-amber-400 mono mt-1">${{ls.latest_price.toFixed(ls.dec)}}</div>
                     </div>
-                    <div class="text-lg font-extrabold text-amber-400 mono mt-0.5">${{ls.latest_price.toFixed(ls.dec)}}</div>
-                    <div class="flex items-center justify-between text-[10px] mono text-slate-300 mt-1">
-                        <span>ไฟ: ${{dot1}}${{dot2}}${{dot3}}</span>
-                        <span class="px-1.5 py-0.2 rounded bg-slate-800 text-amber-300 font-extrabold">COT ${{ls.cot ? ls.cot.pair_idx_equiv : '-'}}%</span>
-                        <span>RSI ${{ls.h4_rsi}}</span>
+                    <div class="mt-2 pt-2 border-t border-slate-800/80">
+                        <div class="flex items-center justify-between text-[11px] mono text-slate-300">
+                            <span title="สัญญาณไฟ 1-2-3">🚦 ${{dot1}} ${{dot2}} ${{dot3}}</span>
+                            <span class="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 font-extrabold text-[10px]">COT ${{ls.cot ? ls.cot.pair_idx_equiv : '-'}}%</span>
+                            <span class="text-slate-400">RSI ${{ls.h4_rsi}}</span>
+                        </div>
+                        ${{statusBadge}}
                     </div>
-                    ${{statusBadge}}
                 </div>`;
             }});
             grid.innerHTML = html;
@@ -1335,82 +1357,108 @@ def build_full_suite():
 
             document.getElementById('liveSessionBadge').textContent = ls.session_label;
 
-            // Render Live 1-2-3-4 Gate Checklist with Clear "Why & How" Rationale
-            const b1 = g.g1_pass ? 'border-emerald-400 bg-emerald-950/30' : 'border-rose-500 bg-rose-950/30';
-            const b2 = g.g2_pass ? 'border-emerald-400 bg-emerald-950/30' : 'border-amber-400 bg-amber-950/30';
-            const b3 = g.g3_pass ? 'border-emerald-400 bg-emerald-950/30' : 'border-cyan-400 bg-slate-950';
+            // Render Live 1-2-3-4 Gate Checklist with Clean Step-by-Step Modern Stepper
+            const b1 = g.g1_pass ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-rose-500/50 bg-rose-950/20';
+            const b2 = g.g2_pass ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-amber-500/50 bg-amber-950/20';
+            const b3 = g.g3_pass ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-cyan-500/40 bg-slate-900/60';
 
-            const dirName = ls.planned_dir === 'BUY' ? '▲ แผนรอ BUY (ฝั่งซื้อตามเทรนด์)' : '▼ แผนรอ SELL (ฝั่งขายตามเทรนด์)';
             const diffEma = ls.ema50 - ls.ema200;
             const diffPrice = ls.latest_price - ls.ema50;
             const cotChg = ls.cot.pair_chg_equiv;
             const cotNet = ls.cot.pair_net_equiv;
             const cotIdx = ls.cot.pair_idx_equiv;
+            const trendName = diffEma < 0 ? 'ขาลง (BEARISH)' : 'ขาขึ้น (BULLISH)';
+            const trendColor = diffEma < 0 ? 'text-rose-400' : 'text-emerald-400';
 
             document.getElementById('liveGatesBody').innerHTML = `
-                <!-- ด่านที่ 1 -->
-                <div class="p-3.5 rounded-xl border-l-4 ${{b1}} border border-slate-800 space-y-2">
-                    <div class="flex justify-between items-center font-extrabold text-xs">
-                        <span class="text-cyan-300 font-bold flex items-center gap-1.5">
-                            ด่านที่ 1️⃣: กำหนดทิศทางหลัก (Macro Trend & COT Bias)
-                        </span>
-                        <span class="px-2 py-0.5 rounded text-[11px] font-extrabold ${{g.g1_pass ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-500/40' : 'bg-rose-900/60 text-rose-300 border border-rose-500/40'}}">
-                            ${{g.g1_pass ? '🟢 ผ่านเกณฑ์ (ทิศทางชัดเจน)' : '🔴 ยังไม่ครบเงื่อนไข'}}
+                <!-- 1️⃣ ด่านที่ 1: กองทุนสถาบัน & เทรนด์ใหญ่ -->
+                <div class="p-3.5 rounded-xl border-l-4 border ${{b1}} transition space-y-2.5 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 font-black text-xs flex items-center justify-center">1</span>
+                            <span class="text-xs font-black text-white">ด่านที่ 1️⃣: กองทุนสถาบัน & เทรนด์ใหญ่</span>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold ${{g.g1_pass ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'}}">
+                            ${{g.g1_pass ? '🟢 ผ่านเกณฑ์' : '🔴 ยังไม่ครบเงื่อนไข'}}
                         </span>
                     </div>
-                    <div class="text-[11px] text-slate-300 leading-relaxed space-y-2">
-                        <!-- 1.1 เกณฑ์ตัดสิน Trend ชัดเจนด้วยตัวเลข -->
-                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
-                            <div class="text-amber-300 font-extrabold mb-1">📐 เกณฑ์ตัดสิน Trend (EMA 50 vs EMA 200 บน H4):</div>
-                            • <b>ตัวเลขเส้นค่าเฉลี่ย:</b> เส้นฟ้า EMA50 = <code class="text-cyan-300 font-bold">${{ls.ema50.toFixed(dec)}}</code> | เส้นม่วง EMA200 = <code class="text-purple-300 font-bold">${{ls.ema200.toFixed(dec)}}</code><br>
-                            • <b>ผลต่างทางคณิตศาสตร์ (Spread):</b> <code class="text-white font-bold">${{diffEma >= 0 ? '+' : ''}}${{diffEma.toFixed(dec)}}</code> ➔ ${{diffEma < 0 ? 'เส้นสั้นอยู่ต่ำกว่าเส้นยาว = โครงสร้างตลาดเป็นขาลง (BEARISH REGIME 100%)' : 'เส้นสั้นอยู่เหนือเส้นยาว = โครงสร้างตลาดเป็นขาขึ้น (BULLISH REGIME 100%)'}}<br>
-                            • <b>ราคาปิดล่าสุด:</b> <code class="text-emerald-300 font-bold">${{ls.latest_price.toFixed(dec)}}</code> (${{diffPrice < 0 ? 'อยู่ต่ำกว่าเส้นฟ้า EMA50 เป็นระยะ ' + Math.abs(diffPrice).toFixed(dec) : 'อยู่สูงกว่าเส้นฟ้า EMA50 เป็นระยะ ' + Math.abs(diffPrice).toFixed(dec)}})<br>
-                            • <b>กฎเหล็กของพอล (FTMO Rule):</b> ห้ามเทรดสวนทางเทรนด์ใหญ่เด็ดขาด ➔ <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}} font-extrabold">ระบบจึงล็อกแผนเทรดเป็น "${{dirName}}"</b>
-                        </div>
 
-                        <!-- 1.2 อธิบาย COT ยอดสะสม vs เงินไหลสัปดาห์ล่าสุด -->
-                        <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1.5">
-                            <div class="flex flex-wrap items-center justify-between gap-1">
-                                <span class="text-cyan-300 font-extrabold">🏦 รายงานกองทุนสถาบัน CFTC COT:</span>
-                                <span class="px-2.5 py-0.5 rounded bg-amber-500/20 border border-amber-400 text-amber-300 font-extrabold text-[11px] mono">
-                                    📍 COT 3-Year Index: ${{cotIdx}}%
-                                </span>
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+                            <div class="text-slate-400 text-[10px]">เทรนด์ H4 (EMA 50 vs 200)</div>
+                            <div class="font-extrabold ${{trendColor}} text-xs mt-0.5">${{trendName}}</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">EMA50: <span class="text-white">${{ls.ema50.toFixed(dec)}}</span></div>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+                            <div class="text-slate-400 text-[10px]">COT 3-Year Index</div>
+                            <div class="font-extrabold text-amber-300 text-xs mt-0.5">${{cotIdx}}% (Neutral Zone)</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">เงินสัปดาห์นี้: <span class="${{cotChg < 0 ? 'text-rose-400' : 'text-emerald-400'}}">${{cotChg < 0 ? cotChg.toLocaleString() : '+' + cotChg.toLocaleString()}}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-[11px] text-slate-300 leading-relaxed">
+                        👉 <b>ข้อสรุปด่าน 1:</b> ${{diffEma < 0 ? 'โครงสร้างราคาหลุดเป็นขาลง (EMA50 < 200) กองทุนใหญ่ขายออก สอดคล้องฝั่ง' : 'โครงสร้างราคาเป็นขาขึ้น (EMA50 > 200) กองทุนหนุน สอดคล้องฝั่ง'}} <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}}">${{ls.planned_dir}}</b> (COT 3-Yr อยู่ที่ ${{cotIdx}}% โซนกลาง ไม่ขัดขวางเทรนด์)
+                    </div>
+                </div>
+
+                <!-- 2️⃣ ด่านที่ 2: จังหวะราคาย่อตัวเข้าโซนคุณค่า -->
+                <div class="p-3.5 rounded-xl border-l-4 border ${{b2}} transition space-y-2 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 font-black text-xs flex items-center justify-center">2</span>
+                            <span class="text-xs font-black text-white">ด่านที่ 2️⃣: จังหวะราคาย่อตัว (Pullback)</span>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold ${{g.g2_pass ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}}">
+                            ${{g.g2_pass ? '🟢 ย่อแตะโซนแล้ว' : '⏳ รอย่อตัวเข้าโซน'}}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+                            <div class="text-slate-400 text-[10px]">แตะแนวรับ EMA50</div>
+                            <div class="font-extrabold ${{g.g2_touched_ema ? 'text-emerald-400' : 'text-amber-400'}} text-xs mt-0.5">
+                                ${{g.g2_touched_ema ? '✅ แตะแล้ว (ได้ต้นทุนดี)' : '⏳ ยังไม่แตะ (ห้ามไล่ราคา)'}}
                             </div>
-                            • <b>1) ยอดสะสมรวมในอดีต (Stock Inventory):</b> กองทุนถือครองสุทธิ <code class="text-white">${{cotNet >= 0 ? '+' : ''}}${{cotNet.toLocaleString()}}</code> สัญญา (COT 3-Yr Index = <code class="text-amber-300 font-bold">${{cotIdx}}%</code>) ➔ <i>ระดับ ${{cotIdx}}% อยู่ในโซนสมดุลกลาง (Neutral 35%–65%) ไม่ได้ตึงตัวสุดขีด จึงเปิดทางให้เล่นตามเทรนด์ H4 ได้เต็มที่</i><br>
-                            • <b>2) กระแสเงินไหลล่าสุดสัปดาห์นี้ (Weekly Flow Shift):</b> กองทุนใหญ่ <b>${{cotChg < 0 ? 'เทขายลดสถานะ Long ลงถึง ' + cotChg.toLocaleString() + ' สัญญา (เม็ดเงินไหลออก)' : 'เปิดสถานะ Long เพิ่ม ' + cotChg.toLocaleString() + ' สัญญา (เม็ดเงินไหลเข้า)'}}</b><br>
-                            • <b>สรุปการประสานพลัง:</b> แม้ยอดสะสมรวมหลายปีจะเป็นบวกตามธรรมชาติของทองคำ แต่ <b>"สัปดาห์นี้กองทุนใหญ่เทขาย (${{cotChg.toLocaleString()}}) + เทรนด์ H4 หลุดเป็นขาลง (EMA50 < EMA200)"</b> ระบบจึงเทรดตามแรงทุบจริงของตลาดด้วยแผน <b>${{ls.planned_dir}}</b>!
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+                            <div class="text-slate-400 text-[10px]">เว้นระยะคูลดาวน์</div>
+                            <div class="font-extrabold ${{g.g2_cooldown_ok ? 'text-emerald-400' : 'text-amber-400'}} text-xs mt-0.5">
+                                ${{g.g2_cooldown_ok ? '✅ ห่างไม้ก่อน ' + g.g2_bars_since_exit + ' แท่ง' : '⏳ รอครบ 8 แท่ง (' + g.g2_bars_since_exit + '/8)'}}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ด่านที่ 2 -->
-                <div class="p-3 rounded-lg border-l-4 ${{b2}} border border-slate-800 space-y-1">
-                    <div class="flex justify-between items-center font-extrabold text-xs">
-                        <span class="text-amber-300">ด่านที่ 2️⃣: เช็คการย่อตัวเข้าโซนคุณค่า (ทำไมด่าน 1 ผ่านแล้ว ยังไม่เข้าทันที)</span>
-                        <span>${{g.g2_pass ? '🟢 ย่อแตะโซนแล้ว' : '⏳ รอย่อตัวเข้าโซน'}}</span>
+                <!-- 3️⃣ ด่านที่ 3: สัญญาณจุดเข้าไกปืน 3-Bar BOS -->
+                <div class="p-3.5 rounded-xl border-l-4 border ${{b3}} transition space-y-2 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 font-black text-xs flex items-center justify-center">3</span>
+                            <span class="text-xs font-black text-white">ด่านที่ 3️⃣: จุดยืนยันเข้า (3-Bar BOS & RSI)</span>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold ${{g.g3_pass ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'}}">
+                            ${{g.g3_pass ? '🟢 จุดเข้าลั่นแล้ว!' : '🎯 รอแท่งปิดเบรก BOS'}}
+                        </span>
                     </div>
-                    <div class="text-[11px] text-slate-300 leading-relaxed">
-                        • <b>ทำไมถึงยังไม่กดเข้าทันที:</b> สถาบันไม่ซื้อที่ยอดดอย หรือทุบขายที่ก้นเหวเด็ดขาด ➔ <b>ระบบจึงตัดสินใจบังคับให้ "รอราคาย่อกลับมาแตะเส้นฟ้า EMA50 (${{ls.ema50.toFixed(dec)}})"</b> เพื่อให้ได้แต้มต่อต้นทุนที่ปลอดภัย<br>
-                        • <b>สถานะการย่อตัว:</b> ${{g.g2_touched_ema ? '✅ ราคาย่อแตะเส้นฟ้า EMA50 แล้วในรอบ 10 แท่งล่าสุด (ได้ต้นทุนที่ดี)' : '⏳ ราคายังลอยอยู่ห่างเส้นฟ้า EMA50 (ยังไม่แตะใน 10 แท่งล่าสุด ห้ามไล่ราคา)'}}<br>
-                        • <b>การเว้นระยะคูลดาวน์:</b> ${{g.g2_cooldown_ok ? `✅ ห่างจากไม้ก่อนหน้า ${{g.g2_bars_since_exit}} แท่ง H4 (เกณฑ์ขั้นต่ำ 8 แท่ง = 32 ชม.) ป้องกัน Overtrading` : `⏳ เพิ่งออกจากไม้เก่ามาเพียง ${{g.g2_bars_since_exit}} แท่ง (ต้องรอครบ 8 แท่ง H4)`}}
-                    </div>
-                </div>
 
-                <!-- ด่านที่ 3 -->
-                <div class="p-3 rounded-lg border-l-4 ${{b3}} border border-slate-800 space-y-1">
-                    <div class="flex justify-between items-center font-extrabold text-xs">
-                        <span class="text-emerald-300">ด่านที่ 3️⃣: แท่งเทียนไกปืน 3-Bar BOS (จุดยืนยันคำสั่งซื้อขาย)</span>
-                        <span>${{g.g3_pass ? '🟢 สัญญาณเบรกครบ!' : '🎯 รอแท่งปิดเบรก'}}</span>
-                    </div>
-                    <div class="text-[11px] text-slate-300 leading-relaxed">
-                        • <b>ทำไมแตะเส้นฟ้าแล้วยังไม่เข้าทันที:</b> เพราะราคาแตะเส้น EMA50 อาจทะลุพังลงต่อได้ ➔ <b>จึงต้องรอแท่งเทียน H4 ปิดยืนยันการเบรกโครงสร้าง (Break of Structure - BOS)</b> ว่ามีแรงซื้อ/ขายจริงกลับเข้ามาคุมตลาดแล้ว<br>
-                        • <b>เงื่อนไขไกปืนลั่น:</b> ${{ls.planned_dir === 'BUY' ? `ต้องปิดแท่งเขียวเหนือ High 3 แท่งก่อนหน้า (<b class="text-cyan-300">${{ls.bos_high.toFixed(dec)}}</b>)` : `ต้องปิดแท่งแดงหลุด Low 3 แท่งก่อนหน้า (<b class="text-cyan-300">${{ls.bos_low.toFixed(dec)}}</b>)`}}<br>
-                        • <b>โมเมนตัม RSI(14):</b> ปัจจุบัน = <b>${{ls.h4_rsi}}</b> (เกณฑ์ฝั่ง ${{ls.planned_dir}}: ${{ls.planned_dir === 'BUY' ? '45–68' : '32–55'}} ป้องกันการซื้อตอน Overbought หรือขายตอน Oversold)
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+                            <div class="text-slate-400 text-[10px]">เงื่อนไขเบรก 3-Bar BOS</div>
+                            <div class="font-extrabold text-white text-xs mt-0.5">
+                                ${{ls.planned_dir === 'BUY' ? 'ปิดเขียว > ' + ls.bos_high.toFixed(dec) : 'ปิดแดง < ' + ls.bos_low.toFixed(dec)}}
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+                            <div class="text-slate-400 text-[10px]">โมเมนตัม RSI(14)</div>
+                            <div class="font-extrabold ${{g.g3_rsi_ok ? 'text-emerald-400' : 'text-amber-400'}} text-xs mt-0.5">
+                                ${{ls.h4_rsi}} ${{g.g3_rsi_ok ? '✅ (สมดุล)' : '⏳ (ไม่อยู่ในโซน)'}}
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
 
-            // Render Live Order Ticket (Active Open Trade OR Planned Trigger Ticket)
+                        // Render Live Order Ticket (Active Open Trade OR Planned Trigger Ticket)
             if (ls.active_open_trade) {{
                 const ot = ls.active_open_trade;
                 const flColor = ot.floating_usd >= 0 ? 'text-emerald-400' : 'text-rose-400';
@@ -2148,6 +2196,11 @@ def build_full_suite():
         // ============================================================================
         // TELEGRAM CLOUD ALERT & INSTANT BROWSER TESTER
         // ============================================================================
+        function toggleChartControlPanel() {{
+            const el = document.getElementById('chartControlsDrawer');
+            if (el) el.classList.toggle('hidden');
+        }}
+
         function toggleTelegramPanel() {{
             const panel = document.getElementById('telegramCloudPanel');
             if (currentMode !== 'LIVE') switchMode('LIVE');
