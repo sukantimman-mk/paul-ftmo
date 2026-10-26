@@ -1,0 +1,38 @@
+{
+  "account_name": "Paul FTMO Pro V4 - Cloud Autonomous Demo",
+  "currency": "USD",
+  "initial_balance": 100000.0,
+  "current_balance": 100000.0,
+  "current_equity": 100000.0,
+  "floating_pnl_usd": 0,
+  "net_profit_usd": 0.0,
+  "net_return_pct": 0.0,
+  "high_water_mark": 100000.0,
+  "max_drawdown_pct": 0.0,
+  "risk_per_trade_pct": 0.75,
+  "risk_per_trade_usd": 750.0,
+  "fee_per_trade_r": 0.04,
+  "started_at_utc": "2026-10-26T02:26:15.198297+00:00",
+  "last_updated_utc": "2026-10-26T02:31:04.859924+00:00",
+  "ftmo_rules": {
+    "max_daily_loss_pct": 5.0,
+    "max_total_loss_pct": 10.0,
+    "profit_target_step1_pct": 10.0,
+    "current_daily_drawdown_pct": 0.0,
+    "current_total_drawdown_pct": 0.0,
+    "status": "PASSING_HEALTHY"
+  },
+  "stats": {
+    "total_trades": 0,
+    "winning_trades": 0,
+    "losing_trades": 0,
+    "breakeven_trades": 0,
+    "win_rate_pct": 0.0,
+    "avg_win_r": 0.0,
+    "avg_loss_r": 0.0,
+    "profit_factor": 0.0,
+    "total_realized_r": 0
+  },
+  "open_trades": [],
+  "closed_trades": []
+}

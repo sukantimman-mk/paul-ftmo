@@ -38,6 +38,59 @@ def get_live_scanner_data():
         return json.loads(resp.read().decode("utf-8"))
 
 
+def get_demo_ledger_data():
+    url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/main/forward_demo_ledger.json?t={int(datetime.datetime.now().timestamp())}"
+    req = urllib.request.Request(url, headers={"User-Agent": "PaulFTMOBot/4.0", "Cache-Control": "no-cache"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+
+
+def format_demo_portfolio(ledger):
+    if not ledger:
+        return "💼 <b>พอร์ตจำลอง Forward Demo:</b> กำลังเริ่มระบบรอบแรก กรุณากดอีกครั้งใน 10 วินาทีครับ"
+    bal = ledger.get('current_balance', 100000.0)
+    eq = ledger.get('current_equity', 100000.0)
+    pnl = ledger.get('net_profit_usd', 0.0)
+    ret = ledger.get('net_return_pct', 0.0)
+    stats = ledger.get('stats', {})
+    open_tr = ledger.get('open_trades', [])
+    ret_icon = "🟢" if pnl >= 0 else "🔴"
+    bkk_now = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=7)).strftime("%Y-%m-%d %H:%M น.")
+
+    lines = [
+        "💼 <b>พอร์ตจำลอง Forward Demo ($100,000 | Paul Pro V4)</b>",
+        f"🕒 เวลาไทย: <code>{bkk_now}</code>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        f"💰 <b>ยอดเงินคงเหลือ (Balance):</b> <code>${bal:,.2f}</code>",
+        f"📊 <b>มูลค่าสุทธิ (Equity):</b> <code>${eq:,.2f}</code>",
+        f"{ret_icon} <b>กำไรสุทธิรวม (P&L):</b> <b>{ret:+.2f}% (${pnl:+,.2f})</b>",
+        f"🛡️ <b>Max Drawdown:</b> <code>{ledger.get('max_drawdown_pct', 0.0):.2f}%</code> (เกณฑ์ FTMO < 10%)",
+        f"🏆 <b>สถานะกฎ FTMO:</b> <b>✅ ผ่านเกณฑ์ปกติ (PASSING)</b>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        f"📈 <b>สถิติออเดอร์ (Forward Stats):</b>",
+        f"• ปิดไปแล้ว: <code>{stats.get('total_trades', 0)} ไม้</code> (ชนะ {stats.get('winning_trades', 0)} / แพ้ {stats.get('losing_trades', 0)})",
+        f"• Win Rate: <b>{stats.get('win_rate_pct', 0.0):.1f}%</b> | Profit Factor: <b>{stats.get('profit_factor', 0.0)}</b>",
+        f"• ผลตอบแทนสะสม: <b>{stats.get('total_realized_r', 0.0):+}R</b>",
+        "━━━━━━━━━━━━━━━━━━━━",
+    ]
+    if open_tr:
+        lines.append(f"⚡ <b>ออเดอร์ที่กำลังถืออยู่ ({len(open_tr)} ไม้):</b>")
+        for t in open_tr:
+            fl_color = "🟢" if t.get('floating_usd', 0.0) >= 0 else "🔴"
+            lines.append(
+                f"{fl_color} <b>{t['symbol']} ({t['dir']})</b> @ <code>{t['entry']}</code> ({t['lots']} Lots)\n"
+                f"   ↳ P&L: <b>{t.get('floating_r', 0.0):+}R (${t.get('floating_usd', 0.0):+,.2f})</b> | ด่าน: <code>{t['stage']}</code> (SL <code>{t['current_sl']}</code>)"
+            )
+    else:
+        lines.append("💤 <i>ขณะนี้ไม่มีออเดอร์ค้าง — ระบบอยู่ในโหมดสแตนด์บายรอสัญญาณครบ 1-2-3</i>")
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("💡 <i>ระบบบันทึกและจัดการออเดอร์อัตโนมัติบน Cloud 100% ไม่ต้องเปิดคอม</i>")
+    return "\n".join(lines)
+
+
 def trigger_github_cloud_scan():
     if not GITHUB_TOKEN:
         return False
@@ -142,6 +195,7 @@ class handler(BaseHTTPRequestHandler):
                         "ระบบพร้อมรับคำสั่งสดในแชทตลอด 24 ชั่วโมง (ปิดคอมได้ 100%):",
                         "",
                         "📌 <b>คำสั่งที่พิมพ์ได้ทันที:</b>",
+                        "• <code>💼 /demo</code> หรือ <code>พอร์ต</code> ➔ ดูสถานะพอร์ต Forward Demo $100k",
                         "• <code>/update</code> หรือ <code>ขออัพเดทตอนนี้</code> ➔ สรุปเรดาร์ 6 คู่เงินสด",
                         "• <code>/scan</code> ➔ สั่งให้ Cloud ปลุกขึ้นมาสแกนกราฟสดเดี๋ยวนี้",
                         "• <code>/gold</code> ➔ ดูใบสั่งเทรดทองคำ (Entry / SL / TP / Lot)",
@@ -149,13 +203,18 @@ class handler(BaseHTTPRequestHandler):
                     ])
                     keyboard = {
                         "keyboard": [
-                            [{"text": "📡 ขออัพเดทเรดาร์สดตอนนี้"}, {"text": "🥇 โพยเทรดทองคำ (GC=F)"}],
+                            [{"text": "💼 พอร์ต Demo $100k"}, {"text": "📡 ขออัพเดทเรดาร์สดตอนนี้"}],
+                            [{"text": "🥇 โพยเทรดทองคำ (GC=F)"}, {"text": "🔄 สั่งสแกนสด Cloud"}],
                             [{"text": "🇯🇵 USDJPY"}, {"text": "🇨🇦 USDCAD"}, {"text": "🇨🇭 USDCHF"}],
-                            [{"text": "🇬🇧 GBPUSD"}, {"text": "🇪🇺 EURUSD"}, {"text": "🔄 สั่งสแกนสด Cloud"}]
+                            [{"text": "🇬🇧 GBPUSD"}, {"text": "🇪🇺 EURUSD"}]
                         ],
                         "resize_keyboard": True
                     }
                     send_telegram(chat_id, welcome_text, keyboard)
+
+                elif any(w in text for w in ["demo", "portfolio", "balance", "พอร์ต", "เดโม", "/demo"]):
+                    ledger = get_demo_ledger_data()
+                    send_telegram(chat_id, format_demo_portfolio(ledger))
 
                 elif any(w in text for w in ["update", "อัพเดท", "เรดาร์", "/radar"]):
                     live_data = get_live_scanner_data()

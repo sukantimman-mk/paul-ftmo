@@ -23,6 +23,7 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 import paul_engine
+import forward_demo_ledger
 
 CONFIG_PATH = os.path.join(BASE_DIR, 'telegram_config.json')
 STATE_PATH = os.path.join(BASE_DIR, 'telegram_alert_state.json')
@@ -278,6 +279,16 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url=''):
                 f"   ⚡ <i>มีออเดอร์ {ot['dir']} ค้างอยู่: เข้า <code>{ot['entry_price']}</code> | P&L <b>{ot['floating_r']:+}R (${ot['floating_usd']:+,.0f})</b> | ด่าน {ot['stage']} (SL <code>{ot['current_sl']}</code>)</i>"
             )
 
+    try:
+        ledger = forward_demo_ledger.load_ledger()
+        pnl = ledger.get('net_profit_usd', 0.0)
+        ret = ledger.get('net_return_pct', 0.0)
+        open_cnt = len(ledger.get('open_trades', []))
+        lines.append("━━━━━━━━━━━━━━━━━━━━")
+        lines.append(f"💼 <b>พอร์ตจำลอง Forward Demo:</b> <code>${ledger.get('current_balance', 100000.0):,.2f}</code> (P&L <b>{ret:+.2f}% / ${pnl:+,.2f}</b> | ถืออยู่ {open_cnt} ไม้)")
+    except Exception:
+        pass
+
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     lines.append("💡 <i>ระบบรันบน Cloud อัตโนมัติทุกปิดแท่ง H4 (ปิดคอมได้ 100% ฟรี 0 บาท)</i>")
     if dashboard_url:
@@ -293,6 +304,16 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
     sync_latest_cftc_cot_if_needed()
     suite_res = paul_engine.build_full_suite()
     live_states = suite_res['live_states']
+
+    # 1.1 Update Forward Demo Ledger ($100k Autonomous Cloud Demo)
+    try:
+        ledger, demo_events = forward_demo_ledger.update_forward_demo_ledger(live_states)
+        for dev in demo_events:
+            if bot_token and chat_id:
+                send_telegram_message(bot_token, chat_id, dev['message'])
+                sent_messages.append(f"DEMO_{dev['type']}")
+    except Exception as e:
+        errors.append(f"Demo Ledger Error: {str(e)}")
 
     # 2. Load previous alert state to prevent duplicate spam
     prev_state = {}
