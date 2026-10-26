@@ -2,13 +2,13 @@ name: 📡 Paul Pro V4 - Free Cloud H4 Scanner & Telegram Alert
 
 on:
   schedule:
-    # Runs automatically 3 minutes after every H4 candle close (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
-    # Thai Time (UTC+7): 07:03, 11:03, 15:03, 19:03, 23:03, 03:03 (Monday - Friday)
-    - cron: '3 0,4,8,12,16,20 * * 1-5'
+    # Runs 5 minutes after every H4 candle close (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+    # Thai Time (UTC+7): 07:05, 11:05, 15:05, 19:05, 23:05, 03:05 (Every Day)
+    - cron: '5 0,4,8,12,16,20 * * *'
   workflow_dispatch:
     inputs:
-      test_mode:
-        description: 'ส่งข้อความทดสอบเรดาร์ทั้ง 6 คู่เงินเข้า Telegram ทันที'
+      force_mode:
+        description: 'Force send radar summary'
         required: false
         default: 'true'
 
@@ -37,11 +37,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
         run: |
-          if [ "${{ github.event.inputs.test_mode }}" = "true" ]; then
-            python telegram_notifier.py --test --force
-          else
-            python telegram_notifier.py
-          fi
+          python -u telegram_notifier.py --force
 
       - name: 💾 Save Updated Live Charts & Alert State to Cloud
         run: |
