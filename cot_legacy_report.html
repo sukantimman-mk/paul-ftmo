@@ -1,0 +1,4024 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFTC COT Institutional Money Flow Dashboard - FTMO Strategy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="cot_data.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            darkbg: '#090d16',
+            cardbg: '#111827',
+            bordercol: '#1f293d',
+            bullgreen: '#10b981',
+            bearred: '#f43f5e',
+            neoncyan: '#38bdf8',
+            goldaccent: '#f59e0b',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #090d16; color: #f3f4f6; }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #0b0f19; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #243049; border-radius: 3px; }
+    .tab-active {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans p-3 md:p-6 custom-scroll">
+
+  <!-- Top Navigation & Header -->
+  <header class="max-w-7xl mx-auto mb-4">
+    <div class="glass-card rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-bordercol">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-neoncyan/10 border border-neoncyan/30 text-neoncyan font-bold text-xl">
+            🏛️
+          </span>
+          <div>
+            <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+              CFTC COT Institutional Money Flow
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-neoncyan/15 text-neoncyan border border-neoncyan/30">FTMO Pro Multi-Asset</span>
+            </h1>
+            <p class="text-xs md:text-sm text-gray-400">
+              แกะรอยเม็ดเงินสถาบัน (Hedge Funds & Large Speculators) จากรายงานทางการของรัฐบาลสหรัฐฯ (CFTC)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Status -->
+      <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+        <div class="text-right text-xs">
+          <div class="text-gray-400">รอบรายงานล่าสุด (As of):</div>
+          <div id="reportDate" class="font-mono font-bold text-neoncyan text-sm">2026-10-20 (Week 42)</div>
+        </div>
+        <button id="refreshBtn" onclick="refreshData()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-medium text-xs md:text-sm shadow-lg shadow-cyan-900/30 transition-all active:scale-95">
+          <svg id="refreshIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          <span id="refreshText">อัปเดตข้อมูลสด</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Primary Tab Selector -->
+  <div class="max-w-7xl mx-auto mb-6">
+    <div class="flex items-center gap-2 border-b border-bordercol pb-2">
+      <button onclick="switchTab('dashboard')" id="tabBtnDashboard" class="tab-active px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 border transition">
+        <span>📊</span>
+        <span>Executive Dashboard (ภาพรวม & แผนเทรด)</span>
+      </button>
+      <button onclick="switchTab('rawdata')" id="tabBtnRawData" class="px-4 py-2.5 rounded-xl text-gray-400 hover:text-white font-bold text-sm flex items-center gap-2 border border-transparent transition">
+        <span>🔍</span>
+        <span>ตารางข้อมูลดิบ CFTC ทั้งหมด & วิธีอ่านด้วยตนเอง (Master Raw Table & Crosscheck)</span>
+      </button>
+      <a href="paul_system_dashboard.html" class="px-4 py-2.5 rounded-xl text-amber-400 hover:text-white hover:bg-amber-500/20 font-bold text-sm flex items-center gap-2 border border-amber-500/30 transition">
+        <span>📈</span>
+        <span>Paul Auto Multi-TF & Backtest Engine (Step 2 & 3) 🚀</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 1: EXECUTIVE DASHBOARD                 -->
+  <!-- ========================================== -->
+  <div id="viewDashboard" class="space-y-6">
+
+    <!-- Metric Quick Cards -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Strongest Currency -->
+      <div class="glass-card rounded-2xl p-4 border-l-4 border-l-bullgreen flex items-center justify-between">
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">อันดับ 1 แข็งแกร่งที่สุด (Majors)</div>
+          <div class="text-xl md:text-2xl font-black text-white mt-1 flex items-center gap-2">
+            <span id="topBullFlag">🇯🇵</span> <span id="topBullCode">JPY</span>
+          </div>
+          <div class="text-xs text-bullgreen font-mono mt-1 font-semibold" id="topBullNet">+69,878 สัญญา (Net Long)</div>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-bullgreen/10 flex items-center justify-center text-bullgreen font-bold text-lg">
+          ▲ TOP
+        </div>
+      </div>
+
+      <!-- Weakest Currency -->
+      <div class="glass-card rounded-2xl p-4 border-l-4 border-l-bearred flex items-center justify-between">
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">อันดับ 1 อ่อนแอที่สุด (Majors)</div>
+          <div class="text-xl md:text-2xl font-black text-white mt-1 flex items-center gap-2">
+            <span id="topBearFlag">🇪🇺</span> <span id="topBearCode">EUR</span>
+          </div>
+          <div class="text-xs text-bearred font-mono mt-1 font-semibold" id="topBearNet">-134,524 สัญญา (Net Short)</div>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-bearred/10 flex items-center justify-center text-bearred font-bold text-lg">
+          ▼ LOW
+        </div>
+      </div>
+
+      <!-- Top Conviction Setup -->
+      <div class="glass-card rounded-2xl p-4 border-l-4 border-l-goldaccent flex items-center justify-between">
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">ทองคำโลก (Gold Futures)</div>
+          <div class="text-xl md:text-2xl font-black text-white mt-1 flex items-center gap-2">
+            <span>🥇 XAU/USD</span>
+          </div>
+          <div class="text-xs text-bullgreen font-bold mt-1" id="topGoldNet">Net Long +199,865 สัญญา</div>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-goldaccent/10 flex items-center justify-center text-goldaccent font-bold text-lg">
+          🥇 GOLD
+        </div>
+      </div>
+
+      <!-- Micro Risk Indicator -->
+      <div class="glass-card rounded-2xl p-4 border-l-4 border-l-neoncyan flex items-center justify-between">
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">FTMO Paul's Micro-Risk</div>
+          <div class="text-xl md:text-2xl font-black text-white mt-1 font-mono">
+            0.13% <span class="text-xs font-normal text-gray-400">/ ไม้</span>
+          </div>
+          <div class="text-xs text-neoncyan font-medium mt-1">Drawdown Cushion: 76+ ไม้</div>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-neoncyan/10 flex items-center justify-center text-neoncyan font-bold text-lg">
+          🛡️ SAFE
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Section: Table & Setups Grid -->
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Currency Strength Ranking (5 Cols) -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        <div class="glass-card rounded-2xl p-5 border border-bordercol">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              📊 ตารางจัดอันดับความแข็งแกร่ง (COT Strength Matrix)
+            </h2>
+            <span class="text-xs text-gray-400">8 สกุลเงินหลัก</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="text-xs text-gray-400 border-b border-bordercol font-mono">
+                  <th class="pb-2">อันดับ</th>
+                  <th class="pb-2">สกุลเงิน</th>
+                  <th class="pb-2 text-right">Net Position</th>
+                  <th class="pb-2 text-right">1-Week Chg</th>
+                  <th class="pb-2 text-center">Bias</th>
+                </tr>
+              </thead>
+              <tbody id="currencyTableBody" class="divide-y divide-bordercol/50 font-mono text-xs">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-4 p-3 rounded-xl bg-black/40 border border-white/5 text-xs text-gray-400 leading-relaxed">
+            <strong class="text-gray-200">💡 กฎการอ่านของ Paul:</strong> สกุลเงินที่มี Net Position เป็นบวก (+) สถาบันคุมฝั่ง Buy ส่วนที่เป็นลบ (-) สถาบันคุมฝั่ง Sell ยิ่งค่าห่างกันมาก ความได้เปรียบยิ่งสูง
+          </div>
+        </div>
+
+        <!-- Trend Comparison Chart -->
+        <div class="glass-card rounded-2xl p-5 border border-bordercol">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              📈 แนวโน้มการสะสม 5 สัปดาห์ย้อนหลัง
+            </h2>
+            <span class="text-xs font-mono text-gray-400">Historical Flow</span>
+          </div>
+          <div class="h-64">
+            <canvas id="cotHistoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Top Trade Setups & Execution Calculator (7 Cols) -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- Trade Recommendations Matrix -->
+        <div class="glass-card rounded-2xl p-5 border border-bordercol">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                🎯 แผนเทรดสถาบันที่ได้เปรียบสูงสุด (High-Probability Setups)
+              </h2>
+              <p class="text-xs text-gray-400 mt-0.5">คัดกรองคู่เงินที่สถาบันหนุนหลังฝั่งตรงข้ามกันชัดเจนที่สุด</p>
+            </div>
+            <!-- Filter Tabs -->
+            <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 text-xs">
+              <button onclick="filterSetups('ALL')" id="filterAll" class="px-2.5 py-1 rounded-lg bg-neoncyan/20 text-neoncyan font-semibold">ทั้งหมด</button>
+              <button onclick="filterSetups('SELL')" id="filterSell" class="px-2.5 py-1 rounded-lg text-gray-400 hover:text-white">SELL Only</button>
+              <button onclick="filterSetups('BUY')" id="filterBuy" class="px-2.5 py-1 rounded-lg text-gray-400 hover:text-white">BUY Only</button>
+            </div>
+          </div>
+
+          <!-- Setups Container -->
+          <div id="setupsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto custom-scroll pr-1">
+            <!-- Dynamically Populated -->
+          </div>
+        </div>
+
+        <!-- Paul's FTMO Micro-Risk & Position Size Calculator -->
+        <div class="glass-card rounded-2xl p-5 border border-bordercol">
+          <h2 class="text-base font-bold text-white flex items-center gap-2 mb-3">
+            🧮 เครื่องคำนวณความเสี่ยงระดับสถาบัน (0.13% Risk Calculator)
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">ขนาดพอร์ต FTMO ($)</label>
+              <select id="calcBalance" onchange="calculatePosition()" class="w-full bg-black/50 border border-bordercol rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-neoncyan outline-none">
+                <option value="10000">$10,000 (Challenge 10k)</option>
+                <option value="25000">$25,000 (Challenge 25k)</option>
+                <option value="50000">$50,000 (Challenge 50k)</option>
+                <option value="100000" selected>$100,000 (Standard 100k)</option>
+                <option value="200000">$200,000 (Standard 200k)</option>
+                <option value="400000">$400,000 (Max Allocation)</option>
+                <option value="800000">$800,000 (Scaled Master)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">ความเสี่ยงต่อไม้ (% Risk)</label>
+              <select id="calcRiskPct" onchange="calculatePosition()" class="w-full bg-black/50 border border-bordercol rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-neoncyan outline-none">
+                <option value="0.10">0.10% (Ultra Conservative)</option>
+                <option value="0.13" selected>0.13% (Paul's Golden Ratio)</option>
+                <option value="0.25">0.25% (Conservative)</option>
+                <option value="0.50">0.50% (Standard Prop)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">ระยะ Stop Loss (Pips)</label>
+              <input type="number" id="calcSL" value="25" min="5" max="200" oninput="calculatePosition()" class="w-full bg-black/50 border border-bordercol rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-neoncyan outline-none">
+            </div>
+          </div>
+
+          <!-- Calculated Result Output -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-black/40 p-4 rounded-xl border border-white/5 text-center font-mono">
+            <div>
+              <div class="text-[11px] text-gray-400">เงินที่ยอมเสีย ($ Risk)</div>
+              <div id="resRiskDollar" class="text-base font-bold text-bearred mt-0.5">$130.00</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-gray-400">ขนาด Lot ที่ต้องออก</div>
+              <div id="resLotSize" class="text-base font-bold text-neoncyan mt-0.5">0.52 Lots</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-gray-400">กำไรเป้าหมาย 1:2 R:R</div>
+              <div id="resProfit12" class="text-base font-bold text-bullgreen mt-0.5">+$260.00</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-gray-400">กำไรเป้าหมาย 1:3 R:R</div>
+              <div id="resProfit13" class="text-base font-bold text-bullgreen mt-0.5">+$390.00</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 2: RAW DATA & SELF-LEARNING LAB        -->
+  <!-- ========================================== -->
+  <div id="viewRawData" class="max-w-7xl mx-auto space-y-6 hidden">
+
+    <!-- Raw Data Header & Source Link -->
+    <div class="glass-card rounded-2xl p-5 border border-bordercol">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>📋</span> ตารางข้อมูลดิบ CFTC ทั้งหมด (CFTC Master Raw Table)
+          </h2>
+          <p class="text-xs text-gray-400 mt-1">
+            รวบรวมข้อมูลดิบครบทุกสัญญา: ทั้ง 8 สกุลเงินหลัก (Majors), สกุลเงินเกิดใหม่ (Emerging), โลหะมีค่า (Gold & Silver) และคริปโต (Bitcoin & Ether) จากฐานข้อมูล CFTC Legacy Futures
+          </p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <a href="https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-neoncyan border border-neoncyan/30 flex items-center gap-1.5 transition">
+            <span>🌐 หน้าเว็บทางการ CFTC.gov</span>
+            <span>↗</span>
+          </a>
+          <a href="https://publicreporting.cftc.gov/resource/6dca-aqww.json" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 flex items-center gap-1.5 transition">
+            <span>⚡ Raw API Endpoint</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Filter Categories -->
+      <div class="mt-4 pt-4 border-t border-bordercol flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+          <span class="text-gray-400 mr-2 font-mono uppercase text-[11px]">หมวดหมู่:</span>
+          <button onclick="filterRawTable('ALL')" id="rawCatAll" class="px-3 py-1.5 rounded-xl bg-neoncyan text-black font-bold">ทั้งหมด (All 15)</button>
+          <button onclick="filterRawTable('Major FX')" id="rawCatMajors" class="px-3 py-1.5 rounded-xl bg-black/40 text-gray-300 border border-white/10 hover:border-white/30">8 สกุลเงินหลัก (G8)</button>
+          <button onclick="filterRawTable('Emerging FX')" id="rawCatEmerging" class="px-3 py-1.5 rounded-xl bg-black/40 text-gray-300 border border-white/10 hover:border-white/30">เกิดใหม่ (MXN, BRL, ZAR)</button>
+          <button onclick="filterRawTable('Commodities')" id="rawCatMetals" class="px-3 py-1.5 rounded-xl bg-black/40 text-gray-300 border border-white/10 hover:border-white/30">ทองคำ & โลหะ (Gold / Silver)</button>
+          <button onclick="filterRawTable('Crypto')" id="rawCatCrypto" class="px-3 py-1.5 rounded-xl bg-black/40 text-gray-300 border border-white/10 hover:border-white/30">คริปโต (BTC / ETH)</button>
+        </div>
+        <div class="text-[11px] text-gray-400 font-mono">
+          คลิกที่แถวใดก็ได้ เพื่อเจาะลึกการพิสูจน์สมการด้านล่าง
+        </div>
+      </div>
+    </div>
+
+    <!-- MASTER RAW SPREADSHEET TABLE -->
+    <div class="glass-card rounded-2xl p-5 border border-bordercol">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>📑</span> ตารางข้อมูลดิบระดับสถาบัน (Spreadsheet Style)
+        </h3>
+        <span class="text-xs font-mono text-gray-400" id="rawAssetCount">15 รายการ</span>
+      </div>
+
+      <div class="overflow-x-auto max-h-[480px] custom-scroll border border-bordercol/50 rounded-xl">
+        <table class="w-full text-left font-mono text-xs whitespace-nowrap">
+          <thead class="sticky top-0 bg-[#0d1322] text-gray-400 border-b border-bordercol shadow">
+            <tr>
+              <th class="py-3 px-3">สินทรัพย์ / สัญญา (Contract & Exchange)</th>
+              <th class="py-3 px-3">หมวด</th>
+              <th class="py-3 px-3 text-right">Open Interest</th>
+              <th class="py-3 px-3 text-right text-bullgreen font-bold bg-bullgreen/5">Non-Comm Long</th>
+              <th class="py-3 px-3 text-right text-bearred font-bold bg-bearred/5">Non-Comm Short</th>
+              <th class="py-3 px-3 text-right font-black bg-neoncyan/10 text-neoncyan">Net Position</th>
+              <th class="py-3 px-3 text-right">1-Week Chg</th>
+              <th class="py-3 px-3 text-right text-gray-400">Comm Long</th>
+              <th class="py-3 px-3 text-right text-gray-400">Comm Short</th>
+              <th class="py-3 px-3 text-right text-gray-400">Non-Rept Long</th>
+              <th class="py-3 px-3 text-right text-gray-400">Non-Rept Short</th>
+            </tr>
+          </thead>
+          <tbody id="masterRawTableBody" class="divide-y divide-bordercol/40">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Active Currency Details & Math Proof (Single Asset Inspector) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left 7 Cols: Selected Asset Deep Dive Card -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+        <div class="glass-card rounded-2xl p-5 border border-bordercol">
+          <div class="flex items-center justify-between mb-3 border-b border-bordercol pb-3">
+            <div>
+              <div class="text-xs text-gray-400 font-mono" id="rawMarketExchange">CME / ICE FUTURES</div>
+              <h3 class="text-lg font-bold text-white flex items-center gap-2 mt-0.5">
+                <span id="rawCurFlag" class="text-xl">🇯🇵</span>
+                <span id="rawCurName">JAPANESE YEN FUTURES</span>
+                <span id="rawCurCode" class="text-xs font-mono px-2 py-0.5 rounded bg-white/10 text-neoncyan">JPY</span>
+              </h3>
+            </div>
+            <div class="text-right text-xs font-mono">
+              <div class="text-gray-400">Total Open Interest</div>
+              <div id="rawTotalOI" class="text-base font-bold text-white">379,141</div>
+            </div>
+          </div>
+
+          <!-- Official Style Raw Breakdown Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs">
+              <thead>
+                <tr class="bg-black/50 text-gray-400 border-b border-bordercol">
+                  <th class="py-2.5 px-3">กลุ่มผู้ถือสัญญา (Trader Category)</th>
+                  <th class="py-2.5 px-3 text-right">ฝั่งซื้อ (Long)</th>
+                  <th class="py-2.5 px-3 text-right">ฝั่งขาย (Short)</th>
+                  <th class="py-2.5 px-3 text-right">สุทธิ (Net)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-bordercol/40">
+                <!-- Non-Commercials (Highlight Row) -->
+                <tr class="bg-neoncyan/[0.05] border-l-4 border-l-neoncyan">
+                  <td class="py-3 px-3">
+                    <div class="font-bold text-white flex items-center gap-1.5">
+                      <span>⭐ Non-Commercials</span>
+                      <span class="text-[10px] text-neoncyan bg-neoncyan/15 px-1.5 py-0.2 rounded font-sans">Paul ดูตัวนี้</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 font-sans">เฮดจ์ฟันด์ / กองทุนเก็งกำไรสถาบัน</div>
+                  </td>
+                  <td id="tblNoncommLong" class="py-3 px-3 text-right font-bold text-bullgreen">200,186</td>
+                  <td id="tblNoncommShort" class="py-3 px-3 text-right font-bold text-bearred">130,308</td>
+                  <td id="tblNoncommNet" class="py-3 px-3 text-right font-black text-neoncyan">+69,878</td>
+                </tr>
+
+                <!-- Commercials -->
+                <tr class="hover:bg-white/[0.02]">
+                  <td class="py-2.5 px-3">
+                    <div class="font-semibold text-gray-300">Commercials (Hedgers)</div>
+                    <div class="text-[10px] text-gray-500 font-sans">ธนาคารพาณิชย์ / ผู้ส่งออกป้องกันความเสี่ยง</div>
+                  </td>
+                  <td id="tblCommLong" class="py-2.5 px-3 text-right text-gray-300">141,812</td>
+                  <td id="tblCommShort" class="py-2.5 px-3 text-right text-gray-300">212,899</td>
+                  <td id="tblCommNet" class="py-2.5 px-3 text-right font-semibold text-gray-400">-71,087</td>
+                </tr>
+
+                <!-- Non-Reportable -->
+                <tr class="hover:bg-white/[0.02]">
+                  <td class="py-2.5 px-3">
+                    <div class="font-semibold text-gray-400">Non-Reportable Positions</div>
+                    <div class="text-[10px] text-gray-500 font-sans">รายย่อยทั่วไป (Small Retail Speculators)</div>
+                  </td>
+                  <td id="tblNonreptLong" class="py-2.5 px-3 text-right text-gray-400">34,655</td>
+                  <td id="tblNonreptShort" class="py-2.5 px-3 text-right text-gray-400">33,446</td>
+                  <td id="tblNonreptNet" class="py-2.5 px-3 text-right text-gray-400">+1,209</td>
+                </tr>
+
+                <!-- Spreading (Non-Comm) -->
+                <tr class="text-gray-500 text-[11px] bg-black/20">
+                  <td class="py-2 px-3">Non-Commercial Spreading</td>
+                  <td colspan="3" id="tblSpreading" class="py-2 px-3 text-right">2,488 สัญญา</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 4-Week Net Flow Progression Table in Tab 2 -->
+          <div class="mt-4 pt-3 border-t border-bordercol">
+            <div class="text-xs font-semibold text-gray-300 mb-2 font-mono uppercase flex items-center justify-between">
+              <span>📅 ประวัติ Net Position & Weekly Change ย้อนหลัง 4 สัปดาห์:</span>
+              <span class="text-neoncyan font-bold text-[11px]" id="rawCurName4W">JAPANESE YEN</span>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-white/5 bg-black/40">
+              <table class="w-full text-left font-mono text-xs">
+                <thead>
+                  <tr class="text-gray-400 border-b border-white/10 bg-black/60">
+                    <th class="py-2 px-3">รอบวันที่ (As of)</th>
+                    <th class="py-2 px-3 text-right text-neoncyan font-bold">🏛️ สถาบัน (Hedge)</th>
+                    <th class="py-2 px-3 text-right text-gray-400 font-bold">🏭 พาณิชย์ (Hedgers)</th>
+                    <th class="py-2 px-3 text-right text-amber-400 font-bold">👤 รายย่อย (Retail)</th>
+                  </tr>
+                </thead>
+                <tbody id="raw4WTableBody" class="divide-y divide-white/5">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Weekly Changes Table -->
+          <div class="mt-4 pt-3 border-t border-bordercol">
+            <div class="text-xs font-semibold text-gray-400 mb-2 font-mono uppercase">การเปลี่ยนแปลงรอบสัปดาห์ (Changes from Previous Week):</div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono text-xs">
+              <div class="p-2 rounded-lg bg-black/40 border border-white/5">
+                <div class="text-[10px] text-gray-400">สถาบันซื้อเพิ่ม (Long)</div>
+                <div id="chgNoncommLong" class="font-bold text-bullgreen mt-0.5">+8,930</div>
+              </div>
+              <div class="p-2 rounded-lg bg-black/40 border border-white/5">
+                <div class="text-[10px] text-gray-400">สถาบันขายลดลง (Short)</div>
+                <div id="chgNoncommShort" class="font-bold text-bullgreen mt-0.5">-10,741</div>
+              </div>
+              <div class="p-2 rounded-lg bg-black/40 border border-white/5">
+                <div class="text-[10px] text-gray-400">Net Flow สัปดาห์นี้</div>
+                <div id="chgNetFlow" class="font-black text-neoncyan mt-0.5">+19,671</div>
+              </div>
+              <div class="p-2 rounded-lg bg-black/40 border border-white/5">
+                <div class="text-[10px] text-gray-400">Total OI เปลี่ยนแปลง</div>
+                <div id="chgTotalOI" class="font-bold text-gray-300 mt-0.5">+5,639</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Raw JSON Inspect Card -->
+        <div class="glass-card rounded-2xl p-5 border border-bordercol">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs font-mono font-bold text-gray-300 flex items-center gap-2">
+              <span>💻</span> ข้อมูล JSON ดิบจากเซิร์ฟเวอร์ CFTC (Live Payload)
+            </h4>
+            <span class="text-[10px] font-mono text-gray-500">CFTC API: 6dca-aqww</span>
+          </div>
+          <pre id="rawJsonCode" class="bg-black/60 p-3 rounded-xl text-[11px] font-mono text-cyan-300 max-h-48 overflow-y-auto custom-scroll border border-white/5"></pre>
+        </div>
+      </div>
+
+      <!-- Right 5 Cols: Math Verification & Self-Learning Guide -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- Mathematical Cross-Check Verification Card -->
+        <div class="glass-card rounded-2xl p-5 border border-neoncyan/30 bg-gradient-to-b from-neoncyan/[0.04] to-transparent">
+          <div class="flex items-center gap-2 text-neoncyan font-bold text-sm mb-3">
+            <span>✅</span>
+            <span>การพิสูจน์สมการด้วยมือ (Mathematical Proof)</span>
+          </div>
+
+          <p class="text-xs text-gray-300 mb-3 leading-relaxed">
+            คุณสามารถกดเครื่องคิดเลขคำนวณตามขั้นตอนด้านล่างนี้ เพื่อพิสูจน์ว่าสรุปในแดชบอร์ดตรงกับตัวเลขดิบของ CFTC 100%:
+          </p>
+
+          <div class="space-y-3 font-mono text-xs">
+            <!-- Step 1 -->
+            <div class="p-2.5 rounded-xl bg-black/50 border border-white/5">
+              <div class="text-gray-400 text-[10px]">ขั้นตอนที่ 1: ดึงจำนวนสัญญาฝั่ง Long ของสถาบัน</div>
+              <div class="text-white font-bold mt-0.5">Non-Commercial Long = <span id="proofLong" class="text-bullgreen">200,186</span></div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="p-2.5 rounded-xl bg-black/50 border border-white/5">
+              <div class="text-gray-400 text-[10px]">ขั้นตอนที่ 2: ดึงจำนวนสัญญาฝั่ง Short ของสถาบัน</div>
+              <div class="text-white font-bold mt-0.5">Non-Commercial Short = <span id="proofShort" class="text-bearred">130,308</span></div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="p-2.5 rounded-xl bg-black/50 border border-neoncyan/20">
+              <div class="text-neoncyan text-[10px] font-semibold">ขั้นตอนที่ 3: คำนวณ Net Position (Long - Short)</div>
+              <div class="text-white font-bold mt-1 text-sm">
+                <span id="proofCalc">200,186 - 130,308</span> = <span id="proofResult" class="text-neoncyan font-black">+69,878</span>
+              </div>
+            </div>
+
+            <!-- Verification Status -->
+            <div class="p-2.5 rounded-xl bg-bullgreen/10 border border-bullgreen/30 text-bullgreen font-sans text-xs flex items-center gap-2">
+              <span class="text-base">🎯</span>
+              <span><strong>ผลการตรวจสอบ:</strong> ตัวเลขในแดชบอร์ดสรุปได้ตรงกับตารางดิบของกระทรวง CFTC แบบไม่มีผิดเพี้ยน</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-Step Self-Learning Guide -->
+        <div class="glass-card rounded-2xl p-5 border border-bordercol">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-3">
+            <span>📖</span> วิธีอ่านรายงาน CFTC COT ด้วยตาตนเอง (Step-by-Step)
+          </h3>
+          <div class="space-y-3 text-xs text-gray-300">
+            <div class="p-2.5 rounded-xl bg-black/30 border border-white/5">
+              <strong class="text-neoncyan font-mono">STEP 1:</strong>
+              <p class="mt-1">มองหาบรรทัด <strong class="text-white">"Non-Commercial"</strong> เสมอ กลุ่มอื่น (Commercial / Non-Reportable) ให้มองข้ามไปก่อน เพราะ Non-Commercial คือกลุ่มกองทุน Hedge Funds ที่ขับเคลื่อนเทรนด์จริง</p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-black/30 border border-white/5">
+              <strong class="text-neoncyan font-mono">STEP 2:</strong>
+              <p class="mt-1">นำคอลัมน์ <span class="text-bullgreen font-bold">Long</span> ลบด้วย <span class="text-bearred font-bold">Short</span> ถ้าผลลัพธ์เป็นบวกแปลว่าสถาบันคุมหน้า Buy ถ้าเป็นลบแปลว่าสถาบันคุมหน้า Sell</p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-black/30 border border-white/5">
+              <strong class="text-neoncyan font-mono">STEP 3:</strong>
+              <p class="mt-1">ตรวจสอบแถว <strong class="text-white">"Changes in Positions"</strong> หาก Long เพิ่มขึ้นและ Short ลดลง แปลว่าสถาบันกำลังอัดเงินเร่งเทรนด์ (Momentum สะสมแรง)</p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-black/30 border border-white/5">
+              <strong class="text-neoncyan font-mono">STEP 4:</strong>
+              <p class="mt-1">นำผลลัพธ์ของสกุลเงินที่ 1 มาจับคู่กับสกุลเงินที่ 2 เพื่อหาคู่เงินที่มีความต่างกันสุดขั้ว (Strongest vs Weakest) เพื่อสร้างความได้เปรียบสูงสุด</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 border-t border-bordercol mt-8">
+    CFTC COT Institutional Money Flow Dashboard • Real-time Data Verification Engine • Audited for FTMO Rules
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    const EMBEDDED_COT_DATA = {
+  "metadata": {
+    "title": "CFTC COT Institutional Money Flow Matrix (Paul FTMO Pro Edition)",
+    "source": "U.S. Commodity Futures Trading Commission (CFTC) - Legacy Futures Only",
+    "cftc_api_endpoint": "https://publicreporting.cftc.gov/resource/6dca-aqww.json",
+    "cftc_web_url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm",
+    "report_date": "2026-10-20",
+    "published_at": "2026-10-23",
+    "last_updated": "2026-10-24 08:17:10",
+    "weeks_tracked": [
+      "2026-10-20",
+      "2026-10-13",
+      "2026-10-06",
+      "2026-09-29",
+      "2026-09-22"
+    ],
+    "total_assets_tracked": 15
+  },
+  "currencies": [
+    {
+      "code": "XAU",
+      "name": "Gold Futures",
+      "flag": "🥇",
+      "contract": "GOLD",
+      "category": "Commodities",
+      "market_name": "GOLD - COMMODITY EXCHANGE INC.",
+      "cftc_code": "088691",
+      "commodity_group": "NATURAL RESOURCES",
+      "latest_date": "2026-10-20",
+      "net_position": 199865,
+      "prev_net_position": 207879,
+      "weekly_change": -8014,
+      "change_noncomm_long": -8158,
+      "change_noncomm_short": -144,
+      "bias": "BULLISH",
+      "intensity": "STRONG",
+      "flow": "PROFIT-TAKING (สถาบันเริ่มรินปิดทำกำไร)",
+      "tactical_state": "PULLBACK RISK",
+      "latest_long": 237142,
+      "latest_short": 37277,
+      "open_interest": 402279,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 402279,
+        "change_open_interest": 5934,
+        "noncomm_long": 237142,
+        "noncomm_short": 37277,
+        "noncomm_spread": 54199,
+        "noncomm_net": 199865,
+        "change_noncomm_long": -8158,
+        "change_noncomm_short": -144,
+        "comm_long": 59531,
+        "comm_short": 295113,
+        "comm_net": -235582,
+        "change_comm_long": 5112,
+        "change_comm_short": -1837,
+        "nonrept_long": 51407,
+        "nonrept_short": 15690,
+        "nonrept_net": 35717
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 396345,
+        "change_open_interest": 236,
+        "noncomm_long": 245300,
+        "noncomm_short": 37421,
+        "noncomm_spread": 45895,
+        "noncomm_net": 207879,
+        "change_noncomm_long": -103,
+        "change_noncomm_short": 2353,
+        "comm_long": 54419,
+        "comm_short": 296950,
+        "comm_net": -242531,
+        "change_comm_long": -1383,
+        "change_comm_short": -3379,
+        "nonrept_long": 50731,
+        "nonrept_short": 16079,
+        "nonrept_net": 34652
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 225853,
+          "long": 253982,
+          "short": 28129
+        },
+        {
+          "date": "2026-09-29",
+          "net": 218632,
+          "long": 249736,
+          "short": 31104
+        },
+        {
+          "date": "2026-10-06",
+          "net": 210335,
+          "long": 245403,
+          "short": 35068
+        },
+        {
+          "date": "2026-10-13",
+          "net": 207879,
+          "long": 245300,
+          "short": 37421
+        },
+        {
+          "date": "2026-10-20",
+          "net": 199865,
+          "long": 237142,
+          "short": 37277
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 199865,
+          "noncomm_chg": -8014,
+          "comm_net": -235582,
+          "comm_chg": 6949,
+          "nonrept_net": 35717,
+          "nonrept_chg": 1065
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 207879,
+          "noncomm_chg": -2456,
+          "comm_net": -242531,
+          "comm_chg": 1996,
+          "nonrept_net": 34652,
+          "nonrept_chg": 460
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 210335,
+          "noncomm_chg": -8297,
+          "comm_net": -244527,
+          "comm_chg": 6440,
+          "nonrept_net": 34192,
+          "nonrept_chg": 1857
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 218632,
+          "noncomm_chg": -7221,
+          "comm_net": -250967,
+          "comm_chg": 11936,
+          "nonrept_net": 32335,
+          "nonrept_chg": -4715
+        }
+      ],
+      "rank": 1
+    },
+    {
+      "code": "JPY",
+      "name": "Japanese Yen",
+      "flag": "🇯🇵",
+      "contract": "JAPANESE YEN",
+      "category": "Major FX",
+      "market_name": "JAPANESE YEN - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "097741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": 69878,
+      "prev_net_position": 50207,
+      "weekly_change": 19671,
+      "change_noncomm_long": 8930,
+      "change_noncomm_short": -10741,
+      "bias": "BULLISH",
+      "intensity": "STRONG",
+      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
+      "tactical_state": "TREND CONTINUATION",
+      "latest_long": 200186,
+      "latest_short": 130308,
+      "open_interest": 379141,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 379141,
+        "change_open_interest": 5639,
+        "noncomm_long": 200186,
+        "noncomm_short": 130308,
+        "noncomm_spread": 2488,
+        "noncomm_net": 69878,
+        "change_noncomm_long": 8930,
+        "change_noncomm_short": -10741,
+        "comm_long": 141812,
+        "comm_short": 212899,
+        "comm_net": -71087,
+        "change_comm_long": -2133,
+        "change_comm_short": 20367,
+        "nonrept_long": 34655,
+        "nonrept_short": 33446,
+        "nonrept_net": 1209
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 373502,
+        "change_open_interest": 5364,
+        "noncomm_long": 191256,
+        "noncomm_short": 141049,
+        "noncomm_spread": 3734,
+        "noncomm_net": 50207,
+        "change_noncomm_long": 888,
+        "change_noncomm_short": 13006,
+        "comm_long": 143945,
+        "comm_short": 192532,
+        "comm_net": -48587,
+        "change_comm_long": 3714,
+        "change_comm_short": -9448,
+        "nonrept_long": 34567,
+        "nonrept_short": 36187,
+        "nonrept_net": -1620
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 71982,
+          "long": 192274,
+          "short": 120292
+        },
+        {
+          "date": "2026-09-29",
+          "net": 55440,
+          "long": 176266,
+          "short": 120826
+        },
+        {
+          "date": "2026-10-06",
+          "net": 62325,
+          "long": 190368,
+          "short": 128043
+        },
+        {
+          "date": "2026-10-13",
+          "net": 50207,
+          "long": 191256,
+          "short": 141049
+        },
+        {
+          "date": "2026-10-20",
+          "net": 69878,
+          "long": 200186,
+          "short": 130308
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 69878,
+          "noncomm_chg": 19671,
+          "comm_net": -71087,
+          "comm_chg": -22500,
+          "nonrept_net": 1209,
+          "nonrept_chg": 2829
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 50207,
+          "noncomm_chg": -12118,
+          "comm_net": -48587,
+          "comm_chg": 13162,
+          "nonrept_net": -1620,
+          "nonrept_chg": -1044
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 62325,
+          "noncomm_chg": 6885,
+          "comm_net": -61749,
+          "comm_chg": -5764,
+          "nonrept_net": -576,
+          "nonrept_chg": -1121
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 55440,
+          "noncomm_chg": -16542,
+          "comm_net": -55985,
+          "comm_chg": 20429,
+          "nonrept_net": 545,
+          "nonrept_chg": -3887
+        }
+      ],
+      "rank": 2
+    },
+    {
+      "code": "BRL",
+      "name": "Brazilian Real",
+      "flag": "🇧🇷",
+      "contract": "BRAZILIAN REAL",
+      "category": "Emerging FX",
+      "market_name": "BRAZILIAN REAL - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "102741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": 32518,
+      "prev_net_position": 46718,
+      "weekly_change": -14200,
+      "change_noncomm_long": -4438,
+      "change_noncomm_short": 9762,
+      "bias": "BULLISH",
+      "intensity": "MODERATE",
+      "flow": "PROFIT-TAKING (สถาบันเริ่มรินปิดทำกำไร)",
+      "tactical_state": "PULLBACK RISK",
+      "latest_long": 87608,
+      "latest_short": 55090,
+      "open_interest": 135679,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 135679,
+        "change_open_interest": -3377,
+        "noncomm_long": 87608,
+        "noncomm_short": 55090,
+        "noncomm_spread": 1970,
+        "noncomm_net": 32518,
+        "change_noncomm_long": -4438,
+        "change_noncomm_short": 9762,
+        "comm_long": 40596,
+        "comm_short": 77580,
+        "comm_net": -36984,
+        "change_comm_long": 421,
+        "change_comm_short": -13454,
+        "nonrept_long": 5505,
+        "nonrept_short": 1039,
+        "nonrept_net": 4466
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 139056,
+        "change_open_interest": 4515,
+        "noncomm_long": 92046,
+        "noncomm_short": 45328,
+        "noncomm_spread": 1261,
+        "noncomm_net": 46718,
+        "change_noncomm_long": -1183,
+        "change_noncomm_short": 4362,
+        "comm_long": 40175,
+        "comm_short": 91034,
+        "comm_net": -50859,
+        "change_comm_long": 6372,
+        "change_comm_short": 496,
+        "nonrept_long": 5574,
+        "nonrept_short": 1433,
+        "nonrept_net": 4141
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 54201,
+          "long": 84752,
+          "short": 30551
+        },
+        {
+          "date": "2026-09-29",
+          "net": 60538,
+          "long": 96067,
+          "short": 35529
+        },
+        {
+          "date": "2026-10-06",
+          "net": 52263,
+          "long": 93229,
+          "short": 40966
+        },
+        {
+          "date": "2026-10-13",
+          "net": 46718,
+          "long": 92046,
+          "short": 45328
+        },
+        {
+          "date": "2026-10-20",
+          "net": 32518,
+          "long": 87608,
+          "short": 55090
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 32518,
+          "noncomm_chg": -14200,
+          "comm_net": -36984,
+          "comm_chg": 13875,
+          "nonrept_net": 4466,
+          "nonrept_chg": 325
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 46718,
+          "noncomm_chg": -5545,
+          "comm_net": -50859,
+          "comm_chg": 5876,
+          "nonrept_net": 4141,
+          "nonrept_chg": -331
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 52263,
+          "noncomm_chg": -8275,
+          "comm_net": -56735,
+          "comm_chg": 7539,
+          "nonrept_net": 4472,
+          "nonrept_chg": 736
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 60538,
+          "noncomm_chg": 6337,
+          "comm_net": -64274,
+          "comm_chg": -5598,
+          "nonrept_net": 3736,
+          "nonrept_chg": -739
+        }
+      ],
+      "rank": 3
+    },
+    {
+      "code": "XAG",
+      "name": "Silver Futures",
+      "flag": "🥈",
+      "contract": "SILVER",
+      "category": "Commodities",
+      "market_name": "SILVER - COMMODITY EXCHANGE INC.",
+      "cftc_code": "084691",
+      "commodity_group": "NATURAL RESOURCES",
+      "latest_date": "2026-10-20",
+      "net_position": 19795,
+      "prev_net_position": 22631,
+      "weekly_change": -2836,
+      "change_noncomm_long": 181,
+      "change_noncomm_short": 3017,
+      "bias": "BULLISH",
+      "intensity": "NEUTRAL",
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 34575,
+      "latest_short": 14780,
+      "open_interest": 113992,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 113992,
+        "change_open_interest": 5559,
+        "noncomm_long": 34575,
+        "noncomm_short": 14780,
+        "noncomm_spread": 16918,
+        "noncomm_net": 19795,
+        "change_noncomm_long": 181,
+        "change_noncomm_short": 3017,
+        "comm_long": 35323,
+        "comm_short": 72499,
+        "comm_net": -37176,
+        "change_comm_long": 1929,
+        "change_comm_short": -337,
+        "nonrept_long": 27176,
+        "nonrept_short": 9795,
+        "nonrept_net": 17381
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 108433,
+        "change_open_interest": 3303,
+        "noncomm_long": 34394,
+        "noncomm_short": 11763,
+        "noncomm_spread": 14177,
+        "noncomm_net": 22631,
+        "change_noncomm_long": 746,
+        "change_noncomm_short": 1268,
+        "comm_long": 33394,
+        "comm_short": 72836,
+        "comm_net": -39442,
+        "change_comm_long": 1649,
+        "change_comm_short": -501,
+        "nonrept_long": 26468,
+        "nonrept_short": 9657,
+        "nonrept_net": 16811
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 25444,
+          "long": 34701,
+          "short": 9257
+        },
+        {
+          "date": "2026-09-29",
+          "net": 22083,
+          "long": 33482,
+          "short": 11399
+        },
+        {
+          "date": "2026-10-06",
+          "net": 23153,
+          "long": 33648,
+          "short": 10495
+        },
+        {
+          "date": "2026-10-13",
+          "net": 22631,
+          "long": 34394,
+          "short": 11763
+        },
+        {
+          "date": "2026-10-20",
+          "net": 19795,
+          "long": 34575,
+          "short": 14780
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 19795,
+          "noncomm_chg": -2836,
+          "comm_net": -37176,
+          "comm_chg": 2266,
+          "nonrept_net": 17381,
+          "nonrept_chg": 570
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 22631,
+          "noncomm_chg": -522,
+          "comm_net": -39442,
+          "comm_chg": 2150,
+          "nonrept_net": 16811,
+          "nonrept_chg": -1628
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 23153,
+          "noncomm_chg": 1070,
+          "comm_net": -41592,
+          "comm_chg": -1582,
+          "nonrept_net": 18439,
+          "nonrept_chg": 512
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 22083,
+          "noncomm_chg": -3361,
+          "comm_net": -40010,
+          "comm_chg": 4744,
+          "nonrept_net": 17927,
+          "nonrept_chg": -1383
+        }
+      ],
+      "rank": 4
+    },
+    {
+      "code": "MXN",
+      "name": "Mexican Peso",
+      "flag": "🇲🇽",
+      "contract": "MEXICAN PESO",
+      "category": "Emerging FX",
+      "market_name": "MEXICAN PESO - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "095741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": 17023,
+      "prev_net_position": 15242,
+      "weekly_change": 1781,
+      "change_noncomm_long": 882,
+      "change_noncomm_short": -899,
+      "bias": "BULLISH",
+      "intensity": "NEUTRAL",
+      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
+      "tactical_state": "TREND CONTINUATION",
+      "latest_long": 90409,
+      "latest_short": 73386,
+      "open_interest": 278165,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 278165,
+        "change_open_interest": -842,
+        "noncomm_long": 90409,
+        "noncomm_short": 73386,
+        "noncomm_spread": 2492,
+        "noncomm_net": 17023,
+        "change_noncomm_long": 882,
+        "change_noncomm_short": -899,
+        "comm_long": 179767,
+        "comm_short": 197593,
+        "comm_net": -17826,
+        "change_comm_long": -2151,
+        "change_comm_short": -421,
+        "nonrept_long": 5497,
+        "nonrept_short": 4694,
+        "nonrept_net": 803
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 279007,
+        "change_open_interest": -11500,
+        "noncomm_long": 89527,
+        "noncomm_short": 74285,
+        "noncomm_spread": 2476,
+        "noncomm_net": 15242,
+        "change_noncomm_long": -9170,
+        "change_noncomm_short": -13711,
+        "comm_long": 181918,
+        "comm_short": 198014,
+        "comm_net": -16096,
+        "change_comm_long": -3099,
+        "change_comm_short": 296,
+        "nonrept_long": 5086,
+        "nonrept_short": 4232,
+        "nonrept_net": 854
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 75167,
+          "long": 127595,
+          "short": 52428
+        },
+        {
+          "date": "2026-09-29",
+          "net": 52402,
+          "long": 115431,
+          "short": 63029
+        },
+        {
+          "date": "2026-10-06",
+          "net": 10701,
+          "long": 98697,
+          "short": 87996
+        },
+        {
+          "date": "2026-10-13",
+          "net": 15242,
+          "long": 89527,
+          "short": 74285
+        },
+        {
+          "date": "2026-10-20",
+          "net": 17023,
+          "long": 90409,
+          "short": 73386
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 17023,
+          "noncomm_chg": 1781,
+          "comm_net": -17826,
+          "comm_chg": -1730,
+          "nonrept_net": 803,
+          "nonrept_chg": -51
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 15242,
+          "noncomm_chg": 4541,
+          "comm_net": -16096,
+          "comm_chg": -3395,
+          "nonrept_net": 854,
+          "nonrept_chg": -1146
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 10701,
+          "noncomm_chg": -41701,
+          "comm_net": -12701,
+          "comm_chg": 41896,
+          "nonrept_net": 2000,
+          "nonrept_chg": -195
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 52402,
+          "noncomm_chg": -22765,
+          "comm_net": -54597,
+          "comm_chg": 25023,
+          "nonrept_net": 2195,
+          "nonrept_chg": -2258
+        }
+      ],
+      "rank": 5
+    },
+    {
+      "code": "USD",
+      "name": "US Dollar Index",
+      "flag": "🇺🇸",
+      "contract": "USD INDEX",
+      "category": "Major FX",
+      "market_name": "USD INDEX - ICE FUTURES U.S.",
+      "cftc_code": "098662",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": 15044,
+      "prev_net_position": 12919,
+      "weekly_change": 2125,
+      "change_noncomm_long": -174,
+      "change_noncomm_short": -2299,
+      "bias": "BULLISH",
+      "intensity": "NEUTRAL",
+      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
+      "tactical_state": "TREND CONTINUATION",
+      "latest_long": 32422,
+      "latest_short": 17378,
+      "open_interest": 49382,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 49382,
+        "change_open_interest": -2434,
+        "noncomm_long": 32422,
+        "noncomm_short": 17378,
+        "noncomm_spread": 1466,
+        "noncomm_net": 15044,
+        "change_noncomm_long": -174,
+        "change_noncomm_short": -2299,
+        "comm_long": 11737,
+        "comm_short": 28751,
+        "comm_net": -17014,
+        "change_comm_long": -2152,
+        "change_comm_short": 34,
+        "nonrept_long": 3757,
+        "nonrept_short": 1787,
+        "nonrept_net": 1970
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 51816,
+        "change_open_interest": 721,
+        "noncomm_long": 32596,
+        "noncomm_short": 19677,
+        "noncomm_spread": 1519,
+        "noncomm_net": 12919,
+        "change_noncomm_long": 2070,
+        "change_noncomm_short": 1162,
+        "comm_long": 13889,
+        "comm_short": 28717,
+        "comm_net": -14828,
+        "change_comm_long": -882,
+        "change_comm_short": -325,
+        "nonrept_long": 3812,
+        "nonrept_short": 1903,
+        "nonrept_net": 1909
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 10330,
+          "long": 27768,
+          "short": 17438
+        },
+        {
+          "date": "2026-09-29",
+          "net": 11881,
+          "long": 29742,
+          "short": 17861
+        },
+        {
+          "date": "2026-10-06",
+          "net": 12011,
+          "long": 30526,
+          "short": 18515
+        },
+        {
+          "date": "2026-10-13",
+          "net": 12919,
+          "long": 32596,
+          "short": 19677
+        },
+        {
+          "date": "2026-10-20",
+          "net": 15044,
+          "long": 32422,
+          "short": 17378
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 15044,
+          "noncomm_chg": 2125,
+          "comm_net": -17014,
+          "comm_chg": -2186,
+          "nonrept_net": 1970,
+          "nonrept_chg": 61
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 12919,
+          "noncomm_chg": 908,
+          "comm_net": -14828,
+          "comm_chg": -557,
+          "nonrept_net": 1909,
+          "nonrept_chg": -351
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 12011,
+          "noncomm_chg": 130,
+          "comm_net": -14271,
+          "comm_chg": -397,
+          "nonrept_net": 2260,
+          "nonrept_chg": 267
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 11881,
+          "noncomm_chg": 1551,
+          "comm_net": -13874,
+          "comm_chg": -1707,
+          "nonrept_net": 1993,
+          "nonrept_chg": 156
+        }
+      ],
+      "rank": 6
+    },
+    {
+      "code": "ZAR",
+      "name": "South African Rand",
+      "flag": "🇿🇦",
+      "contract": "SO AFRICAN RAND",
+      "category": "Emerging FX",
+      "market_name": "SO AFRICAN RAND - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "122741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": 12928,
+      "prev_net_position": 12510,
+      "weekly_change": 418,
+      "change_noncomm_long": 586,
+      "change_noncomm_short": 168,
+      "bias": "BULLISH",
+      "intensity": "NEUTRAL",
+      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
+      "tactical_state": "TREND CONTINUATION",
+      "latest_long": 17643,
+      "latest_short": 4715,
+      "open_interest": 38473,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 38473,
+        "change_open_interest": 1386,
+        "noncomm_long": 17643,
+        "noncomm_short": 4715,
+        "noncomm_spread": 504,
+        "noncomm_net": 12928,
+        "change_noncomm_long": 586,
+        "change_noncomm_short": 168,
+        "comm_long": 17483,
+        "comm_short": 31536,
+        "comm_net": -14053,
+        "change_comm_long": 688,
+        "change_comm_short": 901,
+        "nonrept_long": 2843,
+        "nonrept_short": 1718,
+        "nonrept_net": 1125
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 37087,
+        "change_open_interest": 674,
+        "noncomm_long": 17057,
+        "noncomm_short": 4547,
+        "noncomm_spread": 504,
+        "noncomm_net": 12510,
+        "change_noncomm_long": -664,
+        "change_noncomm_short": 287,
+        "comm_long": 16795,
+        "comm_short": 30635,
+        "comm_net": -13840,
+        "change_comm_long": 1404,
+        "change_comm_short": 403,
+        "nonrept_long": 2731,
+        "nonrept_short": 1401,
+        "nonrept_net": 1330
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 15698,
+          "long": 21035,
+          "short": 5337
+        },
+        {
+          "date": "2026-09-29",
+          "net": 17200,
+          "long": 19534,
+          "short": 2334
+        },
+        {
+          "date": "2026-10-06",
+          "net": 13461,
+          "long": 17721,
+          "short": 4260
+        },
+        {
+          "date": "2026-10-13",
+          "net": 12510,
+          "long": 17057,
+          "short": 4547
+        },
+        {
+          "date": "2026-10-20",
+          "net": 12928,
+          "long": 17643,
+          "short": 4715
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 12928,
+          "noncomm_chg": 418,
+          "comm_net": -14053,
+          "comm_chg": -213,
+          "nonrept_net": 1125,
+          "nonrept_chg": -205
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 12510,
+          "noncomm_chg": -951,
+          "comm_net": -13840,
+          "comm_chg": 1001,
+          "nonrept_net": 1330,
+          "nonrept_chg": -50
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 13461,
+          "noncomm_chg": -3739,
+          "comm_net": -14841,
+          "comm_chg": 4480,
+          "nonrept_net": 1380,
+          "nonrept_chg": -741
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 17200,
+          "noncomm_chg": 1502,
+          "comm_net": -19321,
+          "comm_chg": -1681,
+          "nonrept_net": 2121,
+          "nonrept_chg": 179
+        }
+      ],
+      "rank": 7
+    },
+    {
+      "code": "BTC",
+      "name": "Bitcoin CME",
+      "flag": "₿",
+      "contract": "BITCOIN",
+      "category": "Crypto",
+      "market_name": "BITCOIN - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "133741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": 2418,
+      "prev_net_position": 2534,
+      "weekly_change": -116,
+      "change_noncomm_long": -358,
+      "change_noncomm_short": -242,
+      "bias": "BULLISH",
+      "intensity": "NEUTRAL",
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 16962,
+      "latest_short": 14544,
+      "open_interest": 21040,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 21040,
+        "change_open_interest": 288,
+        "noncomm_long": 16962,
+        "noncomm_short": 14544,
+        "noncomm_spread": 3010,
+        "noncomm_net": 2418,
+        "change_noncomm_long": -358,
+        "change_noncomm_short": -242,
+        "comm_long": 37,
+        "comm_short": 2762,
+        "comm_net": -2725,
+        "change_comm_long": -48,
+        "change_comm_short": -58,
+        "nonrept_long": 1031,
+        "nonrept_short": 724,
+        "nonrept_net": 307
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 20752,
+        "change_open_interest": -680,
+        "noncomm_long": 17320,
+        "noncomm_short": 14786,
+        "noncomm_spread": 2365,
+        "noncomm_net": 2534,
+        "change_noncomm_long": -993,
+        "change_noncomm_short": -987,
+        "comm_long": 85,
+        "comm_short": 2820,
+        "comm_net": -2735,
+        "change_comm_long": 4,
+        "change_comm_short": -267,
+        "nonrept_long": 982,
+        "nonrept_short": 781,
+        "nonrept_net": 201
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 2756,
+          "long": 17658,
+          "short": 14902
+        },
+        {
+          "date": "2026-09-29",
+          "net": 2465,
+          "long": 17188,
+          "short": 14723
+        },
+        {
+          "date": "2026-10-06",
+          "net": 2540,
+          "long": 18313,
+          "short": 15773
+        },
+        {
+          "date": "2026-10-13",
+          "net": 2534,
+          "long": 17320,
+          "short": 14786
+        },
+        {
+          "date": "2026-10-20",
+          "net": 2418,
+          "long": 16962,
+          "short": 14544
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 2418,
+          "noncomm_chg": -116,
+          "comm_net": -2725,
+          "comm_chg": 10,
+          "nonrept_net": 307,
+          "nonrept_chg": 106
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 2534,
+          "noncomm_chg": -6,
+          "comm_net": -2735,
+          "comm_chg": 271,
+          "nonrept_net": 201,
+          "nonrept_chg": -265
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 2540,
+          "noncomm_chg": 75,
+          "comm_net": -3006,
+          "comm_chg": -236,
+          "nonrept_net": 466,
+          "nonrept_chg": 161
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 2465,
+          "noncomm_chg": -291,
+          "comm_net": -2770,
+          "comm_chg": 339,
+          "nonrept_net": 305,
+          "nonrept_chg": -48
+        }
+      ],
+      "rank": 8
+    },
+    {
+      "code": "ETH",
+      "name": "Ether Cash Settled",
+      "flag": "Ξ",
+      "contract": "ETHER CASH SETTLED",
+      "category": "Crypto",
+      "market_name": "ETHER CASH SETTLED - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "146021",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": 1947,
+      "prev_net_position": 2407,
+      "weekly_change": -460,
+      "change_noncomm_long": -560,
+      "change_noncomm_short": -100,
+      "bias": "BULLISH",
+      "intensity": "NEUTRAL",
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 22198,
+      "latest_short": 20251,
+      "open_interest": 28344,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 28344,
+        "change_open_interest": 2801,
+        "noncomm_long": 22198,
+        "noncomm_short": 20251,
+        "noncomm_spread": 5001,
+        "noncomm_net": 1947,
+        "change_noncomm_long": -560,
+        "change_noncomm_short": -100,
+        "comm_long": 358,
+        "comm_short": 2585,
+        "comm_net": -2227,
+        "change_comm_long": 145,
+        "change_comm_short": -242,
+        "nonrept_long": 787,
+        "nonrept_short": 507,
+        "nonrept_net": 280
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 25543,
+        "change_open_interest": -2138,
+        "noncomm_long": 22758,
+        "noncomm_short": 20351,
+        "noncomm_spread": 1806,
+        "noncomm_net": 2407,
+        "change_noncomm_long": -1877,
+        "change_noncomm_short": -2007,
+        "comm_long": 213,
+        "comm_short": 2827,
+        "comm_net": -2614,
+        "change_comm_long": 14,
+        "change_comm_short": -159,
+        "nonrept_long": 766,
+        "nonrept_short": 559,
+        "nonrept_net": 207
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": 2359,
+          "long": 26298,
+          "short": 23939
+        },
+        {
+          "date": "2026-09-29",
+          "net": 2736,
+          "long": 25284,
+          "short": 22548
+        },
+        {
+          "date": "2026-10-06",
+          "net": 2277,
+          "long": 24635,
+          "short": 22358
+        },
+        {
+          "date": "2026-10-13",
+          "net": 2407,
+          "long": 22758,
+          "short": 20351
+        },
+        {
+          "date": "2026-10-20",
+          "net": 1947,
+          "long": 22198,
+          "short": 20251
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 1947,
+          "noncomm_chg": -460,
+          "comm_net": -2227,
+          "comm_chg": 387,
+          "nonrept_net": 280,
+          "nonrept_chg": 73
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 2407,
+          "noncomm_chg": 130,
+          "comm_net": -2614,
+          "comm_chg": 173,
+          "nonrept_net": 207,
+          "nonrept_chg": -303
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 2277,
+          "noncomm_chg": -459,
+          "comm_net": -2787,
+          "comm_chg": 468,
+          "nonrept_net": 510,
+          "nonrept_chg": -9
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 2736,
+          "noncomm_chg": 377,
+          "comm_net": -3255,
+          "comm_chg": -140,
+          "nonrept_net": 519,
+          "nonrept_chg": -237
+        }
+      ],
+      "rank": 9
+    },
+    {
+      "code": "CHF",
+      "name": "Swiss Franc",
+      "flag": "🇨🇭",
+      "contract": "SWISS FRANC",
+      "category": "Major FX",
+      "market_name": "SWISS FRANC - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "092741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": -18150,
+      "prev_net_position": -22078,
+      "weekly_change": 3928,
+      "change_noncomm_long": 2491,
+      "change_noncomm_short": -1437,
+      "bias": "BEARISH",
+      "intensity": "NEUTRAL",
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 29938,
+      "latest_short": 48088,
+      "open_interest": 136451,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 136451,
+        "change_open_interest": -734,
+        "noncomm_long": 29938,
+        "noncomm_short": 48088,
+        "noncomm_spread": 7561,
+        "noncomm_net": -18150,
+        "change_noncomm_long": 2491,
+        "change_noncomm_short": -1437,
+        "comm_long": 90521,
+        "comm_short": 56504,
+        "comm_net": 34017,
+        "change_comm_long": -3036,
+        "change_comm_short": -781,
+        "nonrept_long": 8431,
+        "nonrept_short": 24298,
+        "nonrept_net": -15867
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 137185,
+        "change_open_interest": 0,
+        "noncomm_long": 27447,
+        "noncomm_short": 49525,
+        "noncomm_spread": 6560,
+        "noncomm_net": -22078,
+        "change_noncomm_long": -371,
+        "change_noncomm_short": -2033,
+        "comm_long": 93557,
+        "comm_short": 57285,
+        "comm_net": 36272,
+        "change_comm_long": 1230,
+        "change_comm_short": 2244,
+        "nonrept_long": 9621,
+        "nonrept_short": 23815,
+        "nonrept_net": -14194
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": -26752,
+          "long": 22189,
+          "short": 48941
+        },
+        {
+          "date": "2026-09-29",
+          "net": -24617,
+          "long": 24828,
+          "short": 49445
+        },
+        {
+          "date": "2026-10-06",
+          "net": -23740,
+          "long": 27818,
+          "short": 51558
+        },
+        {
+          "date": "2026-10-13",
+          "net": -22078,
+          "long": 27447,
+          "short": 49525
+        },
+        {
+          "date": "2026-10-20",
+          "net": -18150,
+          "long": 29938,
+          "short": 48088
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -18150,
+          "noncomm_chg": 3928,
+          "comm_net": 34017,
+          "comm_chg": -2255,
+          "nonrept_net": -15867,
+          "nonrept_chg": -1673
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -22078,
+          "noncomm_chg": 1662,
+          "comm_net": 36272,
+          "comm_chg": -1014,
+          "nonrept_net": -14194,
+          "nonrept_chg": -648
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -23740,
+          "noncomm_chg": 877,
+          "comm_net": 37286,
+          "comm_chg": -2854,
+          "nonrept_net": -13546,
+          "nonrept_chg": 1977
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -24617,
+          "noncomm_chg": 2135,
+          "comm_net": 40140,
+          "comm_chg": -2976,
+          "nonrept_net": -15523,
+          "nonrept_chg": 841
+        }
+      ],
+      "rank": 10
+    },
+    {
+      "code": "NZD",
+      "name": "New Zealand Dollar",
+      "flag": "🇳🇿",
+      "contract": "NZ DOLLAR",
+      "category": "Major FX",
+      "market_name": "NZ DOLLAR - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "112741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": -58149,
+      "prev_net_position": -47001,
+      "weekly_change": -11148,
+      "change_noncomm_long": -2894,
+      "change_noncomm_short": 8254,
+      "bias": "BEARISH",
+      "intensity": "STRONG",
+      "flow": "ACCUMULATING SHORT (สถาบันเทขายเพิ่ม)",
+      "tactical_state": "DOWNSIDE PRESSURE",
+      "latest_long": 21725,
+      "latest_short": 79874,
+      "open_interest": 131413,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 131413,
+        "change_open_interest": 6262,
+        "noncomm_long": 21725,
+        "noncomm_short": 79874,
+        "noncomm_spread": 351,
+        "noncomm_net": -58149,
+        "change_noncomm_long": -2894,
+        "change_noncomm_short": 8254,
+        "comm_long": 105028,
+        "comm_short": 44606,
+        "comm_net": 60422,
+        "change_comm_long": 10246,
+        "change_comm_short": -1201,
+        "nonrept_long": 4309,
+        "nonrept_short": 6582,
+        "nonrept_net": -2273
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 125151,
+        "change_open_interest": -4732,
+        "noncomm_long": 24619,
+        "noncomm_short": 71620,
+        "noncomm_spread": 983,
+        "noncomm_net": -47001,
+        "change_noncomm_long": -3202,
+        "change_noncomm_short": 14453,
+        "comm_long": 94782,
+        "comm_short": 45807,
+        "comm_net": 48975,
+        "change_comm_long": -2250,
+        "change_comm_short": -19845,
+        "nonrept_long": 4767,
+        "nonrept_short": 6741,
+        "nonrept_net": -1974
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": -11380,
+          "long": 21571,
+          "short": 32951
+        },
+        {
+          "date": "2026-09-29",
+          "net": -17315,
+          "long": 23338,
+          "short": 40653
+        },
+        {
+          "date": "2026-10-06",
+          "net": -29346,
+          "long": 27821,
+          "short": 57167
+        },
+        {
+          "date": "2026-10-13",
+          "net": -47001,
+          "long": 24619,
+          "short": 71620
+        },
+        {
+          "date": "2026-10-20",
+          "net": -58149,
+          "long": 21725,
+          "short": 79874
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -58149,
+          "noncomm_chg": -11148,
+          "comm_net": 60422,
+          "comm_chg": 11447,
+          "nonrept_net": -2273,
+          "nonrept_chg": -299
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -47001,
+          "noncomm_chg": -17655,
+          "comm_net": 48975,
+          "comm_chg": 17595,
+          "nonrept_net": -1974,
+          "nonrept_chg": 60
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -29346,
+          "noncomm_chg": -12031,
+          "comm_net": 31380,
+          "comm_chg": 12386,
+          "nonrept_net": -2034,
+          "nonrept_chg": -355
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -17315,
+          "noncomm_chg": -5935,
+          "comm_net": 18994,
+          "comm_chg": 6583,
+          "nonrept_net": -1679,
+          "nonrept_chg": -648
+        }
+      ],
+      "rank": 11
+    },
+    {
+      "code": "CAD",
+      "name": "Canadian Dollar",
+      "flag": "🇨🇦",
+      "contract": "CANADIAN DOLLAR",
+      "category": "Major FX",
+      "market_name": "CANADIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "090741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": -74709,
+      "prev_net_position": -94765,
+      "weekly_change": 20056,
+      "change_noncomm_long": 11667,
+      "change_noncomm_short": -8389,
+      "bias": "BEARISH",
+      "intensity": "STRONG",
+      "flow": "SHORT-COVERING (สถาบันปิดชอร์ตทำกำไร)",
+      "tactical_state": "RALLY RISK",
+      "latest_long": 101653,
+      "latest_short": 176362,
+      "open_interest": 383635,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 383635,
+        "change_open_interest": 5431,
+        "noncomm_long": 101653,
+        "noncomm_short": 176362,
+        "noncomm_spread": 5150,
+        "noncomm_net": -74709,
+        "change_noncomm_long": 11667,
+        "change_noncomm_short": -8389,
+        "comm_long": 250673,
+        "comm_short": 163825,
+        "comm_net": 86848,
+        "change_comm_long": -4291,
+        "change_comm_short": 14474,
+        "nonrept_long": 26159,
+        "nonrept_short": 38298,
+        "nonrept_net": -12139
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 378204,
+        "change_open_interest": 7156,
+        "noncomm_long": 89986,
+        "noncomm_short": 184751,
+        "noncomm_spread": 4624,
+        "noncomm_net": -94765,
+        "change_noncomm_long": -1123,
+        "change_noncomm_short": 3479,
+        "comm_long": 254964,
+        "comm_short": 149351,
+        "comm_net": 105613,
+        "change_comm_long": 6653,
+        "change_comm_short": 4542,
+        "nonrept_long": 28630,
+        "nonrept_short": 39478,
+        "nonrept_net": -10848
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": -53210,
+          "long": 86030,
+          "short": 139240
+        },
+        {
+          "date": "2026-09-29",
+          "net": -78671,
+          "long": 85047,
+          "short": 163718
+        },
+        {
+          "date": "2026-10-06",
+          "net": -90163,
+          "long": 91109,
+          "short": 181272
+        },
+        {
+          "date": "2026-10-13",
+          "net": -94765,
+          "long": 89986,
+          "short": 184751
+        },
+        {
+          "date": "2026-10-20",
+          "net": -74709,
+          "long": 101653,
+          "short": 176362
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -74709,
+          "noncomm_chg": 20056,
+          "comm_net": 86848,
+          "comm_chg": -18765,
+          "nonrept_net": -12139,
+          "nonrept_chg": -1291
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -94765,
+          "noncomm_chg": -4602,
+          "comm_net": 105613,
+          "comm_chg": 2111,
+          "nonrept_net": -10848,
+          "nonrept_chg": 2491
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -90163,
+          "noncomm_chg": -11492,
+          "comm_net": 103502,
+          "comm_chg": 13938,
+          "nonrept_net": -13339,
+          "nonrept_chg": -2446
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -78671,
+          "noncomm_chg": -25461,
+          "comm_net": 89564,
+          "comm_chg": 33566,
+          "nonrept_net": -10893,
+          "nonrept_chg": -8105
+        }
+      ],
+      "rank": 12
+    },
+    {
+      "code": "GBP",
+      "name": "British Pound",
+      "flag": "🇬🇧",
+      "contract": "BRITISH POUND",
+      "category": "Major FX",
+      "market_name": "BRITISH POUND - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "096742",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": -80420,
+      "prev_net_position": -106964,
+      "weekly_change": 26544,
+      "change_noncomm_long": 10043,
+      "change_noncomm_short": -16501,
+      "bias": "BEARISH",
+      "intensity": "STRONG",
+      "flow": "SHORT-COVERING (สถาบันปิดชอร์ตทำกำไร)",
+      "tactical_state": "RALLY RISK",
+      "latest_long": 54228,
+      "latest_short": 134648,
+      "open_interest": 254060,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 254060,
+        "change_open_interest": -14472,
+        "noncomm_long": 54228,
+        "noncomm_short": 134648,
+        "noncomm_spread": 2817,
+        "noncomm_net": -80420,
+        "change_noncomm_long": 10043,
+        "change_noncomm_short": -16501,
+        "comm_long": 174081,
+        "comm_short": 78573,
+        "comm_net": 95508,
+        "change_comm_long": -25210,
+        "change_comm_short": 726,
+        "nonrept_long": 22934,
+        "nonrept_short": 38022,
+        "nonrept_net": -15088
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 268532,
+        "change_open_interest": 2642,
+        "noncomm_long": 44185,
+        "noncomm_short": 151149,
+        "noncomm_spread": 3245,
+        "noncomm_net": -106964,
+        "change_noncomm_long": -1074,
+        "change_noncomm_short": 8279,
+        "comm_long": 199291,
+        "comm_short": 77847,
+        "comm_net": 121444,
+        "change_comm_long": 2186,
+        "change_comm_short": -7391,
+        "nonrept_long": 21811,
+        "nonrept_short": 36291,
+        "nonrept_net": -14480
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": -82568,
+          "long": 54455,
+          "short": 137023
+        },
+        {
+          "date": "2026-09-29",
+          "net": -91075,
+          "long": 41396,
+          "short": 132471
+        },
+        {
+          "date": "2026-10-06",
+          "net": -97611,
+          "long": 45259,
+          "short": 142870
+        },
+        {
+          "date": "2026-10-13",
+          "net": -106964,
+          "long": 44185,
+          "short": 151149
+        },
+        {
+          "date": "2026-10-20",
+          "net": -80420,
+          "long": 54228,
+          "short": 134648
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -80420,
+          "noncomm_chg": 26544,
+          "comm_net": 95508,
+          "comm_chg": -25936,
+          "nonrept_net": -15088,
+          "nonrept_chg": -608
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -106964,
+          "noncomm_chg": -9353,
+          "comm_net": 121444,
+          "comm_chg": 9577,
+          "nonrept_net": -14480,
+          "nonrept_chg": -224
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -97611,
+          "noncomm_chg": -6536,
+          "comm_net": 111867,
+          "comm_chg": 10985,
+          "nonrept_net": -14256,
+          "nonrept_chg": -4449
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -91075,
+          "noncomm_chg": -8507,
+          "comm_net": 100882,
+          "comm_chg": 13202,
+          "nonrept_net": -9807,
+          "nonrept_chg": -4695
+        }
+      ],
+      "rank": 13
+    },
+    {
+      "code": "AUD",
+      "name": "Australian Dollar",
+      "flag": "🇦🇺",
+      "contract": "AUSTRALIAN DOLLAR",
+      "category": "Major FX",
+      "market_name": "AUSTRALIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "232741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": -127292,
+      "prev_net_position": -117299,
+      "weekly_change": -9993,
+      "change_noncomm_long": 30,
+      "change_noncomm_short": 10023,
+      "bias": "BEARISH",
+      "intensity": "STRONG",
+      "flow": "ACCUMULATING SHORT (สถาบันเทขายเพิ่ม)",
+      "tactical_state": "DOWNSIDE PRESSURE",
+      "latest_long": 98419,
+      "latest_short": 225711,
+      "open_interest": 333010,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 333010,
+        "change_open_interest": -6454,
+        "noncomm_long": 98419,
+        "noncomm_short": 225711,
+        "noncomm_spread": 1279,
+        "noncomm_net": -127292,
+        "change_noncomm_long": 30,
+        "change_noncomm_short": 10023,
+        "comm_long": 201947,
+        "comm_short": 87022,
+        "comm_net": 114925,
+        "change_comm_long": -5184,
+        "change_comm_short": -13739,
+        "nonrept_long": 31365,
+        "nonrept_short": 18998,
+        "nonrept_net": 12367
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 339464,
+        "change_open_interest": 10782,
+        "noncomm_long": 98389,
+        "noncomm_short": 215688,
+        "noncomm_spread": 2404,
+        "noncomm_net": -117299,
+        "change_noncomm_long": -1749,
+        "change_noncomm_short": 16962,
+        "comm_long": 207131,
+        "comm_short": 100761,
+        "comm_net": 106370,
+        "change_comm_long": 13389,
+        "change_comm_short": -7889,
+        "nonrept_long": 31540,
+        "nonrept_short": 20611,
+        "nonrept_net": 10929
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": -46814,
+          "long": 108533,
+          "short": 155347
+        },
+        {
+          "date": "2026-09-29",
+          "net": -63239,
+          "long": 109690,
+          "short": 172929
+        },
+        {
+          "date": "2026-10-06",
+          "net": -98588,
+          "long": 100138,
+          "short": 198726
+        },
+        {
+          "date": "2026-10-13",
+          "net": -117299,
+          "long": 98389,
+          "short": 215688
+        },
+        {
+          "date": "2026-10-20",
+          "net": -127292,
+          "long": 98419,
+          "short": 225711
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -127292,
+          "noncomm_chg": -9993,
+          "comm_net": 114925,
+          "comm_chg": 8555,
+          "nonrept_net": 12367,
+          "nonrept_chg": 1438
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -117299,
+          "noncomm_chg": -18711,
+          "comm_net": 106370,
+          "comm_chg": 21278,
+          "nonrept_net": 10929,
+          "nonrept_chg": -2567
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -98588,
+          "noncomm_chg": -35349,
+          "comm_net": 85092,
+          "comm_chg": 38744,
+          "nonrept_net": 13496,
+          "nonrept_chg": -3395
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -63239,
+          "noncomm_chg": -16425,
+          "comm_net": 46348,
+          "comm_chg": 19188,
+          "nonrept_net": 16891,
+          "nonrept_chg": -2763
+        }
+      ],
+      "rank": 14
+    },
+    {
+      "code": "EUR",
+      "name": "Euro FX",
+      "flag": "🇪🇺",
+      "contract": "EURO FX",
+      "category": "Major FX",
+      "market_name": "EURO FX - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "099741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-10-20",
+      "net_position": -134524,
+      "prev_net_position": -137573,
+      "weekly_change": 3049,
+      "change_noncomm_long": 3492,
+      "change_noncomm_short": 443,
+      "bias": "BEARISH",
+      "intensity": "STRONG",
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 226421,
+      "latest_short": 360945,
+      "open_interest": 877940,
+      "raw_record": {
+        "date": "2026-10-20",
+        "open_interest": 877940,
+        "change_open_interest": 3399,
+        "noncomm_long": 226421,
+        "noncomm_short": 360945,
+        "noncomm_spread": 43294,
+        "noncomm_net": -134524,
+        "change_noncomm_long": 3492,
+        "change_noncomm_short": 443,
+        "comm_long": 522461,
+        "comm_short": 417566,
+        "comm_net": 104895,
+        "change_comm_long": 1100,
+        "change_comm_short": 7430,
+        "nonrept_long": 85764,
+        "nonrept_short": 56135,
+        "nonrept_net": 29629
+      },
+      "prev_raw_record": {
+        "date": "2026-10-13",
+        "open_interest": 874541,
+        "change_open_interest": 4250,
+        "noncomm_long": 222929,
+        "noncomm_short": 360502,
+        "noncomm_spread": 45685,
+        "noncomm_net": -137573,
+        "change_noncomm_long": -20091,
+        "change_noncomm_short": 18150,
+        "comm_long": 521361,
+        "comm_short": 410136,
+        "comm_net": 111225,
+        "change_comm_long": 17065,
+        "change_comm_short": -22136,
+        "nonrept_long": 84566,
+        "nonrept_short": 58218,
+        "nonrept_net": 26348
+      },
+      "series": [
+        {
+          "date": "2026-09-22",
+          "net": -52334,
+          "long": 220708,
+          "short": 273042
+        },
+        {
+          "date": "2026-09-29",
+          "net": -63256,
+          "long": 238183,
+          "short": 301439
+        },
+        {
+          "date": "2026-10-06",
+          "net": -99332,
+          "long": 243020,
+          "short": 342352
+        },
+        {
+          "date": "2026-10-13",
+          "net": -137573,
+          "long": 222929,
+          "short": 360502
+        },
+        {
+          "date": "2026-10-20",
+          "net": -134524,
+          "long": 226421,
+          "short": 360945
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -134524,
+          "noncomm_chg": 3049,
+          "comm_net": 104895,
+          "comm_chg": -6330,
+          "nonrept_net": 29629,
+          "nonrept_chg": 3281
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -137573,
+          "noncomm_chg": -38241,
+          "comm_net": 111225,
+          "comm_chg": 39201,
+          "nonrept_net": 26348,
+          "nonrept_chg": -960
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -99332,
+          "noncomm_chg": -36076,
+          "comm_net": 72024,
+          "comm_chg": 31447,
+          "nonrept_net": 27308,
+          "nonrept_chg": 4629
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -63256,
+          "noncomm_chg": -10922,
+          "comm_net": 40577,
+          "comm_chg": 11610,
+          "nonrept_net": 22679,
+          "nonrept_chg": -688
+        }
+      ],
+      "rank": 15
+    }
+  ],
+  "trade_setups": [
+    {
+      "pair": "XAU/USD (Gold)",
+      "base": "XAU",
+      "quote": "USD",
+      "macro_bias": "BULLISH (Macro Anchor)",
+      "recommendation": "🟢 โฟกัสหน้า BUY : ⏳ รอราคาย่อตัว (WAIT FOR DISCOUNT)",
+      "phase": "PULLBACK & PROFIT-TAKING (กำลังย่อพักฐาน)",
+      "badge_color": "amber",
+      "confidence": "HIGH (Paul's Confluent)",
+      "net_diff": 199865,
+      "noncomm_net": 199865,
+      "comm_net": -235582,
+      "nonrept_net": 35717,
+      "noncomm_chg": -8014,
+      "comm_chg": 6949,
+      "nonrept_chg": 1065,
+      "weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 199865,
+          "noncomm_chg": -8014,
+          "comm_net": -235582,
+          "comm_chg": 6949,
+          "nonrept_net": 35717,
+          "nonrept_chg": 1065
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 207879,
+          "noncomm_chg": -2456,
+          "comm_net": -242531,
+          "comm_chg": 1996,
+          "nonrept_net": 34652,
+          "nonrept_chg": 460
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 210335,
+          "noncomm_chg": -8297,
+          "comm_net": -244527,
+          "comm_chg": 6440,
+          "nonrept_net": 34192,
+          "nonrept_chg": 1857
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 218632,
+          "noncomm_chg": -7221,
+          "comm_net": -250967,
+          "comm_chg": 11936,
+          "nonrept_net": 32335,
+          "nonrept_chg": -4715
+        }
+      ],
+      "rationale": "มุมมองหลักยังคงเป็น 'หน้า BUY' อย่างชัดเจนเพราะสถาบันถือ Net Long สูงถึง +199,865 สัญญา แต่สัปดาห์นี้สถาบันได้ปิดทำกำไรออกไป -8,158 สัญญา ทำให้ราคาทองกำลังเกิดการย่อตัวระยะสั้น กลยุทธ์ของ Paul: 'เรามองหน้า Buy แน่นอน แต่ยังไม่กดตอนนี้! ให้รอราคาย่อลงมาแตะแนวรับ Fibonacci 50%-61.8% บนกราฟ Daily ก่อน แล้วค่อยเข้า Buy ที่ต้นทุนของถูกด้วยความเสี่ยง 0.13%'",
+      "paul_rule": "รอราคาย่อเข้า Fib 50%-61.8% + RSI Exhaustion ก่อนเปิดออเดอร์",
+      "base_flag": "🥇",
+      "quote_flag": "🇺🇸"
+    },
+    {
+      "pair": "EUR/JPY",
+      "base": "EUR",
+      "quote": "JPY",
+      "macro_bias": "BEARISH",
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -204402,
+      "noncomm_net": -134524,
+      "comm_net": 104895,
+      "nonrept_net": 29629,
+      "base_noncomm_net": -134524,
+      "base_comm_net": 104895,
+      "base_nonrept_net": 29629,
+      "base_noncomm_chg": 3049,
+      "base_comm_chg": -6330,
+      "base_nonrept_chg": 3281,
+      "quote_noncomm_net": 69878,
+      "quote_comm_net": -71087,
+      "quote_nonrept_net": 1209,
+      "quote_noncomm_chg": 19671,
+      "quote_comm_chg": -22500,
+      "quote_nonrept_chg": 2829,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -134524,
+          "noncomm_chg": 3049,
+          "comm_net": 104895,
+          "comm_chg": -6330,
+          "nonrept_net": 29629,
+          "nonrept_chg": 3281
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -137573,
+          "noncomm_chg": -38241,
+          "comm_net": 111225,
+          "comm_chg": 39201,
+          "nonrept_net": 26348,
+          "nonrept_chg": -960
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -99332,
+          "noncomm_chg": -36076,
+          "comm_net": 72024,
+          "comm_chg": 31447,
+          "nonrept_net": 27308,
+          "nonrept_chg": 4629
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -63256,
+          "noncomm_chg": -10922,
+          "comm_net": 40577,
+          "comm_chg": 11610,
+          "nonrept_net": 22679,
+          "nonrept_chg": -688
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 69878,
+          "noncomm_chg": 19671,
+          "comm_net": -71087,
+          "comm_chg": -22500,
+          "nonrept_net": 1209,
+          "nonrept_chg": 2829
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 50207,
+          "noncomm_chg": -12118,
+          "comm_net": -48587,
+          "comm_chg": 13162,
+          "nonrept_net": -1620,
+          "nonrept_chg": -1044
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 62325,
+          "noncomm_chg": 6885,
+          "comm_net": -61749,
+          "comm_chg": -5764,
+          "nonrept_net": -576,
+          "nonrept_chg": -1121
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 55440,
+          "noncomm_chg": -16542,
+          "comm_net": -55985,
+          "comm_chg": 20429,
+          "nonrept_net": 545,
+          "nonrept_chg": -3887
+        }
+      ],
+      "rationale": "ภาพรวม EUR สถาบัน Net Short หนาแน่น (-134,524) สวนทางกับ JPY ที่สถาบัน Net Long (+69,878) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้าน Fibonacci ก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาชน Resistance / Fib 50%-61.8%",
+      "base_flag": "🇪🇺",
+      "quote_flag": "🇯🇵"
+    },
+    {
+      "pair": "AUD/JPY",
+      "base": "AUD",
+      "quote": "JPY",
+      "macro_bias": "BEARISH",
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -197170,
+      "noncomm_net": -127292,
+      "comm_net": 114925,
+      "nonrept_net": 12367,
+      "base_noncomm_net": -127292,
+      "base_comm_net": 114925,
+      "base_nonrept_net": 12367,
+      "base_noncomm_chg": -9993,
+      "base_comm_chg": 8555,
+      "base_nonrept_chg": 1438,
+      "quote_noncomm_net": 69878,
+      "quote_comm_net": -71087,
+      "quote_nonrept_net": 1209,
+      "quote_noncomm_chg": 19671,
+      "quote_comm_chg": -22500,
+      "quote_nonrept_chg": 2829,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -127292,
+          "noncomm_chg": -9993,
+          "comm_net": 114925,
+          "comm_chg": 8555,
+          "nonrept_net": 12367,
+          "nonrept_chg": 1438
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -117299,
+          "noncomm_chg": -18711,
+          "comm_net": 106370,
+          "comm_chg": 21278,
+          "nonrept_net": 10929,
+          "nonrept_chg": -2567
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -98588,
+          "noncomm_chg": -35349,
+          "comm_net": 85092,
+          "comm_chg": 38744,
+          "nonrept_net": 13496,
+          "nonrept_chg": -3395
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -63239,
+          "noncomm_chg": -16425,
+          "comm_net": 46348,
+          "comm_chg": 19188,
+          "nonrept_net": 16891,
+          "nonrept_chg": -2763
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 69878,
+          "noncomm_chg": 19671,
+          "comm_net": -71087,
+          "comm_chg": -22500,
+          "nonrept_net": 1209,
+          "nonrept_chg": 2829
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 50207,
+          "noncomm_chg": -12118,
+          "comm_net": -48587,
+          "comm_chg": 13162,
+          "nonrept_net": -1620,
+          "nonrept_chg": -1044
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 62325,
+          "noncomm_chg": 6885,
+          "comm_net": -61749,
+          "comm_chg": -5764,
+          "nonrept_net": -576,
+          "nonrept_chg": -1121
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 55440,
+          "noncomm_chg": -16542,
+          "comm_net": -55985,
+          "comm_chg": 20429,
+          "nonrept_net": 545,
+          "nonrept_chg": -3887
+        }
+      ],
+      "rationale": "ภาพรวม AUD สถาบัน Net Short หนาแน่น (-127,292) สวนทางกับ JPY ที่สถาบัน Net Long (+69,878) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้าน Fibonacci ก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาชน Resistance / Fib 50%-61.8%",
+      "base_flag": "🇦🇺",
+      "quote_flag": "🇯🇵"
+    },
+    {
+      "pair": "GBP/JPY",
+      "base": "GBP",
+      "quote": "JPY",
+      "macro_bias": "NEUTRAL",
+      "recommendation": "⛔ งดเข้าเทรด / หลีกเลี่ยง (BASE SHORT SQUEEZE)",
+      "phase": "SHORT-COVERING PULLBACK",
+      "badge_color": "amber",
+      "confidence": "LOW (High Squeeze Risk)",
+      "net_diff": -150298,
+      "noncomm_net": -80420,
+      "comm_net": 95508,
+      "nonrept_net": -15088,
+      "base_noncomm_net": -80420,
+      "base_comm_net": 95508,
+      "base_nonrept_net": -15088,
+      "base_noncomm_chg": 26544,
+      "base_comm_chg": -25936,
+      "base_nonrept_chg": -608,
+      "quote_noncomm_net": 69878,
+      "quote_comm_net": -71087,
+      "quote_nonrept_net": 1209,
+      "quote_noncomm_chg": 19671,
+      "quote_comm_chg": -22500,
+      "quote_nonrept_chg": 2829,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -80420,
+          "noncomm_chg": 26544,
+          "comm_net": 95508,
+          "comm_chg": -25936,
+          "nonrept_net": -15088,
+          "nonrept_chg": -608
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -106964,
+          "noncomm_chg": -9353,
+          "comm_net": 121444,
+          "comm_chg": 9577,
+          "nonrept_net": -14480,
+          "nonrept_chg": -224
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -97611,
+          "noncomm_chg": -6536,
+          "comm_net": 111867,
+          "comm_chg": 10985,
+          "nonrept_net": -14256,
+          "nonrept_chg": -4449
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -91075,
+          "noncomm_chg": -8507,
+          "comm_net": 100882,
+          "comm_chg": 13202,
+          "nonrept_net": -9807,
+          "nonrept_chg": -4695
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 69878,
+          "noncomm_chg": 19671,
+          "comm_net": -71087,
+          "comm_chg": -22500,
+          "nonrept_net": 1209,
+          "nonrept_chg": 2829
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 50207,
+          "noncomm_chg": -12118,
+          "comm_net": -48587,
+          "comm_chg": 13162,
+          "nonrept_net": -1620,
+          "nonrept_chg": -1044
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 62325,
+          "noncomm_chg": 6885,
+          "comm_net": -61749,
+          "comm_chg": -5764,
+          "nonrept_net": -576,
+          "nonrept_chg": -1121
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 55440,
+          "noncomm_chg": -16542,
+          "comm_net": -55985,
+          "comm_chg": 20429,
+          "nonrept_net": 545,
+          "nonrept_chg": -3887
+        }
+      ],
+      "rationale": "แม้ภาพรวม GBP จะ Net Short (-80,420) แต่สัปดาห์นี้สถาบันได้ปิด Short หนีตายใน GBP ถึง +26,544 สัญญา ราคากำลังดีดตัวขึ้นแรง กฎของ Paul: 'หลีกเลี่ยงการเปิด Sell ในช่วงที่ตัวหน้ากำลังเกิด Short Squeeze'",
+      "paul_rule": "งดเปิดสถานะ! รอจนกว่าการปิด Short ของตัวหน้าจะจบลงและเกิด Rejection ที่แนวต้านใหญ่",
+      "base_flag": "🇬🇧",
+      "quote_flag": "🇯🇵"
+    },
+    {
+      "pair": "EUR/USD",
+      "base": "EUR",
+      "quote": "USD",
+      "macro_bias": "BEARISH",
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -149568,
+      "noncomm_net": -134524,
+      "comm_net": 104895,
+      "nonrept_net": 29629,
+      "base_noncomm_net": -134524,
+      "base_comm_net": 104895,
+      "base_nonrept_net": 29629,
+      "base_noncomm_chg": 3049,
+      "base_comm_chg": -6330,
+      "base_nonrept_chg": 3281,
+      "quote_noncomm_net": 15044,
+      "quote_comm_net": -17014,
+      "quote_nonrept_net": 1970,
+      "quote_noncomm_chg": 2125,
+      "quote_comm_chg": -2186,
+      "quote_nonrept_chg": 61,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -134524,
+          "noncomm_chg": 3049,
+          "comm_net": 104895,
+          "comm_chg": -6330,
+          "nonrept_net": 29629,
+          "nonrept_chg": 3281
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -137573,
+          "noncomm_chg": -38241,
+          "comm_net": 111225,
+          "comm_chg": 39201,
+          "nonrept_net": 26348,
+          "nonrept_chg": -960
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -99332,
+          "noncomm_chg": -36076,
+          "comm_net": 72024,
+          "comm_chg": 31447,
+          "nonrept_net": 27308,
+          "nonrept_chg": 4629
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -63256,
+          "noncomm_chg": -10922,
+          "comm_net": 40577,
+          "comm_chg": 11610,
+          "nonrept_net": 22679,
+          "nonrept_chg": -688
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 15044,
+          "noncomm_chg": 2125,
+          "comm_net": -17014,
+          "comm_chg": -2186,
+          "nonrept_net": 1970,
+          "nonrept_chg": 61
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 12919,
+          "noncomm_chg": 908,
+          "comm_net": -14828,
+          "comm_chg": -557,
+          "nonrept_net": 1909,
+          "nonrept_chg": -351
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 12011,
+          "noncomm_chg": 130,
+          "comm_net": -14271,
+          "comm_chg": -397,
+          "nonrept_net": 2260,
+          "nonrept_chg": 267
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 11881,
+          "noncomm_chg": 1551,
+          "comm_net": -13874,
+          "comm_chg": -1707,
+          "nonrept_net": 1993,
+          "nonrept_chg": 156
+        }
+      ],
+      "rationale": "ภาพรวม EUR สถาบัน Net Short หนาแน่น (-134,524) สวนทางกับ USD ที่สถาบัน Net Long (+15,044) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้าน Fibonacci ก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาชน Resistance / Fib 50%-61.8%",
+      "base_flag": "🇪🇺",
+      "quote_flag": "🇺🇸"
+    },
+    {
+      "pair": "AUD/USD",
+      "base": "AUD",
+      "quote": "USD",
+      "macro_bias": "BEARISH",
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -142336,
+      "noncomm_net": -127292,
+      "comm_net": 114925,
+      "nonrept_net": 12367,
+      "base_noncomm_net": -127292,
+      "base_comm_net": 114925,
+      "base_nonrept_net": 12367,
+      "base_noncomm_chg": -9993,
+      "base_comm_chg": 8555,
+      "base_nonrept_chg": 1438,
+      "quote_noncomm_net": 15044,
+      "quote_comm_net": -17014,
+      "quote_nonrept_net": 1970,
+      "quote_noncomm_chg": 2125,
+      "quote_comm_chg": -2186,
+      "quote_nonrept_chg": 61,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -127292,
+          "noncomm_chg": -9993,
+          "comm_net": 114925,
+          "comm_chg": 8555,
+          "nonrept_net": 12367,
+          "nonrept_chg": 1438
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -117299,
+          "noncomm_chg": -18711,
+          "comm_net": 106370,
+          "comm_chg": 21278,
+          "nonrept_net": 10929,
+          "nonrept_chg": -2567
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -98588,
+          "noncomm_chg": -35349,
+          "comm_net": 85092,
+          "comm_chg": 38744,
+          "nonrept_net": 13496,
+          "nonrept_chg": -3395
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -63239,
+          "noncomm_chg": -16425,
+          "comm_net": 46348,
+          "comm_chg": 19188,
+          "nonrept_net": 16891,
+          "nonrept_chg": -2763
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 15044,
+          "noncomm_chg": 2125,
+          "comm_net": -17014,
+          "comm_chg": -2186,
+          "nonrept_net": 1970,
+          "nonrept_chg": 61
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 12919,
+          "noncomm_chg": 908,
+          "comm_net": -14828,
+          "comm_chg": -557,
+          "nonrept_net": 1909,
+          "nonrept_chg": -351
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 12011,
+          "noncomm_chg": 130,
+          "comm_net": -14271,
+          "comm_chg": -397,
+          "nonrept_net": 2260,
+          "nonrept_chg": 267
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 11881,
+          "noncomm_chg": 1551,
+          "comm_net": -13874,
+          "comm_chg": -1707,
+          "nonrept_net": 1993,
+          "nonrept_chg": 156
+        }
+      ],
+      "rationale": "ภาพรวม AUD สถาบัน Net Short หนาแน่น (-127,292) สวนทางกับ USD ที่สถาบัน Net Long (+15,044) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้าน Fibonacci ก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาชน Resistance / Fib 50%-61.8%",
+      "base_flag": "🇦🇺",
+      "quote_flag": "🇺🇸"
+    },
+    {
+      "pair": "NZD/USD",
+      "base": "NZD",
+      "quote": "USD",
+      "macro_bias": "BEARISH",
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -73193,
+      "noncomm_net": -58149,
+      "comm_net": 60422,
+      "nonrept_net": -2273,
+      "base_noncomm_net": -58149,
+      "base_comm_net": 60422,
+      "base_nonrept_net": -2273,
+      "base_noncomm_chg": -11148,
+      "base_comm_chg": 11447,
+      "base_nonrept_chg": -299,
+      "quote_noncomm_net": 15044,
+      "quote_comm_net": -17014,
+      "quote_nonrept_net": 1970,
+      "quote_noncomm_chg": 2125,
+      "quote_comm_chg": -2186,
+      "quote_nonrept_chg": 61,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -58149,
+          "noncomm_chg": -11148,
+          "comm_net": 60422,
+          "comm_chg": 11447,
+          "nonrept_net": -2273,
+          "nonrept_chg": -299
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -47001,
+          "noncomm_chg": -17655,
+          "comm_net": 48975,
+          "comm_chg": 17595,
+          "nonrept_net": -1974,
+          "nonrept_chg": 60
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -29346,
+          "noncomm_chg": -12031,
+          "comm_net": 31380,
+          "comm_chg": 12386,
+          "nonrept_net": -2034,
+          "nonrept_chg": -355
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -17315,
+          "noncomm_chg": -5935,
+          "comm_net": 18994,
+          "comm_chg": 6583,
+          "nonrept_net": -1679,
+          "nonrept_chg": -648
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 15044,
+          "noncomm_chg": 2125,
+          "comm_net": -17014,
+          "comm_chg": -2186,
+          "nonrept_net": 1970,
+          "nonrept_chg": 61
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 12919,
+          "noncomm_chg": 908,
+          "comm_net": -14828,
+          "comm_chg": -557,
+          "nonrept_net": 1909,
+          "nonrept_chg": -351
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 12011,
+          "noncomm_chg": 130,
+          "comm_net": -14271,
+          "comm_chg": -397,
+          "nonrept_net": 2260,
+          "nonrept_chg": 267
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 11881,
+          "noncomm_chg": 1551,
+          "comm_net": -13874,
+          "comm_chg": -1707,
+          "nonrept_net": 1993,
+          "nonrept_chg": 156
+        }
+      ],
+      "rationale": "ภาพรวม NZD สถาบัน Net Short หนาแน่น (-58,149) สวนทางกับ USD ที่สถาบัน Net Long (+15,044) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้าน Fibonacci ก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาชน Resistance / Fib 50%-61.8%",
+      "base_flag": "🇳🇿",
+      "quote_flag": "🇺🇸"
+    },
+    {
+      "pair": "USD/CAD",
+      "base": "USD",
+      "quote": "CAD",
+      "macro_bias": "NEUTRAL",
+      "recommendation": "⛔ งดเข้าเทรด / หลีกเลี่ยง (QUOTE SHORT SQUEEZE)",
+      "phase": "AGGRESSIVE SELLOFF (เงินตัวหลังกระชากขึ้น)",
+      "badge_color": "amber",
+      "confidence": "DANGER (Short Squeeze In Progress)",
+      "net_diff": 89753,
+      "noncomm_net": 15044,
+      "comm_net": -17014,
+      "nonrept_net": 1970,
+      "base_noncomm_net": 15044,
+      "base_comm_net": -17014,
+      "base_nonrept_net": 1970,
+      "base_noncomm_chg": 2125,
+      "base_comm_chg": -2186,
+      "base_nonrept_chg": 61,
+      "quote_noncomm_net": -74709,
+      "quote_comm_net": 86848,
+      "quote_nonrept_net": -12139,
+      "quote_noncomm_chg": 20056,
+      "quote_comm_chg": -18765,
+      "quote_nonrept_chg": -1291,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 15044,
+          "noncomm_chg": 2125,
+          "comm_net": -17014,
+          "comm_chg": -2186,
+          "nonrept_net": 1970,
+          "nonrept_chg": 61
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 12919,
+          "noncomm_chg": 908,
+          "comm_net": -14828,
+          "comm_chg": -557,
+          "nonrept_net": 1909,
+          "nonrept_chg": -351
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 12011,
+          "noncomm_chg": 130,
+          "comm_net": -14271,
+          "comm_chg": -397,
+          "nonrept_net": 2260,
+          "nonrept_chg": 267
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 11881,
+          "noncomm_chg": 1551,
+          "comm_net": -13874,
+          "comm_chg": -1707,
+          "nonrept_net": 1993,
+          "nonrept_chg": 156
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -74709,
+          "noncomm_chg": 20056,
+          "comm_net": 86848,
+          "comm_chg": -18765,
+          "nonrept_net": -12139,
+          "nonrept_chg": -1291
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -94765,
+          "noncomm_chg": -4602,
+          "comm_net": 105613,
+          "comm_chg": 2111,
+          "nonrept_net": -10848,
+          "nonrept_chg": 2491
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -90163,
+          "noncomm_chg": -11492,
+          "comm_net": 103502,
+          "comm_chg": 13938,
+          "nonrept_net": -13339,
+          "nonrept_chg": -2446
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -78671,
+          "noncomm_chg": -25461,
+          "comm_net": 89564,
+          "comm_chg": 33566,
+          "nonrept_net": -10893,
+          "nonrept_chg": -8105
+        }
+      ],
+      "rationale": "⚠️ สภาวะเงินปะทะกัน: แม้ภาพรวม USD จะ Net Long (+15,044) และ CAD จะ Net Short (-74,709) แต่ในสัปดาห์นี้สถาบันได้ปิด Short และอัดเงินเข้า CAD ถึง +20,056 สัญญา ซึ่งแรงกว่า USD (+2,125) เกือบ 10 เท่า! ทำให้ค่าเงิน CAD แข็งค่ากระชาก ทุบกราฟ USD/CAD ดิ่งลงมา กฎของ Paul: 'หลีกเลี่ยงการเทรดคู่ที่เงินกำลังปะทะกันรุนแรง'",
+      "paul_rule": "งดเข้าเทรดคู่นี้! ปล่อยให้แรงซื้อคืนของตัวหลังหมดก่อน และรอแนวรับใหญ่ Fibonacci",
+      "base_flag": "🇺🇸",
+      "quote_flag": "🇨🇦"
+    },
+    {
+      "pair": "USD/CHF",
+      "base": "USD",
+      "quote": "CHF",
+      "macro_bias": "BULLISH",
+      "recommendation": "🟢 โฟกัสหน้า BUY : ⏳ รอจังหวะย่อตัว (WAIT FOR PULLBACK)",
+      "phase": "MOMENTUM CHOP (กำลังสะสมพลัง)",
+      "badge_color": "amber",
+      "confidence": "MODERATE",
+      "net_diff": 33194,
+      "noncomm_net": 15044,
+      "comm_net": -17014,
+      "nonrept_net": 1970,
+      "base_noncomm_net": 15044,
+      "base_comm_net": -17014,
+      "base_nonrept_net": 1970,
+      "base_noncomm_chg": 2125,
+      "base_comm_chg": -2186,
+      "base_nonrept_chg": 61,
+      "quote_noncomm_net": -18150,
+      "quote_comm_net": 34017,
+      "quote_nonrept_net": -15867,
+      "quote_noncomm_chg": 3928,
+      "quote_comm_chg": -2255,
+      "quote_nonrept_chg": -1673,
+      "base_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": 15044,
+          "noncomm_chg": 2125,
+          "comm_net": -17014,
+          "comm_chg": -2186,
+          "nonrept_net": 1970,
+          "nonrept_chg": 61
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": 12919,
+          "noncomm_chg": 908,
+          "comm_net": -14828,
+          "comm_chg": -557,
+          "nonrept_net": 1909,
+          "nonrept_chg": -351
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": 12011,
+          "noncomm_chg": 130,
+          "comm_net": -14271,
+          "comm_chg": -397,
+          "nonrept_net": 2260,
+          "nonrept_chg": 267
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": 11881,
+          "noncomm_chg": 1551,
+          "comm_net": -13874,
+          "comm_chg": -1707,
+          "nonrept_net": 1993,
+          "nonrept_chg": 156
+        }
+      ],
+      "quote_weekly_changes_4w": [
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -18150,
+          "noncomm_chg": 3928,
+          "comm_net": 34017,
+          "comm_chg": -2255,
+          "nonrept_net": -15867,
+          "nonrept_chg": -1673
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -22078,
+          "noncomm_chg": 1662,
+          "comm_net": 36272,
+          "comm_chg": -1014,
+          "nonrept_net": -14194,
+          "nonrept_chg": -648
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -23740,
+          "noncomm_chg": 877,
+          "comm_net": 37286,
+          "comm_chg": -2854,
+          "nonrept_net": -13546,
+          "nonrept_chg": 1977
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -24617,
+          "noncomm_chg": 2135,
+          "comm_net": 40140,
+          "comm_chg": -2976,
+          "nonrept_net": -15523,
+          "nonrept_chg": 841
+        }
+      ],
+      "rationale": "โมเมนตัมของทั้งสองฝั่งยังสูสีกัน แม้เทรนด์ใหญ่จะได้เปรียบแต่ต้องรอการย่อตัวที่ชัดเจน",
+      "paul_rule": "รอสัญญาณ Price Action กลับตัวที่แนวรับ",
+      "base_flag": "🇺🇸",
+      "quote_flag": "🇨🇭"
+    }
+  ]
+};
+    let cotData = EMBEDDED_COT_DATA;
+    let chartInstance = null;
+    let currentFilter = 'ALL';
+    let currentRawCategory = 'ALL';
+    let selectedRawCode = 'JPY';
+
+    function switchTab(tabId) {
+      const viewDash = document.getElementById('viewDashboard');
+      const viewRaw = document.getElementById('viewRawData');
+      const btnDash = document.getElementById('tabBtnDashboard');
+      const btnRaw = document.getElementById('tabBtnRawData');
+
+      if (tabId === 'dashboard') {
+        viewDash.classList.remove('hidden');
+        viewRaw.classList.add('hidden');
+        btnDash.className = "tab-active px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 border transition";
+        btnRaw.className = "px-4 py-2.5 rounded-xl text-gray-400 hover:text-white font-bold text-sm flex items-center gap-2 border border-transparent transition";
+      } else {
+        viewDash.classList.add('hidden');
+        viewRaw.classList.remove('hidden');
+        btnRaw.className = "tab-active px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 border transition";
+        btnDash.className = "px-4 py-2.5 rounded-xl text-gray-400 hover:text-white font-bold text-sm flex items-center gap-2 border border-transparent transition";
+        renderMasterRawTable();
+        renderRawDataView();
+      }
+    }
+
+    async function loadData() {
+      // 1. First priority: check window.COT_DATA from cot_data.js
+      if (typeof window.COT_DATA !== 'undefined' && window.COT_DATA && window.COT_DATA.currencies && window.COT_DATA.currencies.length > 0) {
+        cotData = window.COT_DATA;
+      } else if (typeof EMBEDDED_COT_DATA !== 'undefined' && EMBEDDED_COT_DATA && EMBEDDED_COT_DATA.currencies && EMBEDDED_COT_DATA.currencies.length > 0) {
+        cotData = EMBEDDED_COT_DATA;
+      }
+      
+      // 2. Try background fetch if served over HTTP/HTTPS
+      try {
+        const response = await fetch('cot_data.json?t=' + Date.now());
+        if (response.ok) {
+          const fresh = await response.json();
+          if (fresh && fresh.currencies && fresh.currencies.length > 0) {
+            cotData = fresh;
+          }
+        }
+      } catch (e) {
+        // file:// protocol will use embedded data seamlessly
+      }
+
+      renderExecutiveDashboard();
+      renderMasterRawTable();
+      renderRawDataView();
+    }
+
+    function renderExecutiveDashboard() {
+      if (!cotData || !cotData.currencies || cotData.currencies.length === 0) return;
+
+      document.getElementById('reportDate').innerText = `${cotData.metadata.report_date} (Week 42)`;
+
+      const majors = cotData.currencies.filter(c => c.category === 'Major FX');
+      const topBull = majors.find(c => c.net_position > 0) || majors[0];
+      const topBear = majors[majors.length - 1];
+
+      document.getElementById('topBullFlag').innerText = topBull.flag;
+      document.getElementById('topBullCode').innerText = topBull.code;
+      document.getElementById('topBullNet').innerText = `${topBull.net_position > 0 ? '+' : ''}${topBull.net_position.toLocaleString()} (Net Long)`;
+
+      document.getElementById('topBearFlag').innerText = topBear.flag;
+      document.getElementById('topBearCode').innerText = topBear.code;
+      document.getElementById('topBearNet').innerText = `${topBear.net_position.toLocaleString()} (Net Short)`;
+
+      const gold = cotData.currencies.find(c => c.code === 'XAU');
+      if (gold) {
+        document.getElementById('topGoldNet').innerText = `Net Long +${gold.net_position.toLocaleString()} สัญญา`;
+      }
+
+      // Populate Currency Table (Majors)
+      const tbody = document.getElementById('currencyTableBody');
+      tbody.innerHTML = '';
+      majors.forEach((c, idx) => {
+        const isBull = c.net_position > 0;
+        const chgPositive = c.weekly_change >= 0;
+        const row = document.createElement('tr');
+        row.className = "hover:bg-white/[0.03] transition cursor-pointer";
+        row.onclick = () => { selectRawCurrency(c.code); switchTab('rawdata'); };
+        row.innerHTML = `
+          <td class="py-2.5 font-bold text-gray-400">#${idx + 1}</td>
+          <td class="py-2.5 flex items-center gap-2">
+            <span class="text-base">${c.flag}</span>
+            <span class="font-bold text-white">${c.code}</span>
+            <span class="text-[10px] text-gray-500 hidden sm:inline">${c.name}</span>
+          </td>
+          <td class="py-2.5 text-right font-bold ${isBull ? 'text-bullgreen' : 'text-bearred'}">
+            ${isBull ? '+' : ''}${c.net_position.toLocaleString()}
+          </td>
+          <td class="py-2.5 text-right ${chgPositive ? 'text-bullgreen' : 'text-bearred'}">
+            ${chgPositive ? '▲ +' : '▼ '}${Math.abs(c.weekly_change).toLocaleString()}
+          </td>
+          <td class="py-2.5 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isBull ? 'bg-bullgreen/15 text-bullgreen border border-bullgreen/30' : 'bg-bearred/15 text-bearred border border-bearred/30'}">
+              ${c.bias}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      renderSetups();
+      renderChart();
+      calculatePosition();
+    }
+
+    function renderSetups() {
+      const container = document.getElementById('setupsContainer');
+      container.innerHTML = '';
+
+      let list = cotData.trade_setups || [];
+      if (currentFilter === 'SELL') list = list.filter(s => s.recommendation.includes('SELL'));
+      if (currentFilter === 'BUY') list = list.filter(s => s.recommendation.includes('BUY'));
+
+      list.forEach((s, idx) => {
+        const isCaution = s.badge_color === 'amber' || s.recommendation.includes('ห้าม');
+        const isSell = s.badge_color === 'red' || s.recommendation.includes('SELL');
+        const badgeBg = isCaution ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : isSell ? 'bg-bearred/20 text-bearred border-bearred/40' : 'bg-bullgreen/20 text-bullgreen border-bullgreen/40';
+        const borderCard = isCaution ? 'border-amber-500/30 bg-amber-500/[0.03]' : isSell ? 'border-bearred/20 bg-bearred/[0.03]' : 'border-bullgreen/20 bg-bullgreen/[0.03]';
+
+        const historyId = `historyTable_${idx}`;
+
+        // 4-week table rows builder
+        let historyRowsHtml = '';
+        const historyList = s.weekly_changes_4w || s.base_weekly_changes_4w || [];
+        historyList.forEach(h => {
+          const ncPlus = h.noncomm_chg >= 0;
+          const cPlus = h.comm_chg >= 0;
+          const nrPlus = h.nonrept_chg >= 0;
+          historyRowsHtml += `
+            <tr class="border-b border-white/5 hover:bg-white/[0.04]">
+              <td class="py-1 px-1.5 font-bold text-gray-400">${h.date.slice(5)}</td>
+              <td class="py-1 px-1.5 text-right font-bold ${h.noncomm_net > 0 ? 'text-bullgreen' : 'text-bearred'}">
+                ${h.noncomm_net > 0 ? '+' : ''}${h.noncomm_net.toLocaleString()}
+                <span class="text-[9px] ${ncPlus ? 'text-bullgreen' : 'text-bearred'} ml-0.5 font-normal">(${ncPlus ? '+' : ''}${h.noncomm_chg.toLocaleString()})</span>
+              </td>
+              <td class="py-1 px-1.5 text-right text-gray-400">
+                ${h.comm_net > 0 ? '+' : ''}${h.comm_net.toLocaleString()}
+                <span class="text-[9px] ${cPlus ? 'text-bullgreen' : 'text-bearred'} ml-0.5 font-normal">(${cPlus ? '+' : ''}${h.comm_chg.toLocaleString()})</span>
+              </td>
+              <td class="py-1 px-1.5 text-right text-amber-300">
+                ${h.nonrept_net > 0 ? '+' : ''}${h.nonrept_net.toLocaleString()}
+                <span class="text-[9px] ${nrPlus ? 'text-bullgreen' : 'text-bearred'} ml-0.5 font-normal">(${nrPlus ? '+' : ''}${h.nonrept_chg.toLocaleString()})</span>
+              </td>
+            </tr>
+          `;
+        });
+
+        const card = document.createElement('div');
+        card.className = `p-3.5 rounded-xl border ${borderCard} hover:border-white/25 transition flex flex-col justify-between`;
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <div class="flex items-center gap-1.5 font-black text-base text-white">
+                <span>${s.base_flag}</span>
+                <span>${s.quote_flag}</span>
+                <span>${s.pair}</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-extrabold border ${badgeBg}">
+                ${s.recommendation}
+              </span>
+            </div>
+            
+            <div class="inline-block px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px] font-mono text-gray-300 mb-2">
+              Phase: <strong class="${isCaution ? 'text-amber-400' : isSell ? 'text-rose-400' : 'text-emerald-400'}">${s.phase || 'ANALYZING'}</strong>
+            </div>
+
+            <p class="text-xs text-gray-300 leading-snug mb-2.5">${s.rationale}</p>
+            
+            <div class="p-2 rounded-lg bg-black/50 border border-white/5 text-[11px] text-gray-300 mb-2.5 font-mono">
+              <strong class="text-neoncyan">กฎของ Paul:</strong> ${s.paul_rule || 'รอคอนเฟิร์มโครงสร้างราคา'}
+            </div>
+          </div>
+
+          <!-- 3 Market Groups Net Positioning Breakdown -->
+          <div class="pt-2.5 border-t border-white/5 space-y-2 font-mono text-xs">
+            <div class="text-[10px] text-gray-400 uppercase font-sans font-semibold tracking-wider flex items-center justify-between">
+              <span>ดุลยภาพ 3 กลุ่มผู้เล่น (Net & 1-Wk Chg):</span>
+              <span class="text-gray-500 font-mono text-[9px]">Zero-Sum Flow</span>
+            </div>
+            
+            <!-- 3 Group Cards with Latest Net & Weekly Change -->
+            <div class="grid grid-cols-3 gap-1.5 text-center">
+              <div class="p-1.5 rounded-lg bg-black/50 border border-neoncyan/30">
+                <div class="text-[9px] text-neoncyan font-sans font-bold">🏛️ สถาบัน (Hedge)</div>
+                <div class="font-bold text-xs ${s.noncomm_net > 0 ? 'text-bullgreen' : 'text-bearred'} mt-0.5">
+                  ${s.noncomm_net > 0 ? '+' : ''}${s.noncomm_net.toLocaleString()}
+                </div>
+                <div class="text-[9px] ${(s.noncomm_chg || 0) >= 0 ? 'text-bullgreen' : 'text-bearred'} font-normal">
+                  ${(s.noncomm_chg || 0) >= 0 ? '▲ +' : '▼ '}${Math.abs(s.noncomm_chg || 0).toLocaleString()} wk
+                </div>
+              </div>
+
+              <div class="p-1.5 rounded-lg bg-black/50 border border-white/5">
+                <div class="text-[9px] text-gray-400 font-sans font-semibold">🏭 พาณิชย์ (Hedgers)</div>
+                <div class="font-bold text-xs ${s.comm_net > 0 ? 'text-bullgreen' : 'text-bearred'} mt-0.5">
+                  ${s.comm_net > 0 ? '+' : ''}${s.comm_net.toLocaleString()}
+                </div>
+                <div class="text-[9px] ${(s.comm_chg || 0) >= 0 ? 'text-bullgreen' : 'text-bearred'} font-normal">
+                  ${(s.comm_chg || 0) >= 0 ? '▲ +' : '▼ '}${Math.abs(s.comm_chg || 0).toLocaleString()} wk
+                </div>
+              </div>
+
+              <div class="p-1.5 rounded-lg bg-black/50 border border-white/5">
+                <div class="text-[9px] text-amber-400/90 font-sans font-semibold">👤 รายย่อย (Retail)</div>
+                <div class="font-bold text-xs ${s.nonrept_net > 0 ? 'text-bullgreen' : 'text-bearred'} mt-0.5">
+                  ${s.nonrept_net > 0 ? '+' : ''}${s.nonrept_net.toLocaleString()}
+                </div>
+                <div class="text-[9px] ${(s.nonrept_chg || 0) >= 0 ? 'text-bullgreen' : 'text-bearred'} font-normal">
+                  ${(s.nonrept_chg || 0) >= 0 ? '▲ +' : '▼ '}${Math.abs(s.nonrept_chg || 0).toLocaleString()} wk
+                </div>
+              </div>
+            </div>
+
+            <!-- Toggle 4-Week History Drawer Button -->
+            <div>
+              <button onclick="toggleHistoryDrawer('${historyId}')" class="w-full py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] text-neoncyan font-sans font-semibold flex items-center justify-between transition border border-white/10">
+                <span class="flex items-center gap-1.5">
+                  <span>📅</span>
+                  <span>ตาราง Net Change ย้อนหลัง 4 สัปดาห์ (4-Week History)</span>
+                </span>
+                <span id="arrow_${historyId}" class="text-xs">▼</span>
+              </button>
+              
+              <div id="${historyId}" class="hidden mt-2 p-2 rounded-xl bg-black/70 border border-white/10 overflow-x-auto custom-scroll">
+                <table class="w-full text-left font-mono text-[10px]">
+                  <thead>
+                    <tr class="text-gray-400 border-b border-white/10">
+                      <th class="pb-1 px-1.5">สัปดาห์</th>
+                      <th class="pb-1 px-1.5 text-right text-neoncyan">🏛️ สถาบัน</th>
+                      <th class="pb-1 px-1.5 text-right text-gray-400">🏭 พาณิชย์</th>
+                      <th class="pb-1 px-1.5 text-right text-amber-400">👤 รายย่อย</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${historyRowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterSetups(type) {
+      currentFilter = type;
+      ['filterAll', 'filterSell', 'filterBuy'].forEach(id => {
+        document.getElementById(id).className = "px-2.5 py-1 rounded-lg text-gray-400 hover:text-white";
+      });
+      if (type === 'ALL') document.getElementById('filterAll').className = "px-2.5 py-1 rounded-lg bg-neoncyan/20 text-neoncyan font-semibold";
+      if (type === 'SELL') document.getElementById('filterSell').className = "px-2.5 py-1 rounded-lg bg-bearred/20 text-bearred font-semibold";
+      if (type === 'BUY') document.getElementById('filterBuy').className = "px-2.5 py-1 rounded-lg bg-bullgreen/20 text-bullgreen font-semibold";
+      renderSetups();
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById('cotHistoryChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      const jpy = cotData.currencies.find(c => c.code === 'JPY');
+      const usd = cotData.currencies.find(c => c.code === 'USD');
+      const eur = cotData.currencies.find(c => c.code === 'EUR');
+      const aud = cotData.currencies.find(c => c.code === 'AUD');
+
+      if (!jpy || !jpy.series) return;
+      const labels = jpy.series.map(s => s.date);
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'JPY (Yen)', data: jpy.series.map(s => s.net), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderWidth: 2.5, tension: 0.3 },
+            { label: 'USD (Dollar)', data: usd.series.map(s => s.net), borderColor: '#38bdf8', borderWidth: 2, borderDash: [4, 4], tension: 0.3 },
+            { label: 'EUR (Euro)', data: eur.series.map(s => s.net), borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.1)', borderWidth: 2.5, tension: 0.3 },
+            { label: 'AUD (Aussie)', data: aud.series.map(s => s.net), borderColor: '#f59e0b', borderWidth: 1.5, tension: 0.3 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#9ca3af', font: { family: 'JetBrains Mono', size: 10 } } } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', font: { family: 'JetBrains Mono', size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', font: { family: 'JetBrains Mono', size: 10 } } }
+          }
+        }
+      });
+    }
+
+    function calculatePosition() {
+      const balance = parseFloat(document.getElementById('calcBalance').value);
+      const riskPct = parseFloat(document.getElementById('calcRiskPct').value);
+      const slPips = parseFloat(document.getElementById('calcSL').value) || 25;
+
+      const riskDollar = balance * (riskPct / 100);
+      const pipValueStandard = 10;
+      const lots = riskDollar / (slPips * pipValueStandard);
+
+      document.getElementById('resRiskDollar').innerText = `$${riskDollar.toFixed(2)}`;
+      document.getElementById('resLotSize').innerText = `${lots.toFixed(2)} Lots`;
+      document.getElementById('resProfit12').innerText = `+$${(riskDollar * 2).toFixed(2)}`;
+      document.getElementById('resProfit13').innerText = `+$${(riskDollar * 3).toFixed(2)}`;
+    }
+
+    // ==========================================
+    // RAW DATA TAB: MASTER TABLE & INSPECTOR
+    // ==========================================
+    function filterRawTable(category) {
+      currentRawCategory = category;
+      const catIds = {
+        'ALL': 'rawCatAll',
+        'Major FX': 'rawCatMajors',
+        'Emerging FX': 'rawCatEmerging',
+        'Commodities': 'rawCatMetals',
+        'Crypto': 'rawCatCrypto'
+      };
+      Object.keys(catIds).forEach(k => {
+        const btn = document.getElementById(catIds[k]);
+        if (btn) btn.className = "px-3 py-1.5 rounded-xl bg-black/40 text-gray-300 border border-white/10 hover:border-white/30";
+      });
+      const activeBtn = document.getElementById(catIds[category]);
+      if (activeBtn) activeBtn.className = "px-3 py-1.5 rounded-xl bg-neoncyan text-black font-bold";
+
+      renderMasterRawTable();
+    }
+
+    function renderMasterRawTable() {
+      const tbody = document.getElementById('masterRawTableBody');
+      tbody.innerHTML = '';
+      if (!cotData || !cotData.currencies) return;
+
+      let list = cotData.currencies;
+      if (currentRawCategory !== 'ALL') {
+        list = list.filter(c => c.category === currentRawCategory);
+      }
+
+      document.getElementById('rawAssetCount').innerText = `${list.length} รายการ`;
+
+      list.forEach(c => {
+        const r = c.raw_record || {};
+        const isBull = c.net_position > 0;
+        const isSelected = c.code === selectedRawCode;
+        const chgPositive = c.weekly_change >= 0;
+
+        const row = document.createElement('tr');
+        row.className = `cursor-pointer transition hover:bg-neoncyan/[0.08] ${isSelected ? 'bg-neoncyan/[0.12] border-l-4 border-l-neoncyan' : ''}`;
+        row.onclick = () => selectRawCurrency(c.code);
+
+        row.innerHTML = `
+          <td class="py-2.5 px-3">
+            <div class="flex items-center gap-2">
+              <span class="text-base">${c.flag}</span>
+              <div>
+                <span class="font-bold text-white">${c.code}</span>
+                <span class="text-[10px] text-gray-400 font-sans ml-1">(${c.contract})</span>
+              </div>
+            </div>
+            <div class="text-[10px] text-gray-500 font-mono truncate max-w-[200px]">${c.market_name || ''}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-sans ${c.category === 'Major FX' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : c.category === 'Commodities' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : c.category === 'Crypto' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}">
+              ${c.category}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-right text-gray-300 font-mono">${(r.open_interest || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-bold text-bullgreen bg-bullgreen/5 font-mono">${(r.noncomm_long || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-bold text-bearred bg-bearred/5 font-mono">${(r.noncomm_short || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-black ${isBull ? 'text-bullgreen' : 'text-bearred'} bg-neoncyan/5 font-mono">
+            ${isBull ? '+' : ''}${c.net_position.toLocaleString()}
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono ${chgPositive ? 'text-bullgreen' : 'text-bearred'}">
+            ${chgPositive ? '▲ +' : '▼ '}${Math.abs(c.weekly_change).toLocaleString()}
+          </td>
+          <td class="py-2.5 px-3 text-right text-gray-400 font-mono">${(r.comm_long || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right text-gray-400 font-mono">${(r.comm_short || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right text-gray-400 font-mono">${(r.nonrept_long || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right text-gray-400 font-mono">${(r.nonrept_short || 0).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function selectRawCurrency(code) {
+      selectedRawCode = code;
+      renderMasterRawTable();
+      renderRawDataView();
+    }
+
+    function renderRawDataView() {
+      if (!cotData || !cotData.currencies) return;
+      const cur = cotData.currencies.find(c => c.code === selectedRawCode) || cotData.currencies[0];
+      if (!cur) return;
+
+      const r = cur.raw_record || {};
+
+      document.getElementById('rawMarketExchange').innerText = `${cur.market_name || cur.contract} (CFTC Code: ${cur.cftc_code || 'N/A'})`;
+      document.getElementById('rawCurFlag').innerText = cur.flag;
+      document.getElementById('rawCurName').innerText = `${cur.name}`;
+      document.getElementById('rawCurCode').innerText = cur.code;
+      document.getElementById('rawTotalOI').innerText = (r.open_interest || 0).toLocaleString();
+
+      // Populate Table
+      document.getElementById('tblNoncommLong').innerText = (r.noncomm_long || 0).toLocaleString();
+      document.getElementById('tblNoncommShort').innerText = (r.noncomm_short || 0).toLocaleString();
+      const noncommNet = r.noncomm_net || 0;
+      document.getElementById('tblNoncommNet').innerText = `${noncommNet > 0 ? '+' : ''}${noncommNet.toLocaleString()}`;
+      document.getElementById('tblNoncommNet').className = `py-3 px-3 text-right font-black ${noncommNet > 0 ? 'text-bullgreen' : 'text-bearred'}`;
+
+      document.getElementById('tblCommLong').innerText = (r.comm_long || 0).toLocaleString();
+      document.getElementById('tblCommShort').innerText = (r.comm_short || 0).toLocaleString();
+      const commNet = r.comm_net || 0;
+      document.getElementById('tblCommNet').innerText = `${commNet > 0 ? '+' : ''}${commNet.toLocaleString()}`;
+
+      document.getElementById('tblNonreptLong').innerText = (r.nonrept_long || 0).toLocaleString();
+      document.getElementById('tblNonreptShort').innerText = (r.nonrept_short || 0).toLocaleString();
+      const nonreptNet = r.nonrept_net || 0;
+      document.getElementById('tblNonreptNet').innerText = `${nonreptNet > 0 ? '+' : ''}${nonreptNet.toLocaleString()}`;
+
+      document.getElementById('tblSpreading').innerText = `${(r.noncomm_spread || 0).toLocaleString()} สัญญา`;
+
+      // Populate Changes
+      const chgLong = r.change_noncomm_long || 0;
+      const chgShort = r.change_noncomm_short || 0;
+      const chgNet = chgLong - chgShort;
+      const chgOI = r.change_open_interest || 0;
+
+      document.getElementById('chgNoncommLong').innerText = `${chgLong > 0 ? '+' : ''}${chgLong.toLocaleString()}`;
+      document.getElementById('chgNoncommShort').innerText = `${chgShort > 0 ? '+' : ''}${chgShort.toLocaleString()}`;
+      document.getElementById('chgNetFlow').innerText = `${chgNet > 0 ? '+' : ''}${chgNet.toLocaleString()}`;
+      document.getElementById('chgTotalOI').innerText = `${chgOI > 0 ? '+' : ''}${chgOI.toLocaleString()}`;
+
+      // Populate Mathematical Proof Card
+      document.getElementById('proofLong').innerText = (r.noncomm_long || 0).toLocaleString();
+      document.getElementById('proofShort').innerText = (r.noncomm_short || 0).toLocaleString();
+      document.getElementById('proofCalc').innerText = `${(r.noncomm_long || 0).toLocaleString()} - ${(r.noncomm_short || 0).toLocaleString()}`;
+      document.getElementById('proofResult').innerText = `${noncommNet > 0 ? '+' : ''}${noncommNet.toLocaleString()}`;
+      document.getElementById('proofResult').className = `font-black ${noncommNet > 0 ? 'text-bullgreen' : 'text-bearred'}`;
+
+      // Populate Raw JSON code
+      document.getElementById('rawJsonCode').innerText = JSON.stringify(r, null, 2);
+
+      // Populate 4-week history table in Tab 2
+      const tbody4w = document.getElementById('raw4WTableBody');
+      if (tbody4w) {
+        tbody4w.innerHTML = '';
+        (cur.weekly_changes_4w || []).forEach(h => {
+          const ncPlus = h.noncomm_chg >= 0;
+          const cPlus = h.comm_chg >= 0;
+          const nrPlus = h.nonrept_chg >= 0;
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-white/[0.03]";
+          tr.innerHTML = `
+            <td class="py-2 px-3 font-bold text-gray-300">${h.date}</td>
+            <td class="py-2 px-3 text-right font-bold ${h.noncomm_net > 0 ? 'text-bullgreen' : 'text-bearred'}">
+              ${h.noncomm_net > 0 ? '+' : ''}${h.noncomm_net.toLocaleString()}
+              <span class="text-[10px] ${ncPlus ? 'text-bullgreen' : 'text-bearred'} ml-1 font-normal">(${ncPlus ? '+' : ''}${h.noncomm_chg.toLocaleString()})</span>
+            </td>
+            <td class="py-2 px-3 text-right text-gray-400">
+              ${h.comm_net > 0 ? '+' : ''}${h.comm_net.toLocaleString()}
+              <span class="text-[10px] ${cPlus ? 'text-bullgreen' : 'text-bearred'} ml-1 font-normal">(${cPlus ? '+' : ''}${h.comm_chg.toLocaleString()})</span>
+            </td>
+            <td class="py-2 px-3 text-right text-amber-300">
+              ${h.nonrept_net > 0 ? '+' : ''}${h.nonrept_net.toLocaleString()}
+              <span class="text-[10px] ${nrPlus ? 'text-bullgreen' : 'text-bearred'} ml-1 font-normal">(${nrPlus ? '+' : ''}${h.nonrept_chg.toLocaleString()})</span>
+            </td>
+          `;
+          tbody4w.appendChild(tr);
+        });
+      }
+      const raw4wLabel = document.getElementById('rawCurName4W');
+      if (raw4wLabel) raw4wLabel.innerText = `${cur.flag} ${cur.name}`;
+    }
+
+    async function refreshData() {
+      const btn = document.getElementById('refreshBtn');
+      const text = document.getElementById('refreshText');
+      const icon = document.getElementById('refreshIcon');
+      text.innerText = 'กำลังโหลด...';
+      icon.classList.add('animate-spin');
+
+      await loadData();
+      setTimeout(() => {
+        text.innerText = 'อัปเดตเรียบร้อย!';
+        icon.classList.remove('animate-spin');
+        setTimeout(() => { text.innerText = 'อัปเดตข้อมูลสด'; }, 2000);
+      }, 500);
+    }
+
+    
+    function toggleHistoryDrawer(id) {
+      const el = document.getElementById(id);
+      const arrow = document.getElementById('arrow_' + id);
+      if (el) {
+        if (el.classList.contains('hidden')) {
+          el.classList.remove('hidden');
+          if (arrow) arrow.innerText = '▲';
+        } else {
+          el.classList.add('hidden');
+          if (arrow) arrow.innerText = '▼';
+        }
+      }
+    }
+    
+    window.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>

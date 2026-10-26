@@ -762,7 +762,7 @@ def build_full_suite():
             <button onclick="toggleTelegramPanel()" class="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-xs font-extrabold border border-sky-400/50 flex items-center gap-1.5 shadow-md">
                 📲 แจ้งเตือน Telegram ฟรี (ปิดคอมได้ 100%)
             </button>
-            <a href="index.html" class="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 text-xs font-bold border border-amber-500/30">⬅️ หน้า COT หลัก</a>
+            <a href="cot_legacy_report.html" class="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 text-xs font-bold border border-amber-500/30">🏛️ ตารางดิบ CFTC COT (15 สัญญา)</a>
         </div>
 
         <!-- Global Chart Size & Zoom Controls (Works in BOTH Live & Historical Modes!) -->
@@ -894,7 +894,7 @@ def build_full_suite():
                 <div id="liveChartBanner" class="flex flex-wrap justify-between items-center gap-2 pb-2.5 border-b border-slate-800"></div>
 
                 <!-- Main Live H4 Candlestick Canvas -->
-                <div class="relative flex-1 w-full my-1">
+                <div class="relative flex-1 w-full my-1" style="min-height: 380px;">
                     <canvas id="liveCandleCanvas" class="w-full h-full block cursor-crosshair"></canvas>
                 </div>
 
@@ -1011,7 +1011,7 @@ def build_full_suite():
                         <div id="chartBanner" class="flex flex-wrap justify-between items-center gap-2 flex-1"></div>
                         <button id="chartStopBtn" onclick="toggleAutoPlay()" class="hidden px-3 py-1 rounded bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold shadow-lg">⏸ หยุดเล่นทันที</button>
                     </div>
-                    <div class="relative flex-1 w-full my-1">
+                    <div class="relative flex-1 w-full my-1" style="min-height: 380px;">
                         <canvas id="candleCanvas" class="w-full h-full block cursor-crosshair"></canvas>
                     </div>
                     <div class="h-[115px] w-full border-t border-slate-800/90 pt-1 relative">
@@ -1440,14 +1440,13 @@ def build_full_suite():
         function drawLiveCandlesticks(ls) {{
             const canvas = document.getElementById('liveCandleCanvas');
             const rect = canvas.parentElement.getBoundingClientRect();
-            if (rect.width <= 0 || rect.height <= 0) return;
             const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
+            const W = rect.width > 20 ? rect.width : (canvas.parentElement.clientWidth || 850);
+            const H = rect.height > 20 ? rect.height : (canvas.parentElement.clientHeight || 420);
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
-
-            const W = rect.width, H = rect.height;
             ctx.clearRect(0, 0, W, H);
 
             const allC = ls.live_candles || [];
@@ -1572,14 +1571,13 @@ def build_full_suite():
         function drawLiveRSI(ls) {{
             const canvas = document.getElementById('liveRsiCanvas');
             const rect = canvas.parentElement.getBoundingClientRect();
-            if (rect.width <= 0 || rect.height <= 0) return;
             const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
+            const W = rect.width > 20 ? rect.width : (canvas.parentElement.clientWidth || 850);
+            const H = rect.height > 20 ? rect.height : (canvas.parentElement.clientHeight || 115);
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
-
-            const W = rect.width, H = rect.height;
             ctx.clearRect(0, 0, W, H);
             const allC = ls.live_candles || [];
             if (allC.length === 0) return;
@@ -1913,14 +1911,13 @@ def build_full_suite():
         function drawTradeCandlesticks(t) {{
             const canvas = document.getElementById('candleCanvas');
             const rect = canvas.parentElement.getBoundingClientRect();
-            if (rect.width <= 0 || rect.height <= 0) return;
             const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
+            const W = rect.width > 20 ? rect.width : (canvas.parentElement.clientWidth || 850);
+            const H = rect.height > 20 ? rect.height : (canvas.parentElement.clientHeight || 420);
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
-
-            const W = rect.width, H = rect.height;
             ctx.clearRect(0, 0, W, H);
             const allC = t.candles;
             if (!allC || allC.length === 0) return;
@@ -2060,14 +2057,13 @@ def build_full_suite():
         function drawTradeRSI(t) {{
             const canvas = document.getElementById('rsiCanvas');
             const rect = canvas.parentElement.getBoundingClientRect();
-            if (rect.width <= 0 || rect.height <= 0) return;
             const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
+            const W = rect.width > 20 ? rect.width : (canvas.parentElement.clientWidth || 850);
+            const H = rect.height > 20 ? rect.height : (canvas.parentElement.clientHeight || 115);
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
-
-            const W = rect.width, H = rect.height;
             ctx.clearRect(0, 0, W, H);
             const allC = t.candles;
             if (!allC || allC.length === 0) return;
@@ -2362,6 +2358,8 @@ def build_full_suite():
 
         applyPlaylistFilters();
         renderLivePair();
+        setTimeout(() => {{ if (currentMode === 'LIVE') renderLivePair(); }}, 150);
+        setTimeout(() => {{ if (currentMode === 'LIVE') renderLivePair(); }}, 500);
     </script>
 </body>
 </html>"""
@@ -2369,7 +2367,12 @@ def build_full_suite():
     out_html_path = os.path.join(BASE_DIR, 'paul_system_dashboard.html')
     with open(out_html_path, 'w', encoding='utf-8') as f:
         f.write(html_out)
-    print(f"[✓] Exported {out_html_path} (Live Trading Command Center + Resizable Charts + Fixed Auto-Play)!")
+
+    index_html_path = os.path.join(BASE_DIR, 'index.html')
+    with open(index_html_path, 'w', encoding='utf-8') as f:
+        f.write(html_out)
+
+    print(f"[✓] Exported both {out_html_path} and {index_html_path} (Live Trading Command Center + Resizable Charts + Fixed Auto-Play)!")
     return {
         'generated_at': gen_time_str,
         'live_states': live_states,
