@@ -220,11 +220,13 @@ def format_urgent_pair_alert(s, event_type, dashboard_url=''):
     ]
 
     if ot and event_type.startswith('ACTIVE_STAGE_'):
+        e_price = ot.get('entry', ot.get('entry_price', ''))
+        tp2_price = ot.get('tp', ot.get('tp2_price', ''))
         lines.extend([
-            f"⚡ <b>สถานะไม้ที่ถืออยู่ ({ot['dir']}):</b>",
-            f"• ราคาเข้า (Entry): <code>{ot['entry_price']}</code>",
-            f"• กำไรลอยตัวปัจจุบัน: <b>{ot['floating_r']:+}R (${ot['floating_usd']:+,.2f})</b>",
-            f"• <b>สิ่งที่ต้องทำทันที (ด่าน 4):</b> สถานะเข้าสู่ <b>{ot['stage']}</b> -> ตั้ง SL ปัจจุบันไว้ที่ <code>{ot['current_sl']}</code> และ TP2 ที่ <code>{ot['tp2_price']}</code>",
+            f"⚡ <b>สถานะไม้ที่ถืออยู่ ({ot.get('dir', '')}):</b>",
+            f"• ราคาเข้า (Entry): <code>{e_price}</code>",
+            f"• กำไรลอยตัวปัจจุบัน: <b>{ot.get('floating_r', 0):+}R (${ot.get('floating_usd', 0):+,.2f})</b>",
+            f"• <b>สิ่งที่ต้องทำทันที (ด่าน 4):</b> สถานะเข้าสู่ <b>{ot.get('stage', '')}</b> -> ตั้ง SL ปัจจุบันไว้ที่ <code>{ot.get('current_sl', '')}</code> และ TP2 ที่ <code>{tp2_price}</code>",
         ])
     else:
         lines.extend([
@@ -275,8 +277,9 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url=''):
         lines.append(f"{icon} <b>{sym}</b> {g_lights}\n   ↳ {status_txt}")
 
         if ot:
+            e_price = ot.get('entry', ot.get('entry_price', ''))
             lines.append(
-                f"   ⚡ <i>มีออเดอร์ {ot['dir']} ค้างอยู่: เข้า <code>{ot['entry_price']}</code> | P&L <b>{ot['floating_r']:+}R (${ot['floating_usd']:+,.0f})</b> | ด่าน {ot['stage']} (SL <code>{ot['current_sl']}</code>)</i>"
+                f"   ⚡ <i>มีออเดอร์ {ot.get('dir', '')} ค้างอยู่: เข้า <code>{e_price}</code> | P&L <b>{ot.get('floating_r', 0):+}R (${ot.get('floating_usd', 0):+,.0f})</b> | ด่าน {ot.get('stage', '')} (SL <code>{ot.get('current_sl', '')}</code>)</i>"
             )
 
     try:
