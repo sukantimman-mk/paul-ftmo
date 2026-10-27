@@ -294,63 +294,103 @@ def update_forward_demo_ledger(live_states):
             remaining_open_trades.append(tr)
 
     # -------------------------------------------------------------
-    # 2. CHECK FOR NEW ENTRY_NOW SIGNALS
+    # 2. CHECK FOR NEW ENTRY_NOW SIGNALS & SYNC ACTIVE TRADES
     # -------------------------------------------------------------
     existing_open_syms = {t['symbol'] for t in remaining_open_trades}
     for s in live_states:
         sym = s['symbol']
         sig = s['overall_signal']
         tk = s['planned_ticket']
+        ot = s.get('active_open_trade')
 
-        if sig == 'ENTRY_NOW' and sym not in existing_open_syms:
-            new_ticket_id = f"DEMO-{len(closed_trades) + len(remaining_open_trades) + 1001}"
-            new_trade = {
-                'ticket_id': new_ticket_id,
-                'symbol': sym,
-                'name': s.get('name', sym),
-                'dir': tk['dir'],
-                'entry_time': now_iso,
-                'entry': float(tk['entry']),
-                'lots': float(tk['lots_100k']),
-                'sl': float(tk['sl']),
-                'current_sl': float(tk['sl']),
-                'initial_sl': float(tk['sl']),
-                'tp1': float(tk['tp1']),
-                'lock1': float(tk['lock1']),
-                'stage2': float(tk['stage2']),
-                'lock2': float(tk['lock2']),
-                'tp2': float(tk['tp2']),
-                'risk_dist': abs(float(tk['entry']) - float(tk['sl'])),
-                'atr_mult': float(tk.get('atr_mult', 1.0)),
-                'stage': 'OPEN',
-                'units_remaining': 1.0,
-                'current_price': float(s['latest_price']),
-                'floating_r': 0.0,
-                'floating_usd': 0.0
-            }
-            remaining_open_trades.append(new_trade)
-            existing_open_syms.add(sym)
+        if sym not in existing_open_syms:
+            if sig == 'ENTRY_NOW':
+                new_ticket_id = f"DEMO-{len(closed_trades) + len(remaining_open_trades) + 1001}"
+                new_trade = {
+                    'ticket_id': new_ticket_id,
+                    'symbol': sym,
+                    'name': s.get('name', sym),
+                    'dir': tk['dir'],
+                    'entry_time': now_iso,
+                    'entry': float(tk['entry']),
+                    'lots': float(tk['lots_100k']),
+                    'sl': float(tk['sl']),
+                    'current_sl': float(tk['sl']),
+                    'initial_sl': float(tk['sl']),
+                    'tp1': float(tk['tp1']),
+                    'lock1': float(tk['lock1']),
+                    'stage2': float(tk['stage2']),
+                    'lock2': float(tk['lock2']),
+                    'tp2': float(tk['tp2']),
+                    'risk_dist': abs(float(tk['entry']) - float(tk['sl'])),
+                    'atr_mult': float(tk.get('atr_mult', 1.0)),
+                    'stage': 'OPEN',
+                    'units_remaining': 1.0,
+                    'current_price': float(s['latest_price']),
+                    'floating_r': 0.0,
+                    'floating_usd': 0.0
+                }
+                remaining_open_trades.append(new_trade)
+                existing_open_syms.add(sym)
 
-            events.append({
-                'type': 'TRADE_OPENED',
-                'symbol': sym,
-                'direction': tk['dir'],
-                'ticket_id': new_ticket_id,
-                'entry': float(tk['entry']),
-                'lots': float(tk['lots_100k']),
-                'sl': float(tk['sl']),
-                'tp1': float(tk['tp1']),
-                'tp2': float(tk['tp2']),
-                'message': (
-                    f"🟢🚨 <b>[DEMO AUTO-ENTRY] เปิดออเดอร์ใหม่!</b>\n"
-                    f"• <b>คู่เงิน:</b> <b>{sym} ({tk['dir']})</b>\n"
-                    f"• <b>ราคาเข้า (Entry):</b> <code>{tk['entry']}</code> | <b>ขนาด Lot:</b> <code>{tk['lots_100k']} Lots</code>\n"
-                    f"• <b>Stop Loss:</b> <code>{tk['sl']}</code> (-1.0R)\n"
-                    f"• <b>TP 1:</b> <code>{tk['tp1']}</code> (+1.5R ปิด 50%)\n"
-                    f"• <b>TP 2:</b> <code>{tk['tp2']}</code> (+3.5R เป้าหลัก)\n"
-                    f"• <i>ระบบจัดการเลื่อน SL และปิดกำไรอัตโนมัติตามกฎ 1-2-3-4</i>"
-                )
-            })
+                events.append({
+                    'type': 'TRADE_OPENED',
+                    'symbol': sym,
+                    'direction': tk['dir'],
+                    'ticket_id': new_ticket_id,
+                    'entry': float(tk['entry']),
+                    'lots': float(tk['lots_100k']),
+                    'sl': float(tk['sl']),
+                    'tp1': float(tk['tp1']),
+                    'tp2': float(tk['tp2']),
+                    'message': (
+                        f"🟢🚨 <b>[DEMO AUTO-ENTRY] เปิดออเดอร์ใหม่!</b>\n"
+                        f"• <b>คู่เงิน:</b> <b>{sym} ({tk['dir']})</b>\n"
+                        f"• <b>ราคาเข้า (Entry):</b> <code>{tk['entry']}</code> | <b>ขนาด Lot:</b> <code>{tk['lots_100k']} Lots</code>\n"
+                        f"• <b>Stop Loss:</b> <code>{tk['sl']}</code> (-1.0R)\n"
+                        f"• <b>TP 1:</b> <code>{tk['tp1']}</code> (+1.5R ปิด 50%)\n"
+                        f"• <b>TP 2:</b> <code>{tk['tp2']}</code> (+3.5R เป้าหลัก)\n"
+                        f"• <i>ระบบจัดการเลื่อน SL และปิดกำไรอัตโนมัติตามกฎ 1-2-3-4</i>"
+                    )
+                })
+            elif ot:
+                # Synchronize existing active trade from live scanner engine
+                stg_map = {0: 'OPEN', 1: 'STAGE_1', 2: 'STAGE_2'}
+                ot_stage_num = ot.get('stage', 0)
+                ot_stage_str = stg_map.get(ot_stage_num, 'OPEN')
+                new_ticket_id = f"DEMO-{len(closed_trades) + len(remaining_open_trades) + 1001}"
+                r_dist = abs(float(ot['entry']) - float(ot.get('initial_sl', ot['current_sl'])))
+                if r_dist <= 0:
+                    r_dist = abs(float(ot['entry']) - float(ot['current_sl']))
+                if r_dist <= 0:
+                    r_dist = 0.001
+
+                new_trade = {
+                    'ticket_id': new_ticket_id,
+                    'symbol': sym,
+                    'name': s.get('name', sym),
+                    'dir': ot['dir'],
+                    'entry_time': ot.get('entry_time', now_iso),
+                    'entry': float(ot['entry']),
+                    'lots': float(ot.get('lots_100k', tk.get('lots_100k', 1.0))),
+                    'sl': float(ot.get('initial_sl', ot['current_sl'])),
+                    'current_sl': float(ot['current_sl']),
+                    'initial_sl': float(ot.get('initial_sl', ot['current_sl'])),
+                    'tp1': float(ot['tp1']),
+                    'lock1': float(tk.get('lock1', ot['tp1'])),
+                    'stage2': float(ot['stage2']),
+                    'lock2': float(tk.get('lock2', ot['stage2'])),
+                    'tp2': float(ot.get('tp', tk.get('tp2', 0.0))),
+                    'risk_dist': r_dist,
+                    'atr_mult': float(tk.get('atr_mult', 1.0)),
+                    'stage': ot_stage_str,
+                    'units_remaining': 0.5 if ot_stage_num >= 1 else 1.0,
+                    'current_price': float(s['latest_price']),
+                    'floating_r': float(ot.get('floating_r', 0.0)),
+                    'floating_usd': float(ot.get('floating_usd', 0.0))
+                }
+                remaining_open_trades.append(new_trade)
+                existing_open_syms.add(sym)
 
     # -------------------------------------------------------------
     # 3. RECALCULATE OVERALL PORTFOLIO METRICS

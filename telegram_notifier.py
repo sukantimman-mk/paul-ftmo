@@ -284,11 +284,21 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url=''):
 
     try:
         ledger = forward_demo_ledger.load_ledger()
-        pnl = ledger.get('net_profit_usd', 0.0)
-        ret = ledger.get('net_return_pct', 0.0)
-        open_cnt = len(ledger.get('open_trades', []))
+        init_bal = ledger.get('initial_balance', 100000.0)
+        bal = ledger.get('current_balance', 100000.0)
+        equity = ledger.get('current_equity', 100000.0)
+        floating = ledger.get('floating_pnl_usd', 0.0)
+        realized_pnl = round(bal - init_bal, 2)
+        realized_ret = round((realized_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
+        tot_pnl = round(equity - init_bal, 2)
+        tot_ret = round((tot_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
+        open_trades = ledger.get('open_trades', [])
+        open_cnt = len(open_trades)
         lines.append("━━━━━━━━━━━━━━━━━━━━")
-        lines.append(f"💼 <b>พอร์ตจำลอง Forward Demo:</b> <code>${ledger.get('current_balance', 100000.0):,.2f}</code> (P&L <b>{ret:+.2f}% / ${pnl:+,.2f}</b> | ถืออยู่ {open_cnt} ไม้)")
+        lines.append(f"💼 <b>พอร์ตจำลอง Forward Demo ($100k):</b>")
+        lines.append(f"• มูลค่าพอร์ตสุทธิ (Equity): <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / ${tot_pnl:+,.2f}</b>)")
+        lines.append(f"• กำไรลอยตัว (Floating P&L): <b>{floating:+,.2f} USD</b> ({open_cnt} ไม้กำลังวิ่งในตลาด)")
+        lines.append(f"• กำไรที่ปิดจบแล้ว (Realized): <b>{realized_pnl:+,.2f} USD ({realized_ret:+.2f}%)</b>")
     except Exception:
         pass
 

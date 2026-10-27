@@ -58,11 +58,33 @@ for s in live_states:
     if ot:
         e_price = ot.get('entry', ot.get('entry_price', ''))
         lines.append(
-            f"   ⚡ <i>ถือออเดอร์ {ot['dir']} อยู่: เข้า <code>{e_price}</code> | P&L <b>{ot['floating_r']:+}R (${ot['floating_usd']:+,.0f})</b> | ด่าน {ot['stage']} (SL <code>{ot['current_sl']}</code>)</i>"
+            f"   ⚡ <i>ถือออเดอร์ {ot['dir']} อยู่: เข้า <code>{e_price}</code> | P&L <b>{ot['floating_r']:+}R (${ot['floating_usd']:+,.2f})</b> | ด่าน {ot['stage']} (SL <code>{ot['current_sl']}</code>)</i>"
         )
 
+LEDGER_PATH = os.path.join(BASE_DIR, 'forward_demo_ledger.json')
+if os.path.exists(LEDGER_PATH):
+    try:
+        with open(LEDGER_PATH, 'r', encoding='utf-8') as f:
+            led = json.load(f)
+        init_bal = led.get('initial_balance', 100000.0)
+        bal = led.get('current_balance', 100000.0)
+        equity = led.get('current_equity', 100000.0)
+        fl = led.get('floating_pnl_usd', 0.0)
+        realized_pnl = round(bal - init_bal, 2)
+        realized_ret = round((realized_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
+        tot_pnl = round(equity - init_bal, 2)
+        tot_ret = round((tot_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
+        open_cnt = len(led.get('open_trades', []))
+        lines.append("━━━━━━━━━━━━━━━━━━━━")
+        lines.append(f"💼 <b>สรุปพอร์ตจำลอง Forward Demo ($100,000):</b>")
+        lines.append(f"• มูลค่าพอร์ตสุทธิ (Equity): <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / ${tot_pnl:+,.2f}</b>)")
+        lines.append(f"• กำไรลอยตัว (Floating P&L): <b>{fl:+,.2f} USD</b> ({open_cnt} ไม้ถือสู้ราคาอยู่ในตลาด)")
+        lines.append(f"• กำไรที่ปิดแล้ว (Realized): <b>{realized_pnl:+,.2f} USD ({realized_ret:+.2f}%)</b>")
+    except Exception as e:
+        pass
+
 lines.append("━━━━━━━━━━━━━━━━━━━━")
-lines.append(f"🤖 <i>เชื่อมต่อปลอดภัย Chat ID: <code>{CHAT_ID}</code> ระบบจะสแกนและส่งสัญญาณให้ทุกรอบ H4 ครับ!</i>")
+lines.append(f"🤖 <i>เชื่อมต่อปลอดภัย Chat ID: <code>{CHAT_ID}</code> ระบบ Cloud รันอัตโนมัติ 24/5 แม้ปิดคอมครับ!</i>")
 
 msg_text = "\n".join(lines)
 payload = {
