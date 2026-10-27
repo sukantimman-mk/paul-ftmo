@@ -13,7 +13,7 @@
   "risk_per_trade_usd": 750.0,
   "fee_per_trade_r": 0.04,
   "started_at_utc": "2026-10-26T02:26:15.198297+00:00",
-  "last_updated_utc": "2026-10-27T02:14:00.256258+00:00",
+  "last_updated_utc": "2026-10-27T04:28:15.949167+00:00",
   "ftmo_rules": {
     "max_daily_loss_pct": 5.0,
     "max_total_loss_pct": 10.0,
