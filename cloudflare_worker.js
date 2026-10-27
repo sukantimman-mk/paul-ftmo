@@ -4,7 +4,7 @@
  * Allows chatting directly in Telegram: /update, /radar, /scan, /gold, /jpy etc.
  */
 
-const BOT_TOKEN = "8783621696:AAHGYLyU5PWBXByFUvG7i-qpmGMeLNaOXcI";
+const BOT_TOKEN = "";
 const GITHUB_USER = "sukantimman-mk";
 const REPO_NAME = "paul-ftmo";
 

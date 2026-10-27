@@ -5,7 +5,7 @@ import urllib.parse
 import os
 import datetime
 
-BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8783621696:AAHGYLyU5PWBXByFUvG7i-qpmGMeLNaOXcI")
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 GITHUB_USER = "sukantimman-mk"
 REPO_NAME = "paul-ftmo"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")

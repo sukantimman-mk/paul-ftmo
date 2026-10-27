@@ -4,7 +4,7 @@
  * Runs 100% FREE in the cloud while PC is completely turned off.
  */
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "8783621696:AAHGYLyU5PWBXByFUvG7i-qpmGMeLNaOXcI";
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
 const GITHUB_USER = "sukantimman-mk";
 const REPO_NAME = "paul-ftmo";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
