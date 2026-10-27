@@ -1,19 +1,38 @@
+import os
 import json
 import urllib.request
 import urllib.parse
 from datetime import datetime
 
-TOKEN = ""
-CHAT_ID = ""
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(BASE_DIR, 'telegram_config.json')
 
-with open(r'D:\cot_dashboard\forward_live_scanner.json', 'r', encoding='utf-8') as f:
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+if not TOKEN or not CHAT_ID:
+    if os.path.exists(CONFIG_PATH):
+        try:
+            with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+                cfg = json.load(f)
+                TOKEN = cfg.get('bot_token', '')
+                CHAT_ID = cfg.get('chat_id', '')
+        except Exception as e:
+            print("Config read error:", e)
+
+if not TOKEN or not CHAT_ID:
+    print("[ERROR] No Telegram Token or Chat ID found in environment or telegram_config.json")
+    exit(1)
+
+SCANNER_PATH = os.path.join(BASE_DIR, 'forward_live_scanner.json')
+with open(SCANNER_PATH, 'r', encoding='utf-8') as f:
     live_states = json.load(f)
 
 now_str = datetime.now().strftime('%Y-%m-%d %H:%M น.')
 lines = [
-    "🎉 <b>[ผูกบัญชีถาวรสำเร็จ 100%!] สวัสดีคุณ Superman (@my_paul_FTMO_bot)</b>",
+    "🎉 <b>[ผูกบัญชีถาวรสำเร็จ 100%!] Paul FTMO Radar (@my_paul_FTMO_bot)</b>",
     f"🕒 เวลาไทย: <code>{now_str}</code>",
-    "✅ <b>ตั้งค่าครั้งเดียวจบ! ต่อจากนี้ระบบทำงานอัตโนมัติ ไม่ต้องกดเองอีกเลยครับ</b>",
+    "✅ <b>บอทกู้คืนความปลอดภัยและเชื่อมต่อระบบใหม่เรียบร้อยแล้วครับ</b>",
     "━━━━━━━━━━━━━━━━━━━━"
 ]
 
@@ -37,22 +56,34 @@ for s in live_states:
     lines.append(f"{icon} <b>{sym}</b> {lights}\n   ↳ {status_txt}")
 
     if ot:
+        e_price = ot.get('entry', ot.get('entry_price', ''))
         lines.append(
-            f"   ⚡ <i>ถือออเดอร์ {ot['dir']} อยู่: เข้า <code>{ot['entry_price']}</code> | P&L <b>{ot['floating_r']:+}R (${ot['floating_usd']:+,.0f})</b> | ด่าน {ot['stage']} (SL <code>{ot['current_sl']}</code>)</i>"
+            f"   ⚡ <i>ถือออเดอร์ {ot['dir']} อยู่: เข้า <code>{e_price}</code> | P&L <b>{ot['floating_r']:+}R (${ot['floating_usd']:+,.0f})</b> | ด่าน {ot['stage']} (SL <code>{ot['current_sl']}</code>)</i>"
         )
 
 lines.append("━━━━━━━━━━━━━━━━━━━━")
-lines.append("🤖 <i>บอทจำ Chat ID (1394691513) ของคุณถาวรแล้ว ระบบจะสแกนและส่งสัญญาณเข้าแชทนี้ให้อัตโนมัติทุกปิดแท่ง H4 ครับ!</i>")
+lines.append(f"🤖 <i>เชื่อมต่อปลอดภัย Chat ID: <code>{CHAT_ID}</code> ระบบจะสแกนและส่งสัญญาณให้ทุกรอบ H4 ครับ!</i>")
+
+msg_text = "\n".join(lines)
+payload = {
+    "chat_id": CHAT_ID,
+    "text": msg_text,
+    "parse_mode": "HTML"
+}
 
 url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-payload = urllib.parse.urlencode({
-    'chat_id': CHAT_ID,
-    'text': "\n".join(lines),
-    'parse_mode': 'HTML',
-    'disable_web_page_preview': True
-}).encode('utf-8')
+req = urllib.request.Request(
+    url,
+    data=urllib.parse.urlencode(payload).encode('utf-8'),
+    headers={"User-Agent": "Paul-FTMO-Notifier"}
+)
 
-req = urllib.request.Request(url, data=payload, headers={'User-Agent': 'PaulFTMOBot/4.0'})
-with urllib.request.urlopen(req, timeout=15) as resp:
-    res = json.loads(resp.read().decode('utf-8'))
-    print("TELEGRAM_SEND_OK:", res.get('ok'))
+try:
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        res = json.loads(resp.read().decode('utf-8'))
+        if res.get('ok'):
+            print(f"[OK] Telegram Instant Radar sent successfully to chat {CHAT_ID}!")
+        else:
+            print("[FAIL]", res)
+except Exception as e:
+    print("[ERROR]", e)
