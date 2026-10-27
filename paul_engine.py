@@ -847,12 +847,12 @@ def build_full_suite():
                     </div>
                     <div>
                         <label class="block text-[11px] text-slate-300 font-bold mb-1">1. Telegram Bot Token:</label>
-                        <input id="tgBotTokenInput" type="text" value="8783621696:AAHGYLyU5PWBXByFUvG7i-qpmGMeLNaOXcI" class="w-full bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
+                        <input id="tgBotTokenInput" type="text" value="" placeholder="วาง Bot Token จาก @BotFather ที่นี่" class="w-full bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
                     </div>
                     <div>
                         <label class="block text-[11px] text-slate-300 font-bold mb-1">2. Telegram Chat ID:</label>
                         <div class="flex gap-2">
-                            <input id="tgChatIdInput" type="text" value="1394691513" placeholder="กดปุ่ม 🔍 ดึง Chat ID อัตโนมัติ..." class="flex-1 bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
+                            <input id="tgChatIdInput" type="text" value="" placeholder="กดปุ่ม 🔍 ดึง Chat ID อัตโนมัติ..." placeholder="กดปุ่ม 🔍 ดึง Chat ID อัตโนมัติ..." class="flex-1 bg-slate-950 text-emerald-300 font-bold mono text-xs px-3 py-2 rounded-lg border border-slate-700 focus:border-sky-400 outline-none">
                             <button onclick="autoDetectTelegramChatId()" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold whitespace-nowrap shadow-lg">
                                 🔍 ดึง Chat ID อัตโนมัติ
                             </button>
