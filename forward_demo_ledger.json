@@ -2,36 +2,36 @@
   "account_name": "Paul FTMO Pro V4 - Cloud Autonomous Demo",
   "currency": "USD",
   "initial_balance": 100000.0,
-  "current_balance": 100000.0,
-  "current_equity": 101738.49,
-  "floating_pnl_usd": 1738.49,
-  "net_profit_usd": 1738.49,
-  "net_return_pct": 1.74,
+  "current_balance": 100645.0,
+  "current_equity": 101939.58,
+  "floating_pnl_usd": 1294.58,
+  "net_profit_usd": 1939.58,
+  "net_return_pct": 1.94,
   "high_water_mark": 102180.95,
   "max_drawdown_pct": 0.43,
   "risk_per_trade_pct": 0.75,
   "risk_per_trade_usd": 750.0,
   "fee_per_trade_r": 0.04,
   "started_at_utc": "2026-10-26T02:26:15.198297+00:00",
-  "last_updated_utc": "2026-10-28T12:39:23.804267+00:00",
+  "last_updated_utc": "2026-10-28T16:42:55.441076+00:00",
   "ftmo_rules": {
     "max_daily_loss_pct": 5.0,
     "max_total_loss_pct": 10.0,
     "profit_target_step1_pct": 10.0,
     "current_daily_drawdown_pct": 0.0,
-    "current_total_drawdown_pct": 0.43,
+    "current_total_drawdown_pct": 0.24,
     "status": "PASSING_HEALTHY"
   },
   "stats": {
-    "total_trades": 0,
-    "winning_trades": 0,
+    "total_trades": 1,
+    "winning_trades": 1,
     "losing_trades": 0,
     "breakeven_trades": 0,
-    "win_rate_pct": 0.0,
-    "avg_win_r": 0.0,
+    "win_rate_pct": 100.0,
+    "avg_win_r": 0.86,
     "avg_loss_r": 0.0,
-    "profit_factor": 0.0,
-    "total_realized_r": 0
+    "profit_factor": 99.0,
+    "total_realized_r": 0.86
   },
   "open_trades": [
     {
@@ -54,10 +54,36 @@
       "atr_mult": 1.5,
       "stage": "OPEN",
       "units_remaining": 1.0,
-      "current_price": 0.8298,
-      "floating_r": 0.86,
-      "floating_usd": 648.65
+      "current_price": 0.8293,
+      "floating_r": 0.73,
+      "floating_usd": 547.3
     },
+    {
+      "ticket_id": "DEMO-1003",
+      "symbol": "EURUSD=X",
+      "name": "Euro / USD",
+      "dir": "SELL",
+      "entry_time": "2026-10-26 12:00",
+      "entry": 1.1182,
+      "lots": 2.34,
+      "sl": 1.1214,
+      "current_sl": 1.1172,
+      "initial_sl": 1.1214,
+      "tp1": 1.1134,
+      "lock1": 1.1111,
+      "stage2": 1.1102,
+      "lock2": 1.1085,
+      "tp2": 1.107,
+      "risk_dist": 0.0031999999999998696,
+      "atr_mult": 1.5,
+      "stage": "STAGE_1",
+      "units_remaining": 0.5,
+      "current_price": 1.115,
+      "floating_r": 1.0,
+      "floating_usd": 747.28
+    }
+  ],
+  "closed_trades": [
     {
       "ticket_id": "DEMO-1002",
       "symbol": "EURUSD=X",
@@ -82,8 +108,12 @@
       "floating_r": 1.45,
       "floating_usd": 1089.84,
       "tp1_hit_time": "2026-10-28T06:55:36.600918+00:00",
-      "realized_r_tp1": 0.75
+      "realized_r_tp1": 0.75,
+      "exit_time": "2026-10-28T16:42:55.440976+00:00",
+      "exit_price": 1.1146,
+      "close_reason": "LOCK1_HIT",
+      "net_r": 0.86,
+      "pnl_usd": 645.0
     }
-  ],
-  "closed_trades": []
+  ]
 }
