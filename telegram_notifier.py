@@ -312,6 +312,9 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url=''):
 
 def run_alert_scan(send_summary=True, is_test=False, force=False):
     bot_token, chat_id, dashboard_url = load_telegram_credentials()
+    sent_messages = []
+    errors = []
+    new_state = {}
 
     # 1. Sync latest CFTC COT & run full live suite
     sync_latest_cftc_cot_if_needed()
@@ -336,10 +339,6 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
                 prev_state = json.load(f)
         except Exception:
             prev_state = {}
-
-    new_state = {}
-    sent_messages = []
-    errors = []
 
     for s in live_states:
         sym = s['symbol']
