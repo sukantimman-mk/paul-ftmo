@@ -467,8 +467,22 @@ def simulate_asset_v4(symbol, name, cot_contract, is_usd_base, dec, pip_val, cot
     gate1_pass = bool(price_side_ok and cot_live_ok)
 
     # Gate 2: Pullback to EMA50 in last 10 bars + Cooldown >= 8 bars
+    # Live forward ledger check: Only treat as in_trade if an active trade exists in forward_demo_ledger.json
+    ledger_trade = None
+    ledger_path = os.path.join(BASE_DIR, 'forward_demo_ledger.json')
+    if os.path.exists(ledger_path):
+        try:
+            with open(ledger_path, 'r', encoding='utf-8') as lf:
+                ld = json.load(lf)
+                for tr in ld.get('open_trades', []):
+                    if tr.get('symbol') == symbol:
+                        ledger_trade = tr
+                        break
+        except Exception:
+            pass
+
     bars_since_exit = (len(df_h4) - 1) - last_exit_i
-    cooldown_ok = (not in_trade) and (bars_since_exit >= cooldown)
+    cooldown_ok = (not ledger_trade) and (bars_since_exit >= cooldown)
     pb_lows_live = df_h4['Low'].iloc[-11:-1]
     pb_highs_live = df_h4['High'].iloc[-11:-1]
     pb_efs_live = ef.iloc[-11:-1]
@@ -505,36 +519,35 @@ def simulate_asset_v4(symbol, name, cot_contract, is_usd_base, dec, pip_val, cot
     p_lots = calc_lot_size(symbol, 750.0, r_dist_live)
 
     open_trade_export = None
-    if in_trade:
-        e_price = trade['entry']
-        r_d = trade['risk_dist']
-        float_r = ((latest_c - e_price) / r_d) if trade['dir'] == 'BUY' else ((e_price - latest_c) / r_d)
+    if ledger_trade:
+        e_price = float(ledger_trade['entry'])
+        r_d = float(ledger_trade.get('risk_dist', 0.001)) or 0.001
+        float_r = ((latest_c - e_price) / r_d) if ledger_trade['dir'] == 'BUY' else ((e_price - latest_c) / r_d)
         float_usd = round(float_r * 750.0, 2)
-        e_bar_rel = max(0, trade['entry_idx'] - live_start)
         open_trade_export = {
-            'dir': trade['dir'],
+            'dir': ledger_trade['dir'],
             'entry': round(e_price, dec),
-            'initial_sl': round(trade['meta']['initial_sl'], dec),
-            'current_sl': round(trade['sl'], dec),
-            'tp1': round(trade['meta']['tp1_price'], dec),
-            'stage2': round(trade['meta']['stage2_price'], dec),
-            'tp': round(trade['tp'], dec),
-            'stage': trade['stage'],
-            'entry_time': trade['meta']['entry_time'],
-            'e_idx_live': e_bar_rel,
+            'initial_sl': round(float(ledger_trade.get('initial_sl', ledger_trade['sl'])), dec),
+            'current_sl': round(float(ledger_trade['current_sl']), dec),
+            'tp1': round(float(ledger_trade['tp1']), dec),
+            'stage2': round(float(ledger_trade.get('stage2', ledger_trade['tp1'])), dec),
+            'tp': round(float(ledger_trade.get('tp2', ledger_trade['tp1'])), dec),
+            'stage': ledger_trade.get('stage', 'OPEN'),
+            'entry_time': ledger_trade.get('entry_time', ''),
+            'e_idx_live': 0,
             'floating_r': round(float_r, 2),
             'floating_usd': float_usd,
-            'lots_100k': calc_lot_size(symbol, 750.0, r_d)
+            'lots_100k': float(ledger_trade.get('lots', 1.0))
         }
 
-    if in_trade:
+    if open_trade_export:
         overall_signal = "ACTIVE_OPEN"
-        overall_badge = f"🔥 ถือออเดอร์ {trade['dir']} อยู่ ({open_trade_export['floating_r']:+}R)"
+        overall_badge = f"🔥 ถือออเดอร์ {open_trade_export['dir']} อยู่ ({open_trade_export['floating_r']:+}R)"
     elif gate1_pass and gate2_pass and gate3_pass:
-        overall_signal = "EXECUTE_NOW"
+        overall_signal = "ENTRY_NOW"
         overall_badge = f"🚀 สัญญาณเข้าครบ 4 ข้อ! กด {planned_dir} ได้ทันที"
     elif gate1_pass and gate2_pass:
-        overall_signal = "READY_WAIT_BOS"
+        overall_signal = "SETUP_ARMED"
         overall_badge = f"⚡ เตรียมพร้อม! รอเบรก {'High ' + str(bos_h_now) if is_bull_now else 'Low ' + str(bos_l_now)}"
     else:
         overall_signal = "WAIT_PULLBACK"
