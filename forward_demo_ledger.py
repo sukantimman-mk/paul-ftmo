@@ -304,7 +304,7 @@ def update_forward_demo_ledger(live_states):
         ot = s.get('active_open_trade')
 
         if sym not in existing_open_syms:
-            if sig == 'ENTRY_NOW':
+            if sig in ('ENTRY_NOW', 'EXECUTE_NOW'):
                 new_ticket_id = f"DEMO-{len(closed_trades) + len(remaining_open_trades) + 1001}"
                 new_trade = {
                     'ticket_id': new_ticket_id,
@@ -353,44 +353,6 @@ def update_forward_demo_ledger(live_states):
                         f"• <i>ระบบจัดการเลื่อน SL และปิดกำไรอัตโนมัติตามกฎ 1-2-3-4</i>"
                     )
                 })
-            elif ot:
-                # Synchronize existing active trade from live scanner engine
-                stg_map = {0: 'OPEN', 1: 'STAGE_1', 2: 'STAGE_2'}
-                ot_stage_num = ot.get('stage', 0)
-                ot_stage_str = stg_map.get(ot_stage_num, 'OPEN')
-                new_ticket_id = f"DEMO-{len(closed_trades) + len(remaining_open_trades) + 1001}"
-                r_dist = abs(float(ot['entry']) - float(ot.get('initial_sl', ot['current_sl'])))
-                if r_dist <= 0:
-                    r_dist = abs(float(ot['entry']) - float(ot['current_sl']))
-                if r_dist <= 0:
-                    r_dist = 0.001
-
-                new_trade = {
-                    'ticket_id': new_ticket_id,
-                    'symbol': sym,
-                    'name': s.get('name', sym),
-                    'dir': ot['dir'],
-                    'entry_time': ot.get('entry_time', now_iso),
-                    'entry': float(ot['entry']),
-                    'lots': float(ot.get('lots_100k', tk.get('lots_100k', 1.0))),
-                    'sl': float(ot.get('initial_sl', ot['current_sl'])),
-                    'current_sl': float(ot['current_sl']),
-                    'initial_sl': float(ot.get('initial_sl', ot['current_sl'])),
-                    'tp1': float(ot['tp1']),
-                    'lock1': float(tk.get('lock1', ot['tp1'])),
-                    'stage2': float(ot['stage2']),
-                    'lock2': float(tk.get('lock2', ot['stage2'])),
-                    'tp2': float(ot.get('tp', tk.get('tp2', 0.0))),
-                    'risk_dist': r_dist,
-                    'atr_mult': float(tk.get('atr_mult', 1.0)),
-                    'stage': ot_stage_str,
-                    'units_remaining': 0.5 if ot_stage_num >= 1 else 1.0,
-                    'current_price': float(s['latest_price']),
-                    'floating_r': float(ot.get('floating_r', 0.0)),
-                    'floating_usd': float(ot.get('floating_usd', 0.0))
-                }
-                remaining_open_trades.append(new_trade)
-                existing_open_syms.add(sym)
 
     # -------------------------------------------------------------
     # 3. RECALCULATE OVERALL PORTFOLIO METRICS
@@ -499,3 +461,24 @@ def format_demo_portfolio_summary(ledger):
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     lines.append("💡 <i>ระบบบันทึกและจัดการออเดอร์อัตโนมัติบน Cloud 100% ไม่ต้องเปิดคอม</i>")
     return "\n".join(lines)
+
+
+def reset_ledger():
+    """Resets the demo portfolio to initial clean $100,000.00 state with 0 trades."""
+    clean = get_default_ledger()
+    save_ledger(clean)
+    print("✅ Forward Demo Ledger successfully reset to initial state ($100,000.00 USD, 0 trades).")
+    return clean
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Paul Pro V4 Forward Demo Ledger')
+    parser.add_argument('--reset', action='store_true', help='Reset ledger to initial $100,000 state')
+    args = parser.parse_args()
+
+    if args.reset:
+        reset_ledger()
+    else:
+        l = load_ledger()
+        print(f"Current Balance: ${l['current_balance']:,.2f} | Open Trades: {len(l['open_trades'])} | Closed: {len(l['closed_trades'])}")

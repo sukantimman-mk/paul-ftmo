@@ -100,6 +100,12 @@ def auto_detect_chat_id(bot_token):
         return {'ok': False, 'error': f'เชื่อมต่อ Telegram ไม่สำเร็จ: {str(e)}'}
 
 
+def escape_html(val):
+    if not isinstance(val, str):
+        val = str(val)
+    return val.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
+
 def send_telegram_message(bot_token, chat_id, text_html):
     """Sends an HTML-formatted message to Telegram."""
     if not bot_token or not chat_id:
@@ -119,6 +125,21 @@ def send_telegram_message(bot_token, chat_id, text_html):
             res = json.loads(resp.read().decode('utf-8'))
             return {'ok': bool(res.get('ok')), 'response': res}
     except Exception as e:
+        try:
+            import re
+            clean_plain = re.sub(r'<[^>]+>', '', text_html)
+            fallback_payload = {
+                'chat_id': chat_id,
+                'text': clean_plain,
+                'disable_web_page_preview': True
+            }
+            fb_encoded = urllib.parse.urlencode(fallback_payload).encode('utf-8')
+            fb_req = urllib.request.Request(url, data=fb_encoded, headers={'User-Agent': 'PaulFTMOBot/4.0'})
+            with urllib.request.urlopen(fb_req, timeout=20) as resp:
+                res = json.loads(resp.read().decode('utf-8'))
+                return {'ok': bool(res.get('ok')), 'response': res}
+        except Exception:
+            pass
         return {'ok': False, 'error': str(e)}
 
 
@@ -197,9 +218,9 @@ def format_urgent_pair_alert(s, event_type, dashboard_url=''):
     ot = s.get('active_open_trade')
     bkk_now = (datetime.now(timezone.utc) + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M น. (เวลาไทย)')
 
-    if event_type == 'ENTRY_NOW':
+    if event_type in ('ENTRY_NOW', 'EXECUTE_NOW'):
         header = f"🟢🚨 <b>[เข้าออเดอร์ทันที!] {sym} ({name}) — ด่าน 1-2-3 ผ่านครบ 100%!</b>"
-    elif event_type == 'SETUP_ARMED':
+    elif event_type in ('SETUP_ARMED', 'READY_WAIT_BOS'):
         header = f"⏳⚡ <b>[เตรียมพร้อมตั้งไม้!] {sym} ({name}) — ราคาย่อแตะเส้นฟ้า EMA50 แล้ว!</b>"
     elif event_type.startswith('ACTIVE_STAGE_'):
         header = f"🛡️💰 <b>[อัปเดตไม้ที่ถืออยู่!] {sym} ({name}) — ราคาวิ่งชนเป้าย่อยแล้ว!</b>"
@@ -213,9 +234,9 @@ def format_urgent_pair_alert(s, event_type, dashboard_url=''):
         "━━━━━━━━━━━━━━━━━━━━",
         f"💵 <b>ราคาปัจจุบัน:</b> <code>{s['latest_price']}</code> | <b>แผนฝั่ง:</b> <b>{s['planned_dir']}</b>",
         f"📊 <b>ตรวจสอบกฎ 1-2-3-4:</b>",
-        f"  {'🟢' if gates['g1_pass'] else '🔴'} <b>ด่าน 1 (Trend+COT):</b> {gates['g1_text']}",
-        f"  {'🟢' if gates['g2_pass'] else '🔴'} <b>ด่าน 2 (Pullback EMA50):</b> {gates['g2_text']}",
-        f"  {'🟢' if gates['g3_pass'] else '⏳'} <b>ด่าน 3 (3-Bar BOS+RSI):</b> {gates['g3_text']}",
+        f"  {'🟢' if gates['g1_pass'] else '🔴'} <b>ด่าน 1 (Trend+COT):</b> {escape_html(gates['g1_text'])}",
+        f"  {'🟢' if gates['g2_pass'] else '🔴'} <b>ด่าน 2 (Pullback EMA50):</b> {escape_html(gates['g2_text'])}",
+        f"  {'🟢' if gates['g3_pass'] else '⏳'} <b>ด่าน 3 (3-Bar BOS+RSI):</b> {escape_html(gates['g3_text'])}",
         "━━━━━━━━━━━━━━━━━━━━",
     ]
 
@@ -263,10 +284,10 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url=''):
         tk = s['planned_ticket']
         ot = s.get('active_open_trade')
 
-        if s['overall_signal'] == 'ENTRY_NOW':
+        if s['overall_signal'] in ('ENTRY_NOW', 'EXECUTE_NOW'):
             icon = "🟢🚨"
             status_txt = f"<b>สั่งเข้า {s['planned_dir']} ทันที!</b> @ <code>{s['latest_price']}</code> (SL <code>{tk['sl']}</code> | TP1 <code>{tk['tp1']}</code> | <code>{tk['lots_100k']} Lot</code>)"
-        elif s['overall_signal'] == 'SETUP_ARMED':
+        elif s['overall_signal'] in ('SETUP_ARMED', 'READY_WAIT_BOS'):
             icon = "⏳⚡"
             status_txt = f"<b>ย่อแตะ EMA50 แล้ว!</b> รอเบรก {s['planned_dir']} @ <code>{tk['entry']}</code> (SL <code>{tk['sl']}</code> | <code>{tk['lots_100k']} Lot</code>)"
         else:
@@ -364,9 +385,9 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
         old_stage_key = prev_state.get(sym, {}).get('stage_key', '')
 
         # Trigger 1: ENTRY_NOW or SETUP_ARMED on a new H4 bar
-        if sig in ('ENTRY_NOW', 'SETUP_ARMED') and (force or pair_key != old_pair_key):
+        if sig in ('ENTRY_NOW', 'EXECUTE_NOW', 'SETUP_ARMED', 'READY_WAIT_BOS') and (force or pair_key != old_pair_key):
             fix_exec_msg = ""
-            if sig == 'ENTRY_NOW':
+            if sig in ('ENTRY_NOW', 'EXECUTE_NOW'):
                 try:
                     import ftmo_fix_trader
                     cfg = ftmo_fix_trader.load_fix_config()
