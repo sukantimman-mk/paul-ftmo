@@ -3,23 +3,23 @@
   "currency": "USD",
   "initial_balance": 100000.0,
   "current_balance": 100645.0,
-  "current_equity": 101152.44,
-  "floating_pnl_usd": 507.44,
-  "net_profit_usd": 1152.44,
-  "net_return_pct": 1.15,
+  "current_equity": 101251.89,
+  "floating_pnl_usd": 606.89,
+  "net_profit_usd": 1251.89,
+  "net_return_pct": 1.25,
   "high_water_mark": 102168.3,
   "max_drawdown_pct": 0.99,
   "risk_per_trade_pct": 0.75,
   "risk_per_trade_usd": 750.0,
   "fee_per_trade_r": 0.04,
   "started_at_utc": "2026-10-26T02:26:15.198297+00:00",
-  "last_updated_utc": "2026-10-29T08:34:49.072160+00:00",
+  "last_updated_utc": "2026-10-29T08:40:24.243722+00:00",
   "ftmo_rules": {
     "max_daily_loss_pct": 5.0,
     "max_total_loss_pct": 10.0,
     "profit_target_step1_pct": 10.0,
     "current_daily_drawdown_pct": 0.0,
-    "current_total_drawdown_pct": 0.99,
+    "current_total_drawdown_pct": 0.9,
     "status": "PASSING_HEALTHY"
   },
   "stats": {
@@ -54,9 +54,9 @@
       "atr_mult": 1.5,
       "stage": "OPEN",
       "units_remaining": 1.0,
-      "current_price": 0.8281,
-      "floating_r": 0.41,
-      "floating_usd": 304.05
+      "current_price": 0.8282,
+      "floating_r": 0.43,
+      "floating_usd": 324.32
     },
     {
       "ticket_id": "DEMO-1003",
@@ -78,9 +78,9 @@
       "atr_mult": 1.5,
       "stage": "OPEN",
       "units_remaining": 1.0,
-      "current_price": 1.4,
-      "floating_r": -0.19,
-      "floating_usd": -139.53
+      "current_price": 1.3995,
+      "floating_r": -0.07,
+      "floating_usd": -52.33
     },
     {
       "ticket_id": "DEMO-1004",
@@ -102,9 +102,9 @@
       "atr_mult": 1.5,
       "stage": "STAGE_1",
       "units_remaining": 0.5,
-      "current_price": 1.1142,
-      "floating_r": 0.63,
-      "floating_usd": 468.75
+      "current_price": 1.114,
+      "floating_r": 0.66,
+      "floating_usd": 492.19
     },
     {
       "ticket_id": "DEMO-1005",
@@ -126,9 +126,9 @@
       "atr_mult": 1.5,
       "stage": "OPEN",
       "units_remaining": 1.0,
-      "current_price": 4041.2,
-      "floating_r": -0.17,
-      "floating_usd": -125.83
+      "current_price": 4042.9,
+      "floating_r": -0.21,
+      "floating_usd": -157.29
     }
   ],
   "closed_trades": [
