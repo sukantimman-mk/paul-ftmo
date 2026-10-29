@@ -3,23 +3,23 @@
   "currency": "USD",
   "initial_balance": 100000.0,
   "current_balance": 100645.0,
-  "current_equity": 101637.89,
-  "floating_pnl_usd": 992.89,
-  "net_profit_usd": 1637.89,
-  "net_return_pct": 1.64,
+  "current_equity": 101565.28,
+  "floating_pnl_usd": 920.28,
+  "net_profit_usd": 1565.28,
+  "net_return_pct": 1.57,
   "high_water_mark": 102180.95,
   "max_drawdown_pct": 0.87,
   "risk_per_trade_pct": 0.75,
   "risk_per_trade_usd": 750.0,
   "fee_per_trade_r": 0.04,
   "started_at_utc": "2026-10-26T02:26:15.198297+00:00",
-  "last_updated_utc": "2026-10-29T00:36:48.576628+00:00",
+  "last_updated_utc": "2026-10-29T04:40:04.019227+00:00",
   "ftmo_rules": {
     "max_daily_loss_pct": 5.0,
     "max_total_loss_pct": 10.0,
     "profit_target_step1_pct": 10.0,
     "current_daily_drawdown_pct": 0.0,
-    "current_total_drawdown_pct": 0.53,
+    "current_total_drawdown_pct": 0.6,
     "status": "PASSING_HEALTHY"
   },
   "stats": {
@@ -54,9 +54,9 @@
       "atr_mult": 1.5,
       "stage": "OPEN",
       "units_remaining": 1.0,
-      "current_price": 0.8293,
-      "floating_r": 0.73,
-      "floating_usd": 547.3
+      "current_price": 0.8284,
+      "floating_r": 0.49,
+      "floating_usd": 364.86
     },
     {
       "ticket_id": "DEMO-1003",
@@ -78,9 +78,9 @@
       "atr_mult": 1.5,
       "stage": "STAGE_1",
       "units_remaining": 0.5,
-      "current_price": 1.1141,
-      "floating_r": 0.64,
-      "floating_usd": 480.47
+      "current_price": 1.1148,
+      "floating_r": 0.53,
+      "floating_usd": 398.44
     },
     {
       "ticket_id": "DEMO-1004",
@@ -102,9 +102,9 @@
       "atr_mult": 1.5,
       "stage": "OPEN",
       "units_remaining": 1.0,
-      "current_price": 1.3994,
-      "floating_r": -0.05,
-      "floating_usd": -34.88
+      "current_price": 1.3983,
+      "floating_r": 0.21,
+      "floating_usd": 156.98
     }
   ],
   "closed_trades": [
