@@ -2,6 +2,9 @@ __pycache__/
 *.pyc
 telegram_config.json
 telegram_secret.json
+ftmo_config.json
+ftmo_secret.json
+ftmo_fix_config.json
 .env
 .env.*
 *.secret

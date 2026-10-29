@@ -302,6 +302,15 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url=''):
     except Exception:
         pass
 
+    try:
+        import ftmo_fix_trader
+        fcfg = ftmo_fix_trader.load_fix_config()
+        if fcfg.get('password') and fcfg.get('account_id'):
+            lines.append("━━━━━━━━━━━━━━━━━━━━")
+            lines.append(f"⚡ <b>FTMO cTrader Cloud Live:</b> บัญชี <code>{fcfg['account_id']}</code> ($100k) เชื่อมต่อ FIX API พร้อมยิงออเดอร์อัตโนมัติ 🟢")
+    except Exception:
+        pass
+
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     lines.append("💡 <i>ระบบรันบน Cloud อัตโนมัติทุกปิดแท่ง H4 (ปิดคอมได้ 100% ฟรี 0 บาท)</i>")
     if dashboard_url:
@@ -356,7 +365,29 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
 
         # Trigger 1: ENTRY_NOW or SETUP_ARMED on a new H4 bar
         if sig in ('ENTRY_NOW', 'SETUP_ARMED') and (force or pair_key != old_pair_key):
+            fix_exec_msg = ""
+            if sig == 'ENTRY_NOW':
+                try:
+                    import ftmo_fix_trader
+                    cfg = ftmo_fix_trader.load_fix_config()
+                    if cfg.get('password'):
+                        fix_res = ftmo_fix_trader.execute_signal(s)
+                        if fix_res.get('ok'):
+                            order_id = fix_res.get('res', {}).get('order_id', 'SUCCESS')
+                            lots = fix_res.get('lots', s.get('planned_ticket', {}).get('lots_100k', 1.0))
+                            fix_exec_msg = (
+                                f"\n\n⚡ <b>[FTMO LIVE cTrader]</b> ยิงออเดอร์เข้าพอร์ต <code>{cfg.get('account_id')}</code> สำเร็จเรียบร้อย! "
+                                f"(Ticket: <code>{order_id}</code> | {lots} Lots)"
+                            )
+                        else:
+                            fix_exec_msg = f"\n\n⚠️ <b>[FTMO LIVE cTrader]</b> ยิงออเดอร์ไม่สำเร็จ: <code>{fix_res.get('error')}</code>"
+                except Exception as ex:
+                    fix_exec_msg = f"\n\n⚠️ <b>[FTMO LIVE cTrader]</b> เกิดข้อผิดพลาด: <code>{str(ex)}</code>"
+
             msg = format_urgent_pair_alert(s, sig, dashboard_url)
+            if fix_exec_msg:
+                msg += fix_exec_msg
+
             if bot_token and chat_id:
                 res = send_telegram_message(bot_token, chat_id, msg)
                 if res.get('ok'):

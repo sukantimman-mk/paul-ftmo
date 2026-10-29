@@ -36,6 +36,11 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+          FTMO_FIX_ACCOUNT: ${{ secrets.FTMO_FIX_ACCOUNT }}
+          FTMO_FIX_SENDER: ${{ secrets.FTMO_FIX_SENDER }}
+          FTMO_FIX_PASSWORD: ${{ secrets.FTMO_FIX_PASSWORD }}
+          FTMO_FIX_HOST: ${{ secrets.FTMO_FIX_HOST }}
+          FTMO_FIX_PORT: ${{ secrets.FTMO_FIX_PORT }}
         run: |
           python -u telegram_notifier.py --force
 
