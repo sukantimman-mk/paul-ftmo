@@ -410,11 +410,20 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
                         print(f"[FTMO FIX] execute_signal result for {sym}: {fix_res}")
                         if fix_res.get('ok'):
                             order_id = fix_res.get('res', {}).get('order_id', 'SUCCESS')
+                            pos_id = fix_res.get('res', {}).get('position_id', 'N/A')
                             lots = fix_res.get('lots', s.get('planned_ticket', {}).get('lots_100k', 1.0))
+                            units = fix_res.get('units', 100000)
+                            sym_id = fix_res.get('symbol_id', '1')
                             fix_exec_msg = (
-                                f"\n\n⚡ <b>[FTMO LIVE cTrader]</b> ยิงออเดอร์เข้าพอร์ต <code>{cfg.get('account_id')}</code> สำเร็จเรียบร้อย! "
-                                f"(Ticket: <code>{order_id}</code> | {lots} Lots)"
+                                f"\n\n⚡ <b>[FTMO LIVE cTrader]</b> ยิงออเดอร์เข้าพอร์ต <code>{cfg.get('account_id')}</code> สำเร็จเรียบร้อย! 🟢\n"
+                                f"• Ticket: <code>{order_id}</code> | PosID: <code>{pos_id}</code>\n"
+                                f"• Volume: <code>{lots} Lots ({units:,} Units)</code>"
                             )
+                            # Bind to forward ledger open trade
+                            try:
+                                forward_demo_ledger.bind_fix_execution_to_trade(sym, pos_id, order_id, units, sym_id)
+                            except Exception as bex:
+                                print(f"[FTMO FIX] Error binding execution: {bex}")
                         else:
                             fix_exec_msg = f"\n\n⚠️ <b>[FTMO LIVE cTrader]</b> ยิงออเดอร์ไม่สำเร็จ: <code>{fix_res.get('error')}</code>"
                 except Exception as ex:

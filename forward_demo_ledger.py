@@ -137,6 +137,26 @@ def update_forward_demo_ledger(live_states):
                 tr['units_remaining'] = 0.5
                 tr['tp1_hit_time'] = now_iso
                 tr['realized_r_tp1'] = 1.5 * 0.5  # +0.75R realized
+                tp1_msg = f"🎯 <b>[TP1 (+1.5R)] {sym} ({direction})</b> ชนเป้าแรก! แบ่งปิด 50% ล็อกกำไร +$562.50 และเลื่อน SL -> <code>{tr['lock1']}</code> (+0.3R) Risk-Free 100%!"
+                # cTrader FIX Autonomous 50% Scale-Out
+                if tr.get('fix_position_id'):
+                    try:
+                        import ftmo_fix_trader
+                        fcfg = ftmo_fix_trader.load_fix_config()
+                        if fcfg.get('password'):
+                            fclient = ftmo_fix_trader.FtmoFixClient(fcfg)
+                            fclient.send_logon()
+                            half_u = int(round(float(tr.get('volume_units', 100000)) * 0.5))
+                            s_id = tr.get('symbol_id', ftmo_fix_trader.FTMO_SYMBOLS.get(sym, {}).get('id', '1'))
+                            c_ok, c_res = fclient.close_position(tr['fix_position_id'], s_id, direction, half_u)
+                            fclient.close()
+                            if c_ok:
+                                tp1_msg += f"\n⚡ <b>[FTMO cTrader Live]</b> แบ่งปิด 50% ({half_u:,} units) บน cTrader สำเร็จเรียบร้อย! 🟢"
+                            else:
+                                tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> แบ่งปิดไม่สำเร็จ: <code>{c_res}</code>"
+                    except Exception as ex:
+                        tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ข้อผิดพลาด: <code>{str(ex)}</code>"
+
                 events.append({
                     'type': 'TP1_HIT',
                     'symbol': sym,
@@ -144,7 +164,7 @@ def update_forward_demo_ledger(live_states):
                     'entry': entry,
                     'hit_price': float(tr['tp1']),
                     'locked_sl': float(tr['lock1']),
-                    'message': f"🎯 <b>[DEMO TP1 (+1.5R)] {sym} ({direction})</b> ชนเป้าแรก! แบ่งปิด 50% ล็อกกำไร +$562.50 และเลื่อน SL -> <code>{tr['lock1']}</code> (+0.3R) กลายเป็น Risk-Free 100%!"
+                    'message': tp1_msg
                 })
                 stage = 'STAGE_1'
                 current_sl = float(tr['lock1'])
@@ -203,6 +223,26 @@ def update_forward_demo_ledger(live_states):
                 tr['units_remaining'] = 0.5
                 tr['tp1_hit_time'] = now_iso
                 tr['realized_r_tp1'] = 1.5 * 0.5
+                tp1_msg = f"🎯 <b>[TP1 (+1.5R)] {sym} ({direction})</b> ชนเป้าแรก! แบ่งปิด 50% ล็อกกำไร +$562.50 และเลื่อน SL -> <code>{tr['lock1']}</code> (+0.3R) Risk-Free 100%!"
+                # cTrader FIX Autonomous 50% Scale-Out
+                if tr.get('fix_position_id'):
+                    try:
+                        import ftmo_fix_trader
+                        fcfg = ftmo_fix_trader.load_fix_config()
+                        if fcfg.get('password'):
+                            fclient = ftmo_fix_trader.FtmoFixClient(fcfg)
+                            fclient.send_logon()
+                            half_u = int(round(float(tr.get('volume_units', 100000)) * 0.5))
+                            s_id = tr.get('symbol_id', ftmo_fix_trader.FTMO_SYMBOLS.get(sym, {}).get('id', '1'))
+                            c_ok, c_res = fclient.close_position(tr['fix_position_id'], s_id, direction, half_u)
+                            fclient.close()
+                            if c_ok:
+                                tp1_msg += f"\n⚡ <b>[FTMO cTrader Live]</b> แบ่งปิด 50% ({half_u:,} units) บน cTrader สำเร็จเรียบร้อย! 🟢"
+                            else:
+                                tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> แบ่งปิดไม่สำเร็จ: <code>{c_res}</code>"
+                    except Exception as ex:
+                        tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ข้อผิดพลาด: <code>{str(ex)}</code>"
+
                 events.append({
                     'type': 'TP1_HIT',
                     'symbol': sym,
@@ -210,7 +250,7 @@ def update_forward_demo_ledger(live_states):
                     'entry': entry,
                     'hit_price': float(tr['tp1']),
                     'locked_sl': float(tr['lock1']),
-                    'message': f"🎯 <b>[DEMO TP1 (+1.5R)] {sym} ({direction})</b> ชนเป้าแรก! แบ่งปิด 50% ล็อกกำไร +$562.50 และเลื่อน SL -> <code>{tr['lock1']}</code> (+0.3R) กลายเป็น Risk-Free 100%!"
+                    'message': tp1_msg
                 })
                 stage = 'STAGE_1'
                 current_sl = float(tr['lock1'])
@@ -271,6 +311,27 @@ def update_forward_demo_ledger(live_states):
             closed_trades.append(tr)
 
             outcome_txt = "กำไร 🎉" if pnl_usd > 0 else "ตัดขาดทุนตามแผน 🛡️"
+            close_msg = f"🏁 <b>[ปิดออเดอร์สมบูรณ์] {sym} ({direction})</b>\n• ผลลัพธ์: <b>{outcome_txt}</b>\n• เหตุผล: <code>{close_reason}</code>\n• P&L สุทธิ: <b>{net_r:+}R ({pnl_usd:+,.2f} USD)</b>\n• พอร์ตคงเหลือ: <code>${ledger['current_balance']:,.2f}</code>"
+
+            # cTrader FIX Autonomous Full Close
+            if tr.get('fix_position_id'):
+                try:
+                    import ftmo_fix_trader
+                    fcfg = ftmo_fix_trader.load_fix_config()
+                    if fcfg.get('password'):
+                        fclient = ftmo_fix_trader.FtmoFixClient(fcfg)
+                        fclient.send_logon()
+                        rem_u = int(round(float(tr.get('volume_units', 100000)) * float(tr.get('units_remaining', 1.0))))
+                        s_id = tr.get('symbol_id', ftmo_fix_trader.FTMO_SYMBOLS.get(sym, {}).get('id', '1'))
+                        c_ok, c_res = fclient.close_position(tr['fix_position_id'], s_id, direction, rem_u)
+                        fclient.close()
+                        if c_ok:
+                            close_msg += f"\n⚡ <b>[FTMO cTrader Live]</b> ปิดออเดอร์ทั้งหมดบน cTrader สำเร็จเรียบร้อย! 🟢"
+                        else:
+                            close_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ปิดออเดอร์ไม่สำเร็จ: <code>{c_res}</code>"
+                except Exception as ex:
+                    close_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ข้อผิดพลาด: <code>{str(ex)}</code>"
+
             events.append({
                 'type': 'TRADE_CLOSED',
                 'symbol': sym,
@@ -278,7 +339,7 @@ def update_forward_demo_ledger(live_states):
                 'reason': close_reason,
                 'pnl_usd': pnl_usd,
                 'net_r': net_r,
-                'message': f"🏁 <b>[DEMO ปิดออเดอร์] {sym} ({direction})</b>\n• ผลลัพธ์: <b>{outcome_txt}</b>\n• เหตุผล: <code>{close_reason}</code>\n• P&L สุทธิ: <b>{net_r:+}R ({pnl_usd:+,.2f} USD)</b>\n• พอร์ตคงเหลือ: <code>${ledger['current_balance']:,.2f}</code>"
+                'message': close_msg
             })
         else:
             # Mark-to-market floating P&L
@@ -482,3 +543,20 @@ if __name__ == '__main__':
     else:
         l = load_ledger()
         print(f"Current Balance: ${l['current_balance']:,.2f} | Open Trades: {len(l['open_trades'])} | Closed: {len(l['closed_trades'])}")
+
+
+def bind_fix_execution_to_trade(symbol, position_id, order_id, units, symbol_id):
+    """Binds cTrader FIX live execution IDs to the forward ledger open trade."""
+    try:
+        ledger = load_ledger()
+        for tr in ledger.get('open_trades', []):
+            if tr.get('symbol') == symbol:
+                tr['fix_position_id'] = str(position_id)
+                tr['fix_order_id'] = str(order_id)
+                tr['volume_units'] = int(units)
+                tr['symbol_id'] = str(symbol_id)
+                save_ledger(ledger)
+                print(f"[Ledger] Bound cTrader FIX PosID {position_id} to open trade {symbol}")
+                break
+    except Exception as e:
+        print(f"[Ledger] Error binding FIX execution: {e}")
