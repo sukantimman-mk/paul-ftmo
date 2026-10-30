@@ -171,10 +171,8 @@ class FtmoFixClient:
             ('60', datetime.now(timezone.utc).strftime('%Y%m%d-%H:%M:%S.%f')[:-3])
         ]
 
-        if sl_price:
-            body.append(('1002', str(sl_price))) # Tag 1002 = AbsoluteSL
-        if tp1_price:
-            body.append(('1000', str(tp1_price))) # Tag 1000 = AbsoluteTP
+        # Note: cTrader cServer rejects custom Tag 1000/1002 in NewOrderSingle (35=D).
+        # Position execution is market-filled, and SL/TP trailing is managed autonomously by Paul Pro Cloud Engine.
 
         msg = build_fix_message('D', body, self.seq_num, self.cfg['sender_comp_id'], self.cfg['target_comp_id'])
         self.sock.sendall(msg.encode('ascii'))
@@ -195,6 +193,7 @@ class FtmoFixClient:
                         if ord_status in ('0', '1', '2'):  # New, Partially Filled, Filled
                             return True, {
                                 'order_id': m.get('37', 'N/A'),
+                                'position_id': m.get('721', 'N/A'),
                                 'cl_ord_id': cl_ord_id,
                                 'symbol': symbol_name,
                                 'symbol_id': symbol_id,
@@ -213,6 +212,82 @@ class FtmoFixClient:
                 return False, f"Recv error: {str(e)}"
 
         return False, "Timeout waiting for ExecutionReport (35=8)"
+
+    def close_position(self, position_id, symbol_id, open_direction, volume_units, cl_ord_id=None):
+        """Closes an open position by sending an offsetting market order targeted at Tag 721."""
+        if not cl_ord_id:
+            cl_ord_id = f"CLS_{self.cfg['account_id']}_{int(datetime.now().timestamp())}"
+        side = '2' if open_direction == 'BUY' else '1'
+        body = [
+            ('11', cl_ord_id),
+            ('494', 'PaulProV4'),
+            ('55', str(symbol_id)),
+            ('54', side),
+            ('38', str(int(volume_units))),
+            ('40', '1'),
+            ('59', '3'),
+            ('721', str(position_id)),
+            ('60', datetime.now(timezone.utc).strftime('%Y%m%d-%H:%M:%S.%f')[:-3])
+        ]
+        msg = build_fix_message('D', body, self.seq_num, self.cfg['sender_comp_id'], self.cfg['target_comp_id'])
+        self.sock.sendall(msg.encode('ascii'))
+        self.seq_num += 1
+        self.sock.settimeout(6.0)
+        start_t = datetime.now().timestamp()
+        while datetime.now().timestamp() - start_t < 6.0:
+            try:
+                resp_data = self.sock.recv(4096)
+                if not resp_data:
+                    break
+                msgs = parse_fix_message(resp_data)
+                for m in msgs:
+                    if m.get('35') == '8':
+                        ord_status = m.get('39')
+                        if ord_status in ('0', '1', '2'):
+                            return True, {'order_id': m.get('37', 'N/A'), 'status': 'CLOSED'}
+                        else:
+                            return False, f"Close rejected: {m.get('58', 'Rejected')} (OrdStatus={ord_status})"
+                    elif m.get('35') in ('3', 'j'):
+                        return False, f"Reject ({m.get('35')}): {m.get('58', 'Reject')}"
+            except socket.timeout:
+                break
+            except Exception as e:
+                return False, f"Recv error: {str(e)}"
+        return False, "Timeout waiting for Close ExecutionReport (35=8)"
+
+    def get_open_positions(self):
+        """Queries all open positions via 35=AN (RequestForPositions)."""
+        req_id = f"POS_{int(datetime.now().timestamp())}"
+        body = [('710', req_id)]
+        msg = build_fix_message('AN', body, self.seq_num, self.cfg['sender_comp_id'], self.cfg['target_comp_id'])
+        self.sock.sendall(msg.encode('ascii'))
+        self.seq_num += 1
+        positions = []
+        self.sock.settimeout(4.0)
+        start_t = datetime.now().timestamp()
+        while datetime.now().timestamp() - start_t < 4.0:
+            try:
+                resp_data = self.sock.recv(4096)
+                if not resp_data:
+                    break
+                msgs = parse_fix_message(resp_data)
+                for m in msgs:
+                    if m.get('35') == 'AP':
+                        if m.get('728') == '2' or m.get('727') == '0':
+                            return True, []
+                        pos_id = m.get('721')
+                        if pos_id:
+                            positions.append({
+                                'position_id': pos_id,
+                                'symbol_id': m.get('55'),
+                                'price': m.get('730'),
+                                'units': m.get('705')
+                            })
+            except socket.timeout:
+                break
+            except Exception as e:
+                return False, f"Recv error: {str(e)}"
+        return True, positions
 
     def close(self):
         if self.connected and self.sock:

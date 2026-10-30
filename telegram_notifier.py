@@ -249,15 +249,29 @@ def format_urgent_pair_alert(s, event_type, dashboard_url=''):
             f"• กำไรลอยตัวปัจจุบัน: <b>{ot.get('floating_r', 0):+}R (${ot.get('floating_usd', 0):+,.2f})</b>",
             f"• <b>สิ่งที่ต้องทำทันที (ด่าน 4):</b> สถานะเข้าสู่ <b>{ot.get('stage', '')}</b> -> ตั้ง SL ปัจจุบันไว้ที่ <code>{ot.get('current_sl', '')}</code> และ TP2 ที่ <code>{tp2_price}</code>",
         ])
-    else:
+    elif event_type in ('ENTRY_NOW', 'EXECUTE_NOW'):
         lines.extend([
-            f"🎯 <b>ใบสั่งเทรด (พอร์ต $100,000 | ความเสี่ยง 0.75% = $750):</b>",
+            f"🟢 <b>[สถานะ: ด่าน 1-2-3 ผ่านครบ -> กำลังยิงออเดอร์เข้า cTrader!]</b>",
             f"• <b>ฝั่ง (Direction):</b> <b>{tk['dir']}</b>",
-            f"• <b>ขนาด Lot (FTMO $100k):</b> <code>{tk['lots_100k']} Lots</code>",
-            f"• <b>ราคาเข้า (Entry / 3-Bar BOS):</b> <code>{tk['entry']}</code>",
-            f"• <b>Stop Loss (-1.0R / {tk['atr_mult']}x ATR):</b> <code>{tk['sl']}</code>",
+            f"• <b>ขนาด Lot (FTMO $100k):</b> <code>{tk['lots_100k']} Lots</code> (ความเสี่ยง 0.75% = $750)",
+            f"• <b>ราคาเข้า (Entry):</b> <code>{s['latest_price']}</code>",
+            f"• <b>Stop Loss (-1.0R):</b> <code>{tk['sl']}</code>",
             f"• <b>TP 1 (+1.5R แบ่งปิด 50%):</b> <code>{tk['tp1']}</code> <i>(แล้วเลื่อน SL มาที่ {tk['lock1']})</i>",
             f"• <b>Stage 2 (+2.5R):</b> <code>{tk['stage2']}</code> <i>(เลื่อน SL ล็อกกำไรที่ {tk['lock2']})</i>",
+            f"• <b>TP 2 (+3.5R ปิดที่เหลือ):</b> <code>{tk['tp2']}</code>",
+        ])
+    else:  # SETUP_ARMED or READY_WAIT_BOS
+        lines.extend([
+            f"⏳ <b>[สถานะ: ยังไม่ออกไม้ / ยังไม่เข้าตลาด!]</b>",
+            f"⚠️ <i>นี่คือใบเตรียมความพร้อม (Watchlist Plan) ระบบกำลังเฝ้าดูแท่งเทียน H4 หากแท่ง H4 ปิดเบรกระดับ <code>{tk['entry']}</code> และ RSI ผ่านด่าน 3 ครบ บอทจะยิงออเดอร์เข้า cTrader อัตโนมัติทันทีครับ!</i>",
+            "━━━━━━━━━━━━━━━━━━━━",
+            f"🎯 <b>แผนคำนวณล่วงหน้า (พอร์ต $100,000 | ความเสี่ยง 0.75% = $750):</b>",
+            f"• <b>ฝั่ง (Direction):</b> <b>{tk['dir']}</b>",
+            f"• <b>ขนาด Lot ที่จะเข้า:</b> <code>{tk['lots_100k']} Lots</code>",
+            f"• <b>จุดเบรกที่รอ (3-Bar BOS Level):</b> <code>{tk['entry']}</code>",
+            f"• <b>Stop Loss (-1.0R / {tk['atr_mult']}x ATR):</b> <code>{tk['sl']}</code>",
+            f"• <b>TP 1 (+1.5R แบ่งปิด 50%):</b> <code>{tk['tp1']}</code>",
+            f"• <b>Stage 2 (+2.5R):</b> <code>{tk['stage2']}</code>",
             f"• <b>TP 2 (+3.5R ปิดที่เหลือ):</b> <code>{tk['tp2']}</code>",
         ])
 
@@ -393,6 +407,7 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
                     cfg = ftmo_fix_trader.load_fix_config()
                     if cfg.get('password'):
                         fix_res = ftmo_fix_trader.execute_signal(s)
+                        print(f"[FTMO FIX] execute_signal result for {sym}: {fix_res}")
                         if fix_res.get('ok'):
                             order_id = fix_res.get('res', {}).get('order_id', 'SUCCESS')
                             lots = fix_res.get('lots', s.get('planned_ticket', {}).get('lots_100k', 1.0))
