@@ -33,6 +33,31 @@
     "profit_factor": 0.0,
     "total_realized_r": 0.0
   },
-  "open_trades": [],
+  "open_trades": [
+    {
+      "ticket_id": "DEMO-1001",
+      "symbol": "USDJPY=X",
+      "name": "USD / Japanese Yen",
+      "dir": "SELL",
+      "entry_time": "2026-10-29T20:42:17.557843+00:00",
+      "entry": 157.683,
+      "lots": 2.59,
+      "sl": 158.136,
+      "current_sl": 158.136,
+      "initial_sl": 158.136,
+      "tp1": 157.004,
+      "lock1": 157.547,
+      "stage2": 156.55,
+      "lock2": 157.004,
+      "tp2": 156.097,
+      "risk_dist": 0.45300000000000296,
+      "atr_mult": 1.5,
+      "stage": "OPEN",
+      "units_remaining": 1.0,
+      "current_price": 157.298,
+      "floating_r": 0.85,
+      "floating_usd": 637.42
+    }
+  ],
   "closed_trades": []
 }
