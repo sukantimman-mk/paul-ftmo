@@ -1,26 +1,26 @@
 {
   "GC=F": {
-    "pair_key": "SETUP_ARMED|2026-10-30 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-10-30 20:00 UTC",
     "stage_key": "NONE|"
   },
   "USDJPY=X": {
-    "pair_key": "SETUP_ARMED|2026-10-30 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-10-30 20:00 UTC",
     "stage_key": "NONE|"
   },
   "USDCAD=X": {
-    "pair_key": "SETUP_ARMED|2026-10-30 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-10-30 20:00 UTC",
     "stage_key": "NONE|"
   },
   "USDCHF=X": {
-    "pair_key": "WAIT_PULLBACK|2026-10-30 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-10-30 20:00 UTC",
     "stage_key": "NONE|"
   },
   "GBPUSD=X": {
-    "pair_key": "SETUP_ARMED|2026-10-30 04:00 UTC",
+    "pair_key": "SETUP_ARMED|2026-10-30 20:00 UTC",
     "stage_key": "NONE|"
   },
   "EURUSD=X": {
-    "pair_key": "WAIT_PULLBACK|2026-10-30 04:00 UTC",
+    "pair_key": "SETUP_ARMED|2026-10-30 20:00 UTC",
     "stage_key": "NONE|"
   }
 }

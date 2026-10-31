@@ -71,7 +71,7 @@ def get_session_label(hour_utc):
         return "🇺🇸 New York Institutional Session (16:00 UTC | 23:00 น. ไทย)"
     return f"Off-Session ({hour_utc:02d}:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)"
 
-def get_strict_cot_snapshot(cot_db, contract_name, is_usd_base, entry_date_str, trade_dir):
+def get_strict_cot_snapshot(cot_db, contract_name, is_usd_base, entry_date_str, trade_dir, include_history=False):
     rows = cot_db.get(contract_name, [])
     dxy_rows = cot_db.get('USD INDEX', [])
     t_dt = pd.Timestamp(entry_date_str)
@@ -87,17 +87,18 @@ def get_strict_cot_snapshot(cot_db, contract_name, is_usd_base, entry_date_str, 
 
     raw_net = cur['net']
     raw_idx = cur['cot_idx']
-    raw_chg = cur['chg_net']
+    raw_chg = cur.get('chg_net', 0)
+    cur_long_pct = cur.get('long_pct', 50.0)
 
     if is_usd_base:
         pair_net_equiv = -raw_net
         pair_idx_equiv = round(100.0 - raw_idx, 1)
-        pair_long_pct = round(100.0 - cur['long_pct'], 1)
+        pair_long_pct = round(100.0 - cur_long_pct, 1)
         pair_chg_equiv = -raw_chg
     else:
         pair_net_equiv = raw_net
         pair_idx_equiv = raw_idx
-        pair_long_pct = cur['long_pct']
+        pair_long_pct = cur_long_pct
         pair_chg_equiv = raw_chg
 
     is_bull_cot = pair_net_equiv > 0
@@ -114,19 +115,19 @@ def get_strict_cot_snapshot(cot_db, contract_name, is_usd_base, entry_date_str, 
         verdict = "🛡️ COT Neutral / Non-Extreme (35%–65%): ไม่อยู่โซนตึงตัวสุดขีด เทรดตามการเบรกโครงสร้าง H4 BOS"
 
     pub_friday = (pd.Timestamp(cur['date']) + pd.Timedelta(days=3)).strftime('%Y-%m-%d')
-    return {
+    snap = {
         'contract': contract_name,
         'report_date': cur['date'],
         'published_friday': pub_friday,
         'is_usd_base': is_usd_base,
-        'raw_nl': cur['nl'],
-        'raw_ns': cur['ns'],
+        'raw_nl': cur.get('nl', cur.get('long', 0)),
+        'raw_ns': cur.get('ns', cur.get('short', 0)),
         'raw_net': raw_net,
         'raw_chg_net': raw_chg,
-        'raw_long_pct': cur['long_pct'],
+        'raw_long_pct': cur_long_pct,
         'raw_cot_idx': raw_idx,
-        'comm_net': cur['c_net'],
-        'oi': cur['oi'],
+        'comm_net': cur.get('c_net', 0),
+        'oi': cur.get('oi', 0),
         'pair_net_equiv': pair_net_equiv,
         'pair_idx_equiv': pair_idx_equiv,
         'pair_long_pct': pair_long_pct,
@@ -135,6 +136,29 @@ def get_strict_cot_snapshot(cot_db, contract_name, is_usd_base, entry_date_str, 
         'dxy_idx': dxy_cur['cot_idx'] if dxy_cur else 50.0,
         'verdict': verdict
     }
+    if include_history:
+        # Build 52-week (12-month) observation-only track from rows (newest first)
+        hist_src = rows[-53:]
+        hist_52w = []
+        for idx_h in range(len(hist_src) - 1, 0, -1):
+            r_c = hist_src[idx_h]
+            r_p = hist_src[idx_h - 1]
+            c_net_val = r_c.get('c_net', 0)
+            p_c_net_val = r_p.get('c_net', 0)
+            nr_val = r_c.get('nr_net', -(r_c.get('net', 0) + c_net_val) if c_net_val else 0)
+            p_nr_val = r_p.get('nr_net', -(r_p.get('net', 0) + p_c_net_val) if p_c_net_val else 0)
+            hist_52w.append({
+                'date': r_c['date'],
+                'noncomm_net': r_c.get('net', 0),
+                'noncomm_chg': r_c.get('chg_net', r_c.get('net', 0) - r_p.get('net', 0)),
+                'comm_net': c_net_val,
+                'comm_chg': r_c.get('chg_c_net', c_net_val - p_c_net_val),
+                'nonrept_net': nr_val,
+                'nonrept_chg': nr_val - p_nr_val,
+                'cot_idx': r_c.get('cot_idx', 50.0)
+            })
+        snap['history_52w'] = hist_52w[:52]
+    return snap
 
 def extract_candle_slice(df_h4, ef_series, es_series, entry_idx, exit_idx, stage1_idx, stage2_idx, dec):
     start_i = max(0, entry_idx - 22)
@@ -455,7 +479,7 @@ def simulate_asset_v4(symbol, name, cot_contract, is_usd_base, dec, pip_val, cot
     trend_now = 'BULLISH' if is_bull_now else 'BEARISH'
     planned_dir = 'BUY' if is_bull_now else 'SELL'
 
-    cot_live = get_strict_cot_snapshot(cot_db, cot_contract, is_usd_base, str(last_t.date()), planned_dir)
+    cot_live = get_strict_cot_snapshot(cot_db, cot_contract, is_usd_base, str(last_t.date()), planned_dir, include_history=True)
 
     # Evaluate Live 1-2-3-4 Gates right now!
     # Gate 1: Macro Trend + COT
@@ -1383,6 +1407,33 @@ def build_full_suite():
             const trendName = diffEma < 0 ? 'ขาลง (BEARISH)' : 'ขาขึ้น (BULLISH)';
             const trendColor = diffEma < 0 ? 'text-rose-400' : 'text-emerald-400';
 
+            const cotHistList = ls.cot.history_52w || [];
+            let cotHistRowsHtml = '';
+            cotHistList.forEach(h => {{
+                const ncPlus = (h.noncomm_chg || 0) >= 0;
+                const cPlus = (h.comm_chg || 0) >= 0;
+                const nrPlus = (h.nonrept_chg || 0) >= 0;
+                const idxCol = h.cot_idx >= 65 ? 'text-emerald-400' : (h.cot_idx <= 35 ? 'text-rose-400' : 'text-amber-300');
+                cotHistRowsHtml += `
+                    <tr class="border-b border-slate-800/70 hover:bg-slate-800/40">
+                        <td class="py-1 px-1.5 font-bold text-slate-300 whitespace-nowrap">${{h.date}}</td>
+                        <td class="py-1 px-1.5 text-right font-bold whitespace-nowrap ${{h.noncomm_net >= 0 ? 'text-emerald-400' : 'text-rose-400'}}">
+                            ${{h.noncomm_net >= 0 ? '+' : ''}}${{h.noncomm_net.toLocaleString()}}
+                            <span class="text-[9px] font-normal ${{ncPlus ? 'text-emerald-400' : 'text-rose-400'}}">(${{ncPlus ? '+' : ''}}${{(h.noncomm_chg || 0).toLocaleString()}})</span>
+                        </td>
+                        <td class="py-1 px-1.5 text-right text-slate-300 whitespace-nowrap">
+                            ${{h.comm_net >= 0 ? '+' : ''}}${{h.comm_net.toLocaleString()}}
+                            <span class="text-[9px] font-normal ${{cPlus ? 'text-emerald-400' : 'text-rose-400'}}">(${{cPlus ? '+' : ''}}${{(h.comm_chg || 0).toLocaleString()}})</span>
+                        </td>
+                        <td class="py-1 px-1.5 text-right text-amber-300 whitespace-nowrap">
+                            ${{h.nonrept_net >= 0 ? '+' : ''}}${{h.nonrept_net.toLocaleString()}}
+                            <span class="text-[9px] font-normal ${{nrPlus ? 'text-emerald-400' : 'text-rose-400'}}">(${{nrPlus ? '+' : ''}}${{(h.nonrept_chg || 0).toLocaleString()}})</span>
+                        </td>
+                        <td class="py-1 px-1.5 text-right font-bold ${{idxCol}}">${{h.cot_idx}}%</td>
+                    </tr>
+                `;
+            }});
+
             document.getElementById('liveGatesBody').innerHTML = `
                 <!-- 1️⃣ ด่านที่ 1: กองทุนสถาบัน & เทรนด์ใหญ่ -->
                 <div class="p-3.5 rounded-xl border-l-4 border ${{b1}} transition space-y-2.5 shadow-sm">
@@ -1407,7 +1458,7 @@ def build_full_suite():
                         </div>
                         <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
                             <div class="flex justify-between items-center text-[10px]">
-                                <span class="text-slate-400">COT 3-Year Index</span>
+                                <span class="text-slate-400">COT 52W Index (${{ls.cot.report_date}})</span>
                                 <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-amber-300 mono font-bold">เกณฑ์: 35% – 65%</span>
                             </div>
                             <div class="font-extrabold text-amber-300 text-xs">${{cotIdx}}% (${{cotIdx >= 35 && cotIdx <= 65 ? 'Neutral โซนกลาง' : (cotIdx > 65 ? 'Extreme Bull กองทุนซื้อ' : 'Extreme Bear กองทุนขาย')}})</div>
@@ -1416,7 +1467,32 @@ def build_full_suite():
                     </div>
 
                     <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-[11px] text-slate-300 leading-relaxed">
-                        👉 <b>เกณฑ์ Threshold & ข้อสรุปด่าน 1:</b> ${{diffEma < 0 ? 'เทรนด์หลุดเป็นขาลง (EMA50 < 200) สอดคล้องฝั่ง' : 'เทรนด์เป็นขาขึ้น (EMA50 > 200) สอดคล้องฝั่ง'}} <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}}">${{ls.planned_dir}}</b> (COT 3-Yr อยู่ที่ ${{cotIdx}}% เกณฑ์โซนกลาง 35-65% สถาบันไม่สกัดกั้น)
+                        👉 <b>เกณฑ์ Threshold & ข้อสรุปด่าน 1:</b> ${{diffEma < 0 ? 'เทรนด์หลุดเป็นขาลง (EMA50 < 200) สอดคล้องฝั่ง' : 'เทรนด์เป็นขาขึ้น (EMA50 > 200) สอดคล้องฝั่ง'}} <b class="${{ls.planned_dir === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}}">${{ls.planned_dir}}</b> (COT อยู่ที่ ${{cotIdx}}% • รอบรายงาน ${{ls.cot.report_date}} ประกาศศุกร์ ${{ls.cot.published_friday}})
+                    </div>
+
+                    <!-- Collapsible 12-Month (52-Week) COT Observation Drawer (Zero Strategy Impact) -->
+                    <div>
+                        <button onclick="document.getElementById('liveCot52Drawer').classList.toggle('hidden')" class="w-full py-1.5 px-2.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-[10px] font-bold text-cyan-300 flex items-center justify-between transition">
+                            <span>📅 ดูตาราง Track COT ย้อนหลัง 12 เดือน (${{cotHistList.length}} สัปดาห์ • สัญญา ${{ls.cot.contract}})</span>
+                            <span class="text-slate-400">ดูค่าอ้างอิง ▼</span>
+                        </button>
+                        <div id="liveCot52Drawer" class="hidden mt-1.5 p-2 rounded-xl bg-slate-950/95 border border-slate-800 space-y-1.5">
+                            <div class="text-[9px] text-slate-400">💡 ข้อมูลสัญญาฟิวเจอร์สจริงของ ${{ls.cot.contract}} ย้อนหลัง 12 เดือน (52W) สำหรับดูแนวโน้มเฉยๆ ไม่กระทบกฎกลยุทธ์ 4 ด่าน</div>
+                            <div class="max-h-56 overflow-y-auto overflow-x-auto">
+                                <table class="w-full text-left mono text-[10px]">
+                                    <thead class="sticky top-0 bg-slate-950 text-slate-400 border-b border-slate-800">
+                                        <tr>
+                                            <th class="py-1 px-1.5">สัปดาห์</th>
+                                            <th class="py-1 px-1.5 text-right text-cyan-300">🏛️ สถาบัน</th>
+                                            <th class="py-1 px-1.5 text-right text-slate-300">🏭 พาณิชย์</th>
+                                            <th class="py-1 px-1.5 text-right text-amber-400">👤 รายย่อย</th>
+                                            <th class="py-1 px-1.5 text-right text-amber-300">COT%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${{cotHistRowsHtml}}</tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1764,28 +1840,128 @@ def build_full_suite():
             ctx.fillText(`RSI ล่าสุด: ${{candles[lastIdx][5]}}`, Math.max(padL, lx - 85), Math.max(12, ly - 5));
         }}
 
-        async function fetchFreshLiveMarket() {{
-            const btn = document.getElementById('liveRefreshBtn');
-            const origText = btn.innerHTML;
-            btn.innerHTML = '⏳ กำลังดึงกราฟปัจจุบันสดจากตลาด...';
-            btn.disabled = true;
+        async function syncLiveCFTCIntoStates() {{
             try {{
-                const resp = await fetch('http://127.0.0.1:8765/api/live', {{ cache: 'no-store' }});
-                if (resp.ok) {{
-                    const data = await resp.json();
-                    if (data && data.live_states) {{
-                        LIVE_STATES = data.live_states;
-                        document.getElementById('liveLastUpdateText').textContent = 'อัปเดตตลาดสดสำเร็จ: ' + data.updated_at;
-                        renderLivePair();
+                const contracts = ['GOLD', 'JAPANESE YEN', 'CANADIAN DOLLAR', 'SWISS FRANC', 'BRITISH POUND', 'EURO FX', 'USD INDEX'];
+                const clause = contracts.map(c => `contract_market_name='${{c}}'`).join(' or ');
+                const params = new URLSearchParams({{
+                    "$where": `(${{clause}})`,
+                    "$select": "report_date_as_yyyy_mm_dd,contract_market_name,noncomm_positions_long_all,noncomm_positions_short_all,comm_positions_long_all,comm_positions_short_all,nonrept_positions_long_all,nonrept_positions_short_all,open_interest_all",
+                    "$order": "report_date_as_yyyy_mm_dd DESC",
+                    "$limit": "450"
+                }});
+                const resp = await fetch(`https://publicreporting.cftc.gov/resource/6dca-aqww.json?${{params.toString()}}`, {{ cache: 'no-store' }});
+                if (!resp.ok) return;
+                const rows = await resp.json();
+                const byC = {{}};
+                rows.forEach(r => {{
+                    const cn = r.contract_market_name;
+                    if (!r.report_date_as_yyyy_mm_dd) return;
+                    if (!byC[cn]) byC[cn] = [];
+                    const nl = Math.trunc(Number(r.noncomm_positions_long_all || 0));
+                    const ns = Math.trunc(Number(r.noncomm_positions_short_all || 0));
+                    const cl = Math.trunc(Number(r.comm_positions_long_all || 0));
+                    const cs = Math.trunc(Number(r.comm_positions_short_all || 0));
+                    const nrl = Math.trunc(Number(r.nonrept_positions_long_all || 0));
+                    const nrs = Math.trunc(Number(r.nonrept_positions_short_all || 0));
+                    byC[cn].push({{
+                        date: String(r.report_date_as_yyyy_mm_dd).slice(0, 10),
+                        nl, ns, net: nl - ns, c_net: cl - cs, nr_net: nrl - nrs,
+                        oi: Math.trunc(Number(r.open_interest_all || 0))
+                    }});
+                }});
+                LIVE_STATES.forEach(ls => {{
+                    if (!ls.cot || !byC[ls.cot.contract]) return;
+                    const arr = byC[ls.cot.contract].sort((a, b) => b.date.localeCompare(a.date));
+                    if (arr.length < 2) return;
+                    const nets = arr.map(x => x.net);
+                    const h52 = [];
+                    const maxR = Math.min(52, arr.length - 1);
+                    for (let i = 0; i < maxR; i++) {{
+                        const win = nets.slice(i, i + 52);
+                        const mn = Math.min(...win), mx = Math.max(...win);
+                        const idx = mx !== mn ? Number((((arr[i].net - mn) / (mx - mn)) * 100).toFixed(1)) : 50.0;
+                        h52.push({{
+                            date: arr[i].date,
+                            noncomm_net: arr[i].net,
+                            noncomm_chg: arr[i].net - arr[i + 1].net,
+                            comm_net: arr[i].c_net,
+                            comm_chg: arr[i].c_net - arr[i + 1].c_net,
+                            nonrept_net: arr[i].nr_net,
+                            nonrept_chg: arr[i].nr_net - arr[i + 1].nr_net,
+                            cot_idx: idx
+                        }});
                     }}
-                }} else {{
-                    alert('เซิร์ฟเวอร์ดึงกราฟสด (Port 8765) ยังไม่ได้เปิด — คุณสามารถดับเบิลคลิกไฟล์ start_live_trading_base.bat เพื่อเปิดโหมดดึงข้อมูลสดอัตโนมัติได้ทันทีครับ!');
+                    ls.cot.history_52w = h52;
+                }});
+            }} catch (e) {{}}
+        }}
+
+        async function fetchFreshLiveMarket(isSilent = false) {{
+            const btn = document.getElementById('liveRefreshBtn');
+            const origText = btn ? btn.innerHTML : '🔄 รีเฟรชสด';
+            if (btn && !isSilent) {{
+                btn.innerHTML = '⏳ กำลังซิงค์ข้อมูลสด...';
+                btn.disabled = true;
+            }}
+            let updatedSource = '';
+            try {{
+                // 1. Try local Python live engine first (fast 1.8s timeout, optional)
+                try {{
+                    const ctrl = new AbortController();
+                    const tid = setTimeout(() => ctrl.abort(), 1800);
+                    const resp = await fetch('http://127.0.0.1:8765/api/live', {{ cache: 'no-store', signal: ctrl.signal }});
+                    clearTimeout(tid);
+                    if (resp.ok) {{
+                        const data = await resp.json();
+                        if (data && data.live_states) {{
+                            LIVE_STATES = data.live_states;
+                            updatedSource = 'อัปเดตสด (Local Engine): ' + data.updated_at;
+                        }}
+                    }}
+                }} catch (localErr) {{}}
+
+                // 2. Zero-.bat Cloud Fallback: fetch latest H4 scanner JSON directly from GitHub Cloud!
+                if (!updatedSource) {{
+                    const cloudUrl = 'https://raw.githubusercontent.com/sukantimman-mk/paul-ftmo/main/forward_live_scanner.json?t=' + Date.now();
+                    const cResp = await fetch(cloudUrl, {{ cache: 'no-store' }});
+                    if (cResp.ok) {{
+                        const cData = await cResp.json();
+                        const sigArr = Array.isArray(cData) ? cData : ((cData && (cData.signals || cData.live_states)) || null);
+                        if (Array.isArray(sigArr) && sigArr.length > 0) {{
+                            // Merge fresh H4 signals while keeping embedded history_52w if needed
+                            const oldHistMap = {{}};
+                            LIVE_STATES.forEach(s => {{
+                                if (s.cot && s.cot.history_52w) oldHistMap[s.symbol] = s.cot.history_52w;
+                            }});
+                            sigArr.forEach(ns => {{
+                                if (ns.cot && (!ns.cot.history_52w || !ns.cot.history_52w.length) && oldHistMap[ns.symbol]) {{
+                                    ns.cot.history_52w = oldHistMap[ns.symbol];
+                                }}
+                            }});
+                            LIVE_STATES = sigArr;
+                            const lastBar = (sigArr[0] && sigArr[0].last_bar_utc) ? ('แท่งล่าสุด ' + sigArr[0].last_bar_utc) : new Date().toLocaleTimeString('th-TH');
+                            updatedSource = 'ซิงค์สด Cloud + CFTC (' + lastBar + '): ' + new Date().toLocaleTimeString('th-TH');
+                        }}
+                    }}
                 }}
+
+                // 3. Always enrich 52-week CFTC COT track directly from official CFTC API
+                await syncLiveCFTCIntoStates();
+
+                if (updatedSource) {{
+                    document.getElementById('liveLastUpdateText').textContent = updatedSource;
+                }}
+                renderLivePair();
             }} catch (err) {{
-                alert('หากต้องการกดปุ่มดึงข้อมูลสดในหน้าเว็บโดยตรง ให้เปิดไฟล์ start_live_trading_base.bat ทิ้งไว้ (หรือรัน python D:\\\\cot_dashboard\\\\paul_engine.py เพื่ออัปเดตไฟล์)');
+                // Silent graceful fallback to embedded snapshot — zero annoying .bat popups!
+                await syncLiveCFTCIntoStates();
+                renderLivePair();
             }} finally {{
-                btn.innerHTML = origText;
-                btn.disabled = false;
+                if (btn && !isSilent) {{
+                    btn.innerHTML = origText;
+                    btn.disabled = false;
+                }}
             }}
         }}
 
@@ -2524,6 +2700,7 @@ def build_full_suite():
         renderLivePair();
         setTimeout(() => {{ if (currentMode === 'LIVE') renderLivePair(); }}, 150);
         setTimeout(() => {{ if (currentMode === 'LIVE') renderLivePair(); }}, 500);
+        setTimeout(() => {{ fetchFreshLiveMarket(true); }}, 700);
     </script>
 </body>
 </html>"""

@@ -146,7 +146,7 @@ def send_telegram_message(bot_token, chat_id, text_html):
 def sync_latest_cftc_cot_if_needed():
     """
     Fetches the latest weekly CFTC COT report from publicreporting.cftc.gov
-    and merges any new weeks into cot_historical_2023_2026.json so Cloud runners stay fresh forever.
+    and merges/repairs any new weeks into cot_historical_2023_2026.json so Cloud runners stay fresh forever.
     """
     try:
         if not os.path.exists(COT_CACHE_PATH):
@@ -154,13 +154,21 @@ def sync_latest_cftc_cot_if_needed():
         with open(COT_CACHE_PATH, 'r', encoding='utf-8') as f:
             cot_db = json.load(f)
 
-        contracts = ['GOLD', 'JAPANESE YEN', 'CANADIAN DOLLAR', 'SWISS FRANC', 'BRITISH POUND', 'EURO FX', 'USD INDEX']
+        contracts = list(cot_db.keys())
         where_clause = "(" + " or ".join([f"contract_market_name='{c}'" for c in contracts]) + ")"
         params = {
             "$where": where_clause,
-            "$select": "report_date_as_yyyy_mm_dd,contract_market_name,noncomm_positions_long_all,noncomm_positions_short_all,change_in_noncomm_long_all,change_in_noncomm_short_all",
+            "$select": (
+                "report_date_as_yyyy_mm_dd,contract_market_name,"
+                "noncomm_positions_long_all,noncomm_positions_short_all,"
+                "comm_positions_long_all,comm_positions_short_all,"
+                "nonrept_positions_long_all,nonrept_positions_short_all,"
+                "change_in_noncomm_long_all,change_in_noncomm_short_all,"
+                "change_in_comm_long_all,change_in_comm_short_all,"
+                "open_interest_all"
+            ),
             "$order": "report_date_as_yyyy_mm_dd DESC",
-            "$limit": 60
+            "$limit": 1000
         }
         url = f"https://publicreporting.cftc.gov/resource/6dca-aqww.json?{urllib.parse.urlencode(params)}"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -168,43 +176,80 @@ def sync_latest_cftc_cot_if_needed():
             raw_rows = json.loads(resp.read().decode('utf-8'))
 
         updated = False
-        for r in raw_rows:
+        for r in reversed(raw_rows):
             c_name = r.get('contract_market_name')
             if c_name not in cot_db:
                 continue
             r_date = str(r.get('report_date_as_yyyy_mm_dd', ''))[:10]
             if not r_date:
                 continue
-            existing_dates = {item['date'] for item in cot_db[c_name]}
-            if r_date not in existing_dates:
+
+            existing_map = {item['date']: item for item in cot_db[c_name]}
+            existing_rec = existing_map.get(r_date)
+            needs_repair = (
+                existing_rec is not None and (
+                    'nl' not in existing_rec or
+                    'ns' not in existing_rec or
+                    'c_net' not in existing_rec or
+                    'oi' not in existing_rec or
+                    'nr_net' not in existing_rec
+                )
+            )
+
+            if existing_rec is None or needs_repair:
                 l_pos = int(float(r.get('noncomm_positions_long_all', 0) or 0))
                 s_pos = int(float(r.get('noncomm_positions_short_all', 0) or 0))
+                c_l = int(float(r.get('comm_positions_long_all', 0) or 0))
+                c_s = int(float(r.get('comm_positions_short_all', 0) or 0))
+                nr_l = int(float(r.get('nonrept_positions_long_all', 0) or 0))
+                nr_s = int(float(r.get('nonrept_positions_short_all', 0) or 0))
                 chg_l = int(float(r.get('change_in_noncomm_long_all', 0) or 0))
                 chg_s = int(float(r.get('change_in_noncomm_short_all', 0) or 0))
+                chg_cl = int(float(r.get('change_in_comm_long_all', 0) or 0))
+                chg_cs = int(float(r.get('change_in_comm_short_all', 0) or 0))
+                oi = int(float(r.get('open_interest_all', 0) or 0))
+
                 net = l_pos - s_pos
+                c_net = c_l - c_s
+                nr_net = nr_l - nr_s
                 chg_net = chg_l - chg_s
+                chg_c_net = chg_cl - chg_cs
                 long_pct = round(l_pos / max(1, l_pos + s_pos) * 100.0, 1)
 
-                hist_nets = [x['net'] for x in cot_db[c_name][-25:]] + [net]
+                prior_rows = [x for x in cot_db[c_name] if x['date'] < r_date]
+                hist_nets = [x['net'] for x in prior_rows[-51:]] + [net]
                 mn, mx = min(hist_nets), max(hist_nets)
-                cot_idx = round((net - mn) / max(1, mx - mn) * 100.0, 1)
+                cot_idx = round((net - mn) / max(1, mx - mn) * 100.0, 1) if mx != mn else 50.0
 
-                cot_db[c_name].append({
+                new_entry = {
                     'date': r_date,
+                    'nl': l_pos,
+                    'ns': s_pos,
                     'long': l_pos,
                     'short': s_pos,
                     'net': net,
+                    'c_net': c_net,
+                    'nr_net': nr_net,
+                    'chg_l': chg_l,
+                    'chg_s': chg_s,
                     'chg_net': chg_net,
+                    'chg_c_net': chg_c_net,
+                    'oi': oi,
                     'long_pct': long_pct,
                     'cot_idx': cot_idx
-                })
+                }
+
+                if existing_rec is not None:
+                    existing_rec.update(new_entry)
+                else:
+                    cot_db[c_name].append(new_entry)
                 cot_db[c_name].sort(key=lambda x: x['date'])
                 updated = True
 
         if updated:
             with open(COT_CACHE_PATH, 'w', encoding='utf-8') as f:
                 json.dump(cot_db, f, indent=2, ensure_ascii=False)
-            print("[+] Synced new weekly CFTC COT records into cache.")
+            print("[+] Synced & verified weekly CFTC COT records (52W index + full schema) into cache.")
     except Exception as e:
         print(f"[!] Note: CFTC live sync skipped ({e}), using existing cache.")
 

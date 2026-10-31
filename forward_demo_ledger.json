@@ -4,7 +4,7 @@
   "initial_balance": 100000.0,
   "current_balance": 100000.0,
   "current_equity": 100000.0,
-  "floating_pnl_usd": 0.0,
+  "floating_pnl_usd": 0,
   "net_profit_usd": 0.0,
   "net_return_pct": 0.0,
   "high_water_mark": 100000.0,
@@ -13,7 +13,7 @@
   "risk_per_trade_usd": 750.0,
   "fee_per_trade_r": 0.04,
   "started_at_utc": "2026-10-30T06:13:49.579812+00:00",
-  "last_updated_utc": "2026-10-30T06:13:49.579812+00:00",
+  "last_updated_utc": "2026-10-31T09:42:44.200407+00:00",
   "ftmo_rules": {
     "max_daily_loss_pct": 5.0,
     "max_total_loss_pct": 10.0,
@@ -31,7 +31,7 @@
     "avg_win_r": 0.0,
     "avg_loss_r": 0.0,
     "profit_factor": 0.0,
-    "total_realized_r": 0.0
+    "total_realized_r": 0
   },
   "open_trades": [],
   "closed_trades": []
