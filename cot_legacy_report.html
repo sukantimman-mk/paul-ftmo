@@ -5,6 +5,225 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CFTC COT Institutional Money Flow Dashboard - FTMO Strategy</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // ============================================================
+    // UNIVERSAL ZERO-CLIPPING COT MODAL & POPOVER ENGINE
+    // ============================================================
+    let activeModalCode = null;
+    let activeModalTab = 'flow';
+
+    function getCurrencyStat(c) {
+      return (window.COT_INDICES && window.COT_INDICES[c.contract]) || (typeof COT_INDICES !== 'undefined' && COT_INDICES[c.contract]) || {
+        net: c.net_position,
+        min52: c.min_52w !== undefined ? c.min_52w : c.net_position - 50000,
+        max52: c.max_52w !== undefined ? c.max_52w : c.net_position + 50000,
+        idx52: c.cot_index_52w !== undefined ? c.cot_index_52w : 50.0
+      };
+    }
+
+    function openCotCommentModal(code, defaultTab = 'flow') {
+      activeModalCode = code;
+      activeModalTab = defaultTab;
+
+      if (!cotData || !cotData.currencies) return;
+      const c = cotData.currencies.find(x => x.code === code) || cotData.currencies[0];
+      if (!c) return;
+
+      const r = c.raw_record || {};
+      const stat = getCurrencyStat(c);
+      const min52 = stat.min52;
+      const max52 = stat.max52;
+      const range52 = max52 - min52 || 1;
+      const num52 = c.net_position - min52;
+      const idxVal = stat.idx52;
+      const isHigh = idxVal >= 65;
+      const isLow = idxVal <= 35;
+      const zoneLabel = isHigh ? 'Bullish (>65%)' : (isLow ? 'Bearish (<35%)' : 'Neutral (35%-65%)');
+      const zoneDesc = isHigh 
+        ? 'สถาบันสะสมฝั่ง Long หนาแน่น ใกล้จุดสูงสุดในรอบปี หนุนโมเมนตัมฝั่งซื้อ' 
+        : (isLow ? 'สถาบันสะสมฝั่ง Short หนาแน่น ใกล้จุดต่ำสุดในรอบปี หนุนโมเมนตัมฝั่งขาย' : 'สถาบันถือครองในระดับปกติ (35%-65%) ไม่เป็นอุปสรรคต่อการเทรดตามโครงสร้าง H4');
+
+      // Header
+      document.getElementById('modalCurFlag').innerText = c.flag;
+      document.getElementById('modalCurName').innerHTML = `${c.name} (${c.code}) <span class="text-xs px-2 py-0.5 rounded ${c.net_position >= 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">${c.bias}</span>`;
+      document.getElementById('modalContractDesc').innerText = `${c.market_name || c.contract} • ประกาศสัปดาห์ล่าสุด (${cotData.metadata ? cotData.metadata.report_date : c.latest_date})`;
+
+      // Tab 1: Flow
+      document.getElementById('modalFlowHeadline').innerText = c.flow || (c.weekly_change >= 0 ? 'สถาบันซื้อสะสมเพิ่ม' : 'สถาบันเริ่มรินปิดทำกำไร');
+      document.getElementById('modalFlowDescription').innerText = `สัปดาห์ล่าสุดสถาบันถือครองสุทธิ (Net Position) รวม ${c.net_position >= 0 ? '+' : ''}${c.net_position.toLocaleString()} สัญญา โดยมีการเปลี่ยนแปลงรอบสัปดาห์ ${c.weekly_change >= 0 ? '+' : ''}${c.weekly_change.toLocaleString()} สัญญา`;
+      document.getElementById('modalTacticalState').innerText = c.tactical_state || (idxVal >= 65 ? 'TREND CONTINUATION' : (idxVal <= 35 ? 'OVERSOLD / UNWINDING' : 'NEUTRAL MARKET BALANCE'));
+      document.getElementById('modalPositionIntensity').innerText = `${c.intensity || 'STANDARD'} • COT INDEX ${idxVal}% (${zoneLabel})`;
+
+      // 3-Player
+      document.getElementById('modalNoncommNet').innerText = `${c.net_position >= 0 ? '+' : ''}${c.net_position.toLocaleString()}`;
+      document.getElementById('modalNoncommChg').innerText = `${c.weekly_change >= 0 ? '▲ +' : '▼ '}${Math.abs(c.weekly_change).toLocaleString()} wk`;
+      document.getElementById('modalNoncommChg').className = `text-[10px] ${c.weekly_change >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-normal`;
+
+      const commNet = r.comm_net || 0;
+      const commChg = (r.change_comm_long || 0) - (r.change_comm_short || 0);
+      document.getElementById('modalCommNet').innerText = `${commNet >= 0 ? '+' : ''}${commNet.toLocaleString()}`;
+      document.getElementById('modalCommChg').innerText = `${commChg >= 0 ? '▲ +' : '▼ '}${Math.abs(commChg).toLocaleString()} wk`;
+
+      const nrNet = r.nonrept_net || 0;
+      const nrChg = (r.change_nonrept_long || 0) - (r.change_nonrept_short || 0);
+      document.getElementById('modalNonreptNet').innerText = `${nrNet >= 0 ? '+' : ''}${nrNet.toLocaleString()}`;
+      document.getElementById('modalNonreptChg').innerText = `${nrChg >= 0 ? '▲ +' : '▼ '}${Math.abs(nrChg).toLocaleString()} wk`;
+
+      // Tab 2: Math
+      document.getElementById('modalMathNet').innerText = `${c.net_position >= 0 ? '+' : ''}${c.net_position.toLocaleString()} สัญญา`;
+      document.getElementById('modalMathMin').innerText = min52.toLocaleString();
+      document.getElementById('modalMathMax').innerText = max52.toLocaleString();
+      document.getElementById('modalMathRange').innerText = range52.toLocaleString();
+      document.getElementById('modalMathStep1').innerText = `[ (${c.net_position.toLocaleString()} - (${min52.toLocaleString()})) / ${range52.toLocaleString()} ] × 100`;
+      document.getElementById('modalMathStep2').innerText = `(${num52.toLocaleString()} / ${range52.toLocaleString()}) × 100`;
+      document.getElementById('modalMathFinalIdx').innerText = `${idxVal}%`;
+      document.getElementById('modalMathMeaning').innerHTML = `🎯 <b>การแปลความหมาย:</b> ${zoneDesc}`;
+
+      // Tab 3: Rule
+      document.getElementById('modalPaulRuleText').innerText = (c.code === 'XAU')
+        ? `ทองคำ (XAU/USD) สถาบันถือครองสุทธิสูงมาก แต่สัปดาห์ล่าสุดมีการรินปิดทำกำไร กฎเหล็กของพอลคือ ห้ามไล่ราคาเด็ดขาด! ต้องรอให้ราคาย่อตัวลงมาแตะเส้นฟ้า EMA50 (ด่าน 2) และเกิดสัญญาณแท่ง H4 ปิดเบรกโครงสร้าง 3-Bar BOS พร้อม RSI ยืนยันครบ 4 ด่านเท่านั้น`
+        : `ในระบบ Paul FTMO Pro V4 สกุลเงิน ${c.code} (${c.name}) มีดัชนีสถาบันอยู่ที่ ${idxVal}% (${zoneLabel}) หากเทรดตามทิศทางเดียวกับสถาบัน จะช่วยเพิ่มความได้เปรียบสูงถึง 1.74 PF โดยต้องรอให้โครงสร้างแท่งเทียน H4 ยืนยันครบ 4 ด่านเสมอ`;
+
+      switchCotModalTab(defaultTab);
+      document.getElementById('cotUniversalModal').classList.remove('hidden');
+    }
+
+    function closeCotCommentModal() {
+      const modal = document.getElementById('cotUniversalModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function switchCotModalTab(tabKey) {
+      activeModalTab = tabKey;
+      ['flow', 'math', 'rule'].forEach(k => {
+        const btn = document.getElementById(`modalTabBtn${k.charAt(0).toUpperCase() + k.slice(1)}`);
+        const content = document.getElementById(`modalTabContent${k.charAt(0).toUpperCase() + k.slice(1)}`);
+        if (k === tabKey) {
+          btn.className = "px-3 py-1.5 rounded-xl font-bold text-xs bg-neoncyan text-black transition flex items-center gap-1.5 shadow";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "px-3 py-1.5 rounded-xl font-bold text-xs text-gray-400 hover:text-white bg-white/5 transition flex items-center gap-1.5";
+          content.classList.add('hidden');
+        }
+      });
+    }
+
+    function openTradeSetupModal(pairName) {
+      if (!cotData || !cotData.trade_setups) return;
+      const s = cotData.trade_setups.find(x => x.pair === pairName) || cotData.trade_setups[0];
+      if (!s) return;
+
+      document.getElementById('setupModalFlags').innerText = `${s.base_flag} ${s.quote_flag}`;
+      document.getElementById('setupModalPair').innerText = `${s.pair} (${s.base}/${s.quote})`;
+      document.getElementById('setupModalRecommendation').innerText = s.recommendation;
+      document.getElementById('setupModalPhase').innerText = s.phase || 'ANALYZING';
+      document.getElementById('setupModalRationale').innerText = s.rationale;
+      document.getElementById('setupModalPaulRule').innerText = s.paul_rule || 'รอยืนยันโครงสร้างราคา 4 ด่าน';
+
+      document.getElementById('cotSetupModal').classList.remove('hidden');
+    }
+
+    function closeTradeSetupModal() {
+      const modal = document.getElementById('cotSetupModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function showCotPopover(event, code) {
+      if (!cotData || !cotData.currencies) return;
+      const c = cotData.currencies.find(x => x.code === code);
+      if (!c) return;
+
+      const stat = getCurrencyStat(c);
+      const min52 = stat.min52;
+      const max52 = stat.max52;
+      const range52 = max52 - min52 || 1;
+      const num52 = c.net_position - min52;
+      const idxVal = stat.idx52;
+      const isHigh = idxVal >= 65;
+      const isLow = idxVal <= 35;
+      const zoneLabel = isHigh ? 'Bullish' : (isLow ? 'Bearish' : 'Neutral');
+
+      const popover = document.getElementById('cotFloatingPopover');
+      const content = document.getElementById('popoverContent');
+      if (!popover || !content) return;
+
+      content.innerHTML = `
+        <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-2 font-sans">
+          <div class="font-extrabold text-amber-300 flex items-center gap-1.5">
+            <span>📐 สูตร & การแทนค่า COT Index</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200 border border-amber-500/30 font-bold">${c.code}</span>
+          </div>
+          <span class="text-[10px] text-gray-400 font-mono">${c.contract}</span>
+        </div>
+
+        <div class="p-2 rounded-lg bg-black/60 border border-white/5 mb-2 font-mono text-[11px] text-cyan-300">
+          <div class="text-[10px] text-gray-400 font-sans font-semibold mb-0.5">สูตรคำนวณมาตรฐาน (Williams COT Index):</div>
+          <div class="font-bold">COT Index = [(Net - Min52W) / (Max52W - Min52W)] × 100</div>
+        </div>
+
+        <div class="space-y-1 text-[11px] text-gray-300 font-mono mb-2">
+          <div class="flex justify-between py-0.5 border-b border-white/5">
+            <span>• Net Position:</span>
+            <b class="${c.net_position >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${c.net_position >= 0 ? '+' : ''}${c.net_position.toLocaleString()}</b>
+          </div>
+          <div class="flex justify-between py-0.5 border-b border-white/5">
+            <span>• Min / Max (52W):</span>
+            <b>${min52.toLocaleString()} / ${max52.toLocaleString()}</b>
+          </div>
+          <div class="flex justify-between py-0.5 border-b border-white/5">
+            <span>• กรอบแกว่งตัว (Range):</span>
+            <b>${range52.toLocaleString()}</b>
+          </div>
+        </div>
+
+        <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-[11px] font-mono">
+          <div>= [(${c.net_position.toLocaleString()} - ${min52.toLocaleString()}) / ${range52.toLocaleString()}] × 100</div>
+          <div class="mt-0.5 text-cyan-300 font-bold">= (${num52.toLocaleString()} / ${range52.toLocaleString()}) × 100 = <span class="text-amber-300 font-black text-sm">${idxVal}% (${zoneLabel})</span></div>
+          <div class="mt-1 pt-1 border-t border-amber-500/20 text-[10px] text-gray-300 font-sans">
+            💡 <i>คลิกเพื่อเปิดดูบทวิเคราะห์สถาบัน & คอมเมนต์ฉบับเต็ม</i>
+          </div>
+        </div>
+      `;
+
+      const rect = event.currentTarget.getBoundingClientRect();
+      const popW = 384;
+      let left = rect.right - popW;
+      if (left < 10) left = 10;
+      if (left + popW > window.innerWidth - 10) left = window.innerWidth - popW - 10;
+
+      let top = rect.bottom + 8;
+      // Flip upwards if within 320px of window bottom
+      if (top + 320 > window.innerHeight) {
+        top = Math.max(10, rect.top - 310);
+      }
+
+      popover.style.top = `${top}px`;
+      popover.style.left = `${left}px`;
+      popover.classList.remove('hidden');
+    }
+
+    function hideCotPopover() {
+      const popover = document.getElementById('cotFloatingPopover');
+      if (popover) popover.classList.add('hidden');
+    }
+
+    // Close modals on Escape key or backdrop click
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeCotCommentModal();
+        closeTradeSetupModal();
+        hideCotPopover();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      const modal1 = document.getElementById('cotUniversalModal');
+      const modal2 = document.getElementById('cotSetupModal');
+      if (modal1 && e.target === modal1) closeCotCommentModal();
+      if (modal2 && e.target === modal2) closeTradeSetupModal();
+    });
+
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="cot_data.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,6 +266,12 @@
       background: rgba(56, 189, 248, 0.15);
       color: #38bdf8;
       border-color: rgba(56, 189, 248, 0.4);
+    }
+  
+    .modal-enter { animation: fadeInModal 0.18s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes fadeInModal {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -214,8 +439,10 @@
                   <th class="pb-2">อันดับ</th>
                   <th class="pb-2">สกุลเงิน</th>
                   <th class="pb-2 text-right">Net Position</th>
-                  <th class="pb-2 text-right">1-Week Chg</th>
+                  <th class="pb-2 text-right">1-Wk Δ</th>
                   <th class="pb-2 text-center">Bias</th>
+                  <th class="pb-2 text-right">COT% (52W)</th>
+                  <th class="pb-2 text-center">บทวิเคราะห์</th>
                 </tr>
               </thead>
               <tbody id="currencyTableBody" class="divide-y divide-bordercol/50 font-mono text-xs">
@@ -420,9 +647,14 @@
                 <span id="rawCurCode" class="text-xs font-mono px-2 py-0.5 rounded bg-white/10 text-neoncyan">JPY</span>
               </h3>
             </div>
-            <div class="text-right text-xs font-mono">
-              <div class="text-gray-400">Total Open Interest</div>
-              <div id="rawTotalOI" class="text-base font-bold text-white">379,141</div>
+            <div class="flex items-center gap-3">
+              <button onclick="openCotCommentModal(selectedRawCode, 'flow')" class="px-3 py-1.5 rounded-xl bg-neoncyan/15 hover:bg-neoncyan/25 text-neoncyan border border-neoncyan/30 text-xs font-bold flex items-center gap-1.5 transition shadow">
+                <span>💬 เปิดคอมเมนต์สถาบัน & สูตร COT ฉบับเต็ม</span>
+              </button>
+              <div class="text-right text-xs font-mono">
+                <div class="text-gray-400">Total Open Interest</div>
+                <div id="rawTotalOI" class="text-base font-bold text-white">379,141</div>
+              </div>
             </div>
           </div>
 
@@ -25902,6 +26134,15 @@
         const row = document.createElement('tr');
         row.className = "hover:bg-white/[0.03] transition cursor-pointer";
         row.onclick = () => { selectRawCurrency(c.code); switchTab('rawdata'); };
+        // Compute COT Index for Dashboard Table
+        const cStat = (window.COT_INDICES && window.COT_INDICES[c.contract]) || (typeof COT_INDICES !== 'undefined' && COT_INDICES[c.contract]) || {
+          idx52: c.cot_index_52w !== undefined ? c.cot_index_52w : 50.0
+        };
+        const cIdxVal = cStat.idx52;
+        const cIsHigh = cIdxVal >= 65;
+        const cIsLow = cIdxVal <= 35;
+        const cIdxColor = cIsHigh ? 'text-bullgreen bg-bullgreen/10 border-bullgreen/30' : (cIsLow ? 'text-bearred bg-bearred/10 border-bearred/30' : 'text-amber-300 bg-amber-500/10 border-amber-500/30');
+
         row.innerHTML = `
           <td class="py-2.5 font-bold text-gray-400">#${idx + 1}</td>
           <td class="py-2.5 flex items-center gap-2">
@@ -25919,6 +26160,21 @@
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isBull ? 'bg-bullgreen/15 text-bullgreen border border-bullgreen/30' : 'bg-bearred/15 text-bearred border border-bearred/30'}">
               ${c.bias}
             </span>
+          </td>
+          <td class="py-2.5 text-right">
+            <button onclick="event.stopPropagation(); openCotCommentModal('${c.code}', 'math')"
+                    onmouseenter="showCotPopover(event, '${c.code}')"
+                    onmouseleave="hideCotPopover()"
+                    class="px-2 py-0.5 rounded font-black text-xs ${cIdxColor} border bg-black/60 hover:scale-105 shadow transition">
+              ${cIdxVal}%
+            </button>
+          </td>
+          <td class="py-2.5 text-center">
+            <button onclick="event.stopPropagation(); openCotCommentModal('${c.code}', 'flow')"
+                    class="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-white/5 hover:bg-neoncyan/20 text-gray-300 hover:text-neoncyan border border-white/10 hover:border-neoncyan/40 transition flex items-center gap-1 mx-auto shadow">
+              <span>💬</span>
+              <span class="hidden sm:inline">ดูคอมเมนต์</span>
+            </button>
           </td>
         `;
         tbody.appendChild(row);
@@ -26026,9 +26282,15 @@
 
             <p class="text-xs text-gray-300 leading-snug mb-2.5">${s.rationale}</p>
             
-            <div class="p-2 rounded-lg bg-black/50 border border-white/5 text-[11px] text-gray-300 mb-2.5 font-mono">
+            <div class="p-2 rounded-lg bg-black/50 border border-white/5 text-[11px] text-gray-300 mb-2 font-mono">
               <strong class="text-neoncyan">กฎของ Paul:</strong> ${s.paul_rule || 'รอคอนเฟิร์มโครงสร้างราคา'}
             </div>
+
+            <button onclick="event.stopPropagation(); openTradeSetupModal('${s.pair}')"
+                    class="w-full mb-2.5 py-1.5 px-2.5 rounded-lg bg-gradient-to-r from-neoncyan/15 to-blue-500/15 hover:from-neoncyan/25 hover:to-blue-500/25 text-neoncyan border border-neoncyan/30 text-[11px] font-bold flex items-center justify-center gap-1.5 transition shadow">
+              <span>💬 ดูคอมเมนต์ & บทวิเคราะห์สถาบันฉบับเต็ม</span>
+              <span>➔</span>
+            </button>
           </div>
 
           <div class="pt-2.5 border-t border-white/5 space-y-2 font-mono text-xs">
@@ -26288,63 +26550,16 @@
           <td class="py-2.5 px-3 text-right font-black ${isBull ? 'text-bullgreen' : 'text-bearred'} bg-neoncyan/5 font-mono">
             ${isBull ? '+' : ''}${c.net_position.toLocaleString()}
           </td>
-          <!-- COT INDEX CELL WITH HOVER FORMULA & EXACT VALUE SUBSTITUTION -->
-          <td class="py-2.5 px-3 text-right font-mono relative group" title="${c.cot_tooltip_text}">
-            <div class="inline-flex items-center gap-1.5 cursor-pointer">
-              <span class="px-2 py-0.5 rounded font-black text-xs ${c.cot_idx_color} border ${c.cot_idx_border} bg-black/60 shadow">
-                ${c.cot_idx_val}%
-              </span>
+          <!-- COT INDEX CELL WITH ZERO-CLIPPING BODY POPOVER & FULL MODAL -->
+          <td class="py-2.5 px-3 text-right font-mono" title="${c.cot_tooltip_text}">
+            <button onclick="event.stopPropagation(); openCotCommentModal('${c.code}', 'math')"
+                    onmouseenter="showCotPopover(event, '${c.code}')"
+                    onmouseleave="hideCotPopover()"
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-black text-xs ${c.cot_idx_color} border ${c.cot_idx_border} bg-black/60 hover:scale-105 shadow transition">
+              <span>${c.cot_idx_val}%</span>
               <span class="text-[10px] ${c.cot_status_color} font-sans hidden sm:inline font-bold">(${c.cot_zone_label})</span>
-              <span class="text-[11px] text-amber-400 opacity-60 group-hover:opacity-100 transition">ℹ️</span>
-            </div>
-
-            <!-- Custom Floating Tooltip Card (Pop-up on hover) -->
-            <div class="absolute right-0 top-full mt-1.5 hidden group-hover:block z-50 w-80 sm:w-96 p-3.5 rounded-xl bg-slate-950/95 border-2 border-amber-500/70 shadow-2xl backdrop-blur-md text-left text-xs pointer-events-none transition-all">
-              <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
-                <div class="font-extrabold text-amber-300 flex items-center gap-1.5">
-                  <span>📐 สูตรและการแทนค่า COT Index</span>
-                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200 border border-amber-500/30 font-bold">${c.code}</span>
-                </div>
-                <span class="text-[10px] text-gray-400 font-mono">${c.contract}</span>
-              </div>
-
-              <!-- Formula Box -->
-              <div class="p-2 rounded-lg bg-black/60 border border-white/5 mb-2 font-mono text-[11px] text-cyan-300">
-                <div class="text-[10px] text-gray-400 font-sans font-semibold mb-0.5">สูตรคำนวณมาตรฐาน (Williams COT Index):</div>
-                <div class="font-bold">COT Index = [(Net - Min) / (Max - Min)] × 100</div>
-              </div>
-
-              <!-- Value Substitution -->
-              <div class="space-y-1 text-[11px] text-gray-300 font-mono mb-2">
-                <div class="text-[10px] text-amber-400 font-sans font-semibold">การแทนค่าจริงย้อนหลัง 52 สัปดาห์ (1 ปี):</div>
-                <div class="flex justify-between py-0.5 border-b border-white/5">
-                  <span>• Net Position ปัจจุบัน:</span>
-                  <b class="${c.net_position >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${c.net_position >= 0 ? '+' : ''}${c.net_position.toLocaleString()}</b>
-                </div>
-                <div class="flex justify-between py-0.5 border-b border-white/5">
-                  <span>• Min Net (จุดต่ำสุด 52W):</span>
-                  <b class="text-rose-300">${c.cot_min52.toLocaleString()}</b>
-                </div>
-                <div class="flex justify-between py-0.5 border-b border-white/5">
-                  <span>• Max Net (จุดสูงสุด 52W):</span>
-                  <b class="text-emerald-300">${c.cot_max52.toLocaleString()}</b>
-                </div>
-                <div class="flex justify-between py-0.5 border-b border-white/5">
-                  <span>• กรอบแกว่งตัว (Max - Min):</span>
-                  <b class="text-white">${c.cot_range52.toLocaleString()}</b>
-                </div>
-              </div>
-
-              <!-- Calculation Result -->
-              <div class="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-[11px] font-mono leading-relaxed">
-                <div><b>แทนค่าลงในสูตร:</b></div>
-                <div class="text-white mt-0.5">[(${c.net_position.toLocaleString()} - (${c.cot_min52.toLocaleString()})) / ${c.cot_range52.toLocaleString()}] × 100</div>
-                <div class="mt-1 text-cyan-300 font-bold">= [${c.cot_num.toLocaleString()} / ${c.cot_range52.toLocaleString()}] × 100 = <span class="text-amber-300 text-sm font-black">${c.cot_idx_val}%</span></div>
-                <div class="mt-1.5 pt-1 border-t border-amber-500/20 text-[10px] text-gray-300 font-sans">
-                  🎯 <b>ความหมาย:</b> ${c.cot_zone_desc}
-                </div>
-              </div>
-            </div>
+              <span class="text-xs">💬</span>
+            </button>
           </td>
           <td class="py-2.5 px-3 text-right font-mono ${chgPositive ? 'text-bullgreen' : 'text-bearred'}">
             ${chgPositive ? '▲ +' : '▼ '}${Math.abs(c.weekly_change).toLocaleString()}
@@ -26519,5 +26734,229 @@
       }
     });
   </script>
+
+  <!-- ============================================================ -->
+  <!-- UNIVERSAL ZERO-CLIPPING COT COMMENT & CALCULATION MODAL      -->
+  <!-- ============================================================ -->
+  <div id="cotUniversalModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto">
+    <div class="relative w-full max-w-2xl bg-slate-950/98 border-2 border-amber-500/70 rounded-2xl p-5 shadow-2xl text-left text-xs modal-enter">
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between border-b border-white/10 pb-3 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="modalCurFlag" class="text-2xl">🥇</span>
+            <div>
+              <h3 id="modalCurName" class="text-base font-black text-white flex items-center gap-2">
+                Gold Futures (XAU)
+              </h3>
+              <div class="text-[11px] text-gray-400 font-mono mt-0.5" id="modalContractDesc">
+                GOLD - COMMODITY EXCHANGE INC. • รายงานสัปดาห์ล่าสุด (2026-10-27)
+              </div>
+            </div>
+          </div>
+        </div>
+        <button onclick="closeCotCommentModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center font-bold text-sm transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="flex items-center gap-2 border-b border-white/10 pb-2 mb-4">
+        <button id="modalTabBtnFlow" onclick="switchCotModalTab('flow')" class="px-3 py-1.5 rounded-xl font-bold text-xs bg-neoncyan text-black transition flex items-center gap-1.5">
+          <span>💬 บทวิเคราะห์สถาบัน & Flow</span>
+        </button>
+        <button id="modalTabBtnMath" onclick="switchCotModalTab('math')" class="px-3 py-1.5 rounded-xl font-bold text-xs text-gray-400 hover:text-white bg-white/5 transition flex items-center gap-1.5">
+          <span>📐 สูตร COT Index & แทนค่า</span>
+        </button>
+        <button id="modalTabBtnRule" onclick="switchCotModalTab('rule')" class="px-3 py-1.5 rounded-xl font-bold text-xs text-gray-400 hover:text-white bg-white/5 transition flex items-center gap-1.5">
+          <span>🎯 กฎเหล็กของ Paul</span>
+        </button>
+      </div>
+
+      <!-- Tab Content 1: Institutional Flow & Comments -->
+      <div id="modalTabContentFlow" class="space-y-3">
+        <div class="p-3.5 rounded-xl bg-black/60 border border-white/10">
+          <div class="text-[10px] text-neoncyan font-bold uppercase font-mono tracking-wider mb-1">สถานะการไหลของเงินสถาบัน (Institutional Money Flow):</div>
+          <div id="modalFlowHeadline" class="text-sm font-extrabold text-white mb-1.5 flex items-center gap-2">
+            PROFIT-TAKING (สถาบันเริ่มรินปิดทำกำไร)
+          </div>
+          <p id="modalFlowDescription" class="text-xs text-gray-300 leading-relaxed">
+            กองทุนขนาดใหญ่ (Hedge Funds) เริ่มทยอยรินปิดสถานะซื้อทำกำไร ยอด Net Long ลดลงจากสัปดาห์ก่อนหน้า
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3 rounded-xl bg-black/40 border border-white/5">
+            <div class="text-[10px] text-gray-400 font-mono">การประเมินความเสี่ยงเชิงยุทธวิธี (Tactical State):</div>
+            <div id="modalTacticalState" class="text-xs font-black text-amber-300 mt-1">
+              PULLBACK RISK (ระวังราคาย่อตัวพักฐาน)
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-black/40 border border-white/5">
+            <div class="text-[10px] text-gray-400 font-mono">ความเข้มข้นของการถือครอง (Position Intensity):</div>
+            <div id="modalPositionIntensity" class="text-xs font-black text-emerald-400 mt-1">
+              STRONG BULLISH BIAS
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Player Breakdown -->
+        <div class="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-2">
+          <div class="text-[10px] text-gray-400 font-bold uppercase font-mono">ดุลยภาพ 3 กลุ่มผู้เล่นในตลาด (Three-Player Equilibrium):</div>
+          <div class="grid grid-cols-3 gap-2 text-center font-mono text-[11px]">
+            <div class="p-2 rounded-lg bg-black/50 border border-neoncyan/40">
+              <div class="text-[10px] text-neoncyan font-bold font-sans">🏛️ สถาบัน (Hedge)</div>
+              <div id="modalNoncommNet" class="font-black text-emerald-400 mt-0.5">+186,451</div>
+              <div id="modalNoncommChg" class="text-[10px] text-rose-400 font-normal">▼ -13,414 wk</div>
+            </div>
+            <div class="p-2 rounded-lg bg-black/50 border border-white/10">
+              <div class="text-[10px] text-gray-400 font-bold font-sans">🏭 พาณิชย์ (Hedgers)</div>
+              <div id="modalCommNet" class="font-bold text-gray-300 mt-0.5">-216,423</div>
+              <div id="modalCommChg" class="text-[10px] text-emerald-400 font-normal">▲ +14,810 wk</div>
+            </div>
+            <div class="p-2 rounded-lg bg-black/50 border border-white/10">
+              <div class="text-[10px] text-amber-400 font-bold font-sans">👤 รายย่อย (Retail)</div>
+              <div id="modalNonreptNet" class="font-bold text-amber-300 mt-0.5">+29,972</div>
+              <div id="modalNonreptChg" class="text-[10px] text-rose-400 font-normal">▼ -1,396 wk</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content 2: Formula & Math Substitution -->
+      <div id="modalTabContentMath" class="space-y-3 hidden">
+        <!-- Formula Box -->
+        <div class="p-3 rounded-xl bg-black/60 border border-cyan-500/30 font-mono text-xs text-cyan-300">
+          <div class="text-[10px] text-gray-400 font-sans font-semibold mb-1">สูตรคำนวณมาตรฐาน (Williams COT Index):</div>
+          <div class="font-bold text-sm">COT Index = [(Net - Min52W) / (Max52W - Min52W)] × 100</div>
+        </div>
+
+        <!-- Substitution Grid -->
+        <div class="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-1.5 font-mono text-xs">
+          <div class="text-[10px] text-amber-400 font-sans font-semibold mb-1">การแทนค่าจริงย้อนหลัง 52 สัปดาห์ (1 ปีเต็ม):</div>
+          <div class="flex justify-between py-1 border-b border-white/5">
+            <span>• Net Position ปัจจุบัน:</span>
+            <b id="modalMathNet" class="text-emerald-400">+186,451 สัญญา</b>
+          </div>
+          <div class="flex justify-between py-1 border-b border-white/5">
+            <span>• จุดต่ำสุดย้อนหลัง 52 สัปดาห์ (Min Net 52W):</span>
+            <b id="modalMathMin" class="text-rose-300">154,260</b>
+          </div>
+          <div class="flex justify-between py-1 border-b border-white/5">
+            <span>• จุดสูงสุดย้อนหลัง 52 สัปดาห์ (Max Net 52W):</span>
+            <b id="modalMathMax" class="text-emerald-300">251,238</b>
+          </div>
+          <div class="flex justify-between py-1 border-b border-white/5">
+            <span>• กรอบแกว่งตัวทั้งปี (Max - Min):</span>
+            <b id="modalMathRange" class="text-white">96,978</b>
+          </div>
+        </div>
+
+        <!-- Result Box -->
+        <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 font-mono text-xs leading-relaxed">
+          <div class="font-sans font-bold text-amber-300 mb-1">แทนค่าลงในสมการ:</div>
+          <div id="modalMathStep1" class="text-white">[ (186,451 - 154,260) / 96,978 ] × 100</div>
+          <div class="mt-1 text-cyan-300 font-bold text-sm">
+            = <span id="modalMathStep2">(32,191 / 96,978) × 100</span> = <span id="modalMathFinalIdx" class="text-amber-300 text-base font-black">33.2%</span>
+          </div>
+          <div id="modalMathMeaning" class="mt-2 pt-2 border-t border-amber-500/20 text-[11px] text-gray-300 font-sans">
+            🎯 <b>การแปลความหมาย:</b> โซนต่ำ (<35%) สะท้อนว่ากองทุนถือครอง Long ใกล้จุดต่ำสุดในรอบปี เกิดแรงขายทำกำไร
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content 3: Paul's 4-Gate Strategy Guideline -->
+      <div id="modalTabContentRule" class="space-y-3 hidden">
+        <div class="p-3.5 rounded-xl bg-black/60 border border-neoncyan/30">
+          <div class="text-[10px] text-neoncyan font-bold uppercase font-mono mb-1">การนำไปใช้ในระบบเทรด 4 ด่าน (Paul Pro V4):</div>
+          <div class="text-sm font-bold text-white mb-2">ด่าน 1 (Macro Trend & COT Aligned)</div>
+          <p id="modalPaulRuleText" class="text-xs text-gray-300 leading-relaxed">
+            COT Index ของสินทรัพย์นี้จะถูกนำมาใช้เป็นตัวกรองทิศทางใหญ่ หากดัชนีไม่อยู่ในโซนสุดโต่งที่ขัดแย้งกับแท่งเทียน ระบบจะเปิดไฟเขียวให้วางแผนเข้าเทรดเมื่อราคาย่อแตะเส้นฟ้า EMA50 (ด่าน 2) และเกิดการเบรก 3-Bar BOS (ด่าน 3)
+          </p>
+        </div>
+
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs">
+          <div class="font-bold mb-1">⚠️ กฎเหล็กของพอล:</div>
+          <div>ห้ามเข้าเทรดทันทีเพียงเพราะเห็นตัวเลข COT! ต้องรอให้ราคาบนกราฟแท่งเทียน H4 วิ่งมาแตะโซน EMA50 และเกิดแท่งปิดเบรก BOS ครบถ้วน เพื่อให้ได้จุดตัดขาดทุน (SL) ที่แคบและมีความได้เปรียบสูงสุด</div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+        <span class="text-[10px] text-gray-500 font-mono">FTMO Institutional COT Engine • 100% Causal Math Verified</span>
+        <button onclick="closeCotCommentModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TRADE SETUP DETAILS & COMMENT MODAL                          -->
+  <!-- ============================================================ -->
+  <div id="cotSetupModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto">
+    <div class="relative w-full max-w-2xl bg-slate-950/98 border-2 border-neoncyan/60 rounded-2xl p-5 shadow-2xl text-left text-xs modal-enter">
+      <div class="flex items-start justify-between border-b border-white/10 pb-3 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="setupModalFlags" class="text-2xl">🥇 💵</span>
+            <div>
+              <h3 id="setupModalPair" class="text-lg font-black text-white flex items-center gap-2">
+                XAU/USD (Gold vs USD)
+              </h3>
+              <div class="text-[11px] text-gray-400 font-mono mt-0.5">
+                บทวิเคราะห์สถาบันฉบับเต็ม & การยืนยันสัญญาณเทรด
+              </div>
+            </div>
+          </div>
+        </div>
+        <button onclick="closeTradeSetupModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center font-bold text-sm transition">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between p-3 rounded-xl bg-black/60 border border-white/10">
+          <div>
+            <div class="text-[10px] text-gray-400 uppercase font-mono">คำแนะนำเชิงกลยุทธ์ (Paul Strategy Bias):</div>
+            <div id="setupModalRecommendation" class="text-sm font-extrabold text-neoncyan mt-0.5">
+              STAND ASIDE (รอสัญญาณด่าน 3)
+            </div>
+          </div>
+          <span id="setupModalPhase" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold font-mono text-xs">
+            WAIT_PULLBACK
+          </span>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-2">
+          <div class="text-[10px] text-neoncyan font-bold font-mono uppercase">เหตุผลและบทวิเคราะห์สถาบัน (Institutional Rationale):</div>
+          <p id="setupModalRationale" class="text-xs text-gray-200 leading-relaxed">
+            -
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-2 font-mono">
+          <div class="text-[10px] text-amber-400 font-bold font-sans uppercase">กฎเกณฑ์การเข้าออเดอร์ของ Paul:</div>
+          <div id="setupModalPaulRule" class="text-xs text-gray-300 leading-relaxed font-sans">
+            -
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-end">
+        <button onclick="closeTradeSetupModal()" class="px-4 py-2 rounded-xl bg-neoncyan text-slate-950 font-bold text-xs transition">
+          เข้าใจแล้ว / ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- DYNAMIC ZERO-CLIPPING BODY POPOVER (Hover Desktop Tooltip)   -->
+  <!-- ============================================================ -->
+  <div id="cotFloatingPopover" class="hidden fixed z-[9990] w-80 sm:w-96 p-3.5 rounded-xl bg-slate-950/98 border-2 border-amber-500/80 shadow-2xl backdrop-blur-xl text-left text-xs pointer-events-none transition-opacity duration-150">
+    <div id="popoverContent"></div>
+  </div>
+
 </body>
 </html>
