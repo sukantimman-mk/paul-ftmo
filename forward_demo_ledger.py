@@ -1,16 +1,17 @@
 """
 Paul FTMO Pro V4 - Autonomous Cloud Forward Demo Ledger (forward_demo_ledger.py)
-Automated $100,000 Paper-Trading Portfolio running on 100% Free Cloud:
+Automated $100,000 Portfolio & cTrader Live Execution Bridge running on 100% Free Cloud:
 - Tracks all forward signals strictly following the 1-2-3-4 Paul Pro rules
 - Fixed Risk: 0.75% ($750 per 1.0R) on $100k account
 - Real 0.04R broker fee & slippage deduction per trade
 - Strict 3-Stage Trade Management (TP1 +1.5R 50% scale-out, Lock +0.3R, Stage 2 Lock +1.5R, TP2 +3.5R)
-- Zero PC dependency: 100% Cloud-native, updates every H4 candle.
+- Crystal-clear human-readable Thai Telegram notifications (3-second comprehension).
 """
 
 import os
 import sys
 import json
+import copy
 from datetime import datetime, timezone, timedelta
 
 if sys.stdout and getattr(sys.stdout, 'encoding', None) != 'utf-8':
@@ -25,6 +26,81 @@ LEDGER_PATH = os.path.join(BASE_DIR, 'forward_demo_ledger.json')
 INITIAL_BALANCE = 100000.0
 RISK_PER_TRADE_USD = 750.0  # 0.75% of $100k
 FEE_PER_TRADE_R = 0.04      # 0.04R fee ($30)
+
+PAIR_DISPLAY_MAP = {
+    'GC=F': ('🥇 XAUUSD (ทองคำ)', '🥇 XAUUSD'),
+    'EURUSD=X': ('🇪🇺 EURUSD', '🇪🇺 EURUSD'),
+    'GBPUSD=X': ('🇬🇧 GBPUSD', '🇬🇧 GBPUSD'),
+    'USDJPY=X': ('🇯🇵 USDJPY', '🇯🇵 USDJPY'),
+    'USDCAD=X': ('🇨🇦 USDCAD', '🇨🇦 USDCAD'),
+    'USDCHF=X': ('🇨🇭 USDCHF', '🇨🇭 USDCHF'),
+}
+
+THAI_MONTHS = [
+    "", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+]
+
+CLOSE_REASON_THAI = {
+    'TP2_HIT': 'ชนเป้าใหญ่ TP2 ครบ 100% (+3.5R)',
+    'LOCK2_HIT': 'ราคาย่อชนจุดล็อกกำไร Stage 2 (เก็บกำไรเข้าพอร์ต)',
+    'LOCK1_HIT': 'ราคาย่อชนจุดบังหน้าทุน หลังแบ่งปิด TP1 ไปแล้ว (จบไม้นี้กำไร)',
+    'SL_HIT': 'ราคาชนจุดตัดขาดทุน SL ตามแผน (คุมความเสี่ยง 0.75%)',
+}
+
+STAGE_THAI = {
+    'OPEN': 'ถือเต็มไม้ (รอลุ้นเป้าแรก TP1)',
+    'STAGE_1': 'แบ่งปิดกำไร 50% แล้ว + บังหน้าทุนแล้ว (ไร้ความเสี่ยง)',
+    'STAGE_2': 'แบ่งปิด 50% แล้ว + ล็อกกำไรเพิ่มที่ +1.5R (รอลุ้น TP2)',
+}
+
+
+def escape_html(val):
+    if not isinstance(val, str):
+        val = str(val)
+    return val.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+def format_pair_name(sym, short=False):
+    info = PAIR_DISPLAY_MAP.get(sym)
+    if info:
+        return info[1] if short else info[0]
+    return str(sym).replace('=X', '')
+
+
+def format_dir_thai(direction):
+    return "🟢 BUY (ขาขึ้น)" if direction == "BUY" else "🔴 SELL (ขาลง)"
+
+
+def format_dir_short(direction):
+    return "🟢 BUY" if direction == "BUY" else "🔴 SELL"
+
+
+def format_bkk_time(dt_utc=None):
+    if dt_utc is None:
+        dt_utc = datetime.now(timezone.utc)
+    bkk = dt_utc + timedelta(hours=7)
+    return f"{bkk.day:02d} {THAI_MONTHS[bkk.month]} {bkk.year} | {bkk.strftime('%H:%M')} น."
+
+
+def format_price(val, sym):
+    try:
+        v = float(val)
+    except Exception:
+        return str(val)
+    if sym == 'GC=F':
+        return f"{v:.2f}"
+    if 'JPY' in str(sym):
+        return f"{v:.3f}"
+    return f"{v:.4f}"
+
+
+def format_close_reason_thai(reason):
+    return CLOSE_REASON_THAI.get(reason, str(reason))
+
+
+def format_stage_thai(stage):
+    return STAGE_THAI.get(stage, str(stage))
 
 
 def get_default_ledger():
@@ -81,20 +157,117 @@ def load_ledger():
 
 def save_ledger(ledger):
     ledger["last_updated_utc"] = datetime.now(timezone.utc).isoformat()
-    with open(LEDGER_PATH, 'w', encoding='utf-8') as f:
+    with open(LEDGER_PATH, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(ledger, f, indent=2, ensure_ascii=False)
     return ledger
 
 
-def update_forward_demo_ledger(live_states):
+def _build_tp1_message(sym, direction, tp1_price, lock1_price, tp2_price, action_html, ctrader_line=""):
+    pair_lbl = format_pair_name(sym)
+    dir_lbl = format_dir_short(direction)
+    bkk_str = format_bkk_time()
+    lines = [
+        f"💰🛡️ <b>[แบ่งปิดกำไรครึ่งไม้ TP1!] {pair_lbl}</b>",
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        action_html,
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📊 <b>สรุปสถานะไม้นี้:</b>",
+        f"• คู่เงิน: <b>{pair_lbl} ({dir_lbl})</b>",
+        f"• ราคาชนเป้าแรก (TP1): <code>{format_price(tp1_price, sym)}</code>",
+        "• กำไรที่ล็อกเข้าพอร์ตแล้ว (50% แรก): <b>+$562.50 (+0.75R)</b>",
+        f"• 🛡️ จุดกันหน้าทุนใหม่ (SL ล่าสุด): <code>{format_price(lock1_price, sym)}</code> <i>(+0.3R)</i>",
+        f"• 🏆 เป้าต่อไปของอีกครึ่งไม้ (TP2): <code>{format_price(tp2_price, sym)}</code> <i>(+3.5R)</i>",
+    ]
+    if ctrader_line:
+        lines.append(ctrader_line)
+    return "\n".join(lines)
+
+
+def _build_stage2_message(sym, direction, lock2_price, tp2_price):
+    pair_lbl = format_pair_name(sym)
+    dir_lbl = format_dir_short(direction)
+    bkk_str = format_bkk_time()
+    lines = [
+        f"🚀🔒 <b>[ขยับล็อกกำไรเพิ่ม!] {pair_lbl} วิ่งทะลุ +2.5R</b>",
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        "✅ <b>ไม่ต้องกดอะไรครับ (ถือรันกำไรต่อ)</b> — บอทขยับจุดเฝ้าล็อกกำไรตามหลังราคาให้แล้ว รอลุ้นชนเป้าใหญ่ TP2",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📊 <b>สรุปสถานะไม้นี้:</b>",
+        f"• คู่เงิน: <b>{pair_lbl} ({dir_lbl})</b>",
+        f"• 🔒 จุดล็อกกำไรใหม่ (SL ล่าสุด): <code>{format_price(lock2_price, sym)}</code> <i>(การันตีกำไร +1.5R)</i>",
+        f"• 🏆 เป้าปิดทั้งหมด (TP2): <code>{format_price(tp2_price, sym)}</code> <i>(+3.5R)</i>",
+    ]
+    return "\n".join(lines)
+
+
+def _build_close_message(sym, direction, entry_price, close_price, close_reason, net_r, pnl_usd, new_balance, action_html, ctrader_line=""):
+    pair_lbl = format_pair_name(sym)
+    dir_lbl = format_dir_short(direction)
+    bkk_str = format_bkk_time()
+    is_win = pnl_usd >= 0
+    header = (
+        f"🏁🎉 <b>[ปิดไม้จบ 100% — กำไร!] {pair_lbl} ({pnl_usd:+,.2f} USD)</b>"
+        if is_win else
+        f"🏁🛡️ <b>[ปิดไม้จบ 100% — ตัดขาดทุนตามแผน] {pair_lbl} ({pnl_usd:+,.2f} USD)</b>"
+    )
+    lines = [
+        header,
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        action_html,
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📊 <b>สรุปผลลัพธ์ไม้นี้:</b>",
+        f"• คู่เงิน: <b>{pair_lbl} ({dir_lbl})</b>",
+        f"• สาเหตุที่ปิด: <b>{format_close_reason_thai(close_reason)}</b>",
+        f"• ราคาเข้า: <code>{format_price(entry_price, sym)}</code> ➔ ราคาปิด: <code>{format_price(close_price, sym)}</code>",
+        f"• 💵 กำไร/ขาดทุนสุทธิ: <b>{pnl_usd:+,.2f} USD ({net_r:+}R)</b> <i>(หักค่าธรรมเนียมแล้ว)</i>",
+        f"• 💼 เงินพอร์ตรวมล่าสุด: <code>${new_balance:,.2f}</code>",
+    ]
+    if ctrader_line:
+        lines.append(ctrader_line)
+    return "\n".join(lines)
+
+
+def _build_entry_message(sym, tk, action_html, ctrader_line=""):
+    pair_lbl = format_pair_name(sym)
+    dir_full = format_dir_thai(tk['dir'])
+    bkk_str = format_bkk_time()
+    lines = [
+        f"🟢🚀 <b>[เข้าไม้ใหม่แล้ว!] {pair_lbl} — ฝั่ง {tk['dir']} ({tk['lots_100k']} Lots)</b>",
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        action_html,
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📋 <b>รายละเอียดออเดอร์ที่เข้า:</b>",
+        f"• คู่เงิน: <b>{pair_lbl}</b>",
+        f"• ฝั่ง: <b>{dir_full}</b> | ขนาด: <code>{tk['lots_100k']} Lots</code>",
+        f"• ราคาที่เข้า: <code>{format_price(tk['entry'], sym)}</code>",
+        f"• 🛑 จุดตัดขาดทุน (SL): <code>{format_price(tk['sl'], sym)}</code> <i>(ความเสี่ยง 0.75% = -$750)</i>",
+        f"• 💰 เป้าแบ่งปิดครึ่งไม้ (TP1): <code>{format_price(tk['tp1'], sym)}</code> <i>(+1.5R)</i>",
+        f"• 🏆 เป้าปิดทั้งหมด (TP2): <code>{format_price(tk['tp2'], sym)}</code> <i>(+3.5R)</i>",
+    ]
+    if ctrader_line:
+        lines.append("━━━━━━━━━━━━━━━━━━━━")
+        lines.append(ctrader_line)
+    lines.append("🤖 <i>บอทจะเฝ้าแบ่งปิด TP1 (50%) และตัด SL ให้อัตโนมัติทุกแท่ง 4 ชม. ครับ</i>")
+    return "\n".join(lines)
+
+
+def update_forward_demo_ledger(live_states, execute_live_fix=True, dry_run=False, initial_ledger=None):
     """
     Called every H4 cycle by telegram_notifier.py or GitHub Actions.
-    1. Checks all open trades against latest H4 candle high/low.
-    2. Opens new trades if overall_signal == 'ENTRY_NOW' and symbol has no open trade.
-    3. Calculates floating P&L, equity, win rate, and returns.
+    1. Checks all open trades against latest H4 candle high/low (executes TP1 50% & TP2/SL 100% on cTrader FIX).
+    2. Opens new trades if overall_signal == 'ENTRY_NOW' and symbol has no open trade (executes Market Order on cTrader FIX).
+    3. Emits single unified, human-friendly Thai Telegram messages for every real trade lifecycle event.
     Returns: (updated_ledger, list_of_events)
     """
-    ledger = load_ledger()
+    ledger = copy.deepcopy(initial_ledger) if initial_ledger is not None else load_ledger()
     now_iso = datetime.now(timezone.utc).isoformat()
     events = []
 
@@ -102,7 +275,6 @@ def update_forward_demo_ledger(live_states):
     closed_trades = ledger.get("closed_trades", [])
     remaining_open_trades = []
 
-    # Map current live states by symbol
     states_by_sym = {s['symbol']: s for s in live_states}
 
     # -------------------------------------------------------------
@@ -129,17 +301,42 @@ def update_forward_demo_ledger(live_states):
         close_reason = None
         close_price = None
 
-        if is_buy:
-            # Check TP1 (+1.5R) if still in OPEN stage
-            if stage == 'OPEN' and bar_high >= float(tr['tp1']):
+        # Match paul_engine.py exact causal order:
+        # 1) Check SL active at start of this H4 candle first
+        # 2) Otherwise check TP1 -> Stage 2 -> TP2 upgrades (new locked SL applies from next candle onward)
+        sl_triggered = (bar_low <= current_sl) if is_buy else (bar_high >= current_sl)
+
+        if sl_triggered:
+            trade_closed = True
+            close_price = current_sl
+            if stage == 'OPEN':
+                close_reason = 'SL_HIT'
+                raw_r = -1.0
+            elif stage == 'STAGE_1':
+                close_reason = 'LOCK1_HIT'
+                raw_r = tr.get('realized_r_tp1', 0.0) + (0.3 * 0.5)
+            else:
+                close_reason = 'LOCK2_HIT'
+                raw_r = tr.get('realized_r_tp1', 0.0) + (1.5 * 0.5)
+            net_r = round(raw_r - FEE_PER_TRADE_R, 2)
+            pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
+        else:
+            # --- Check TP1 (+1.5R) ---
+            tp1_triggered = (
+                (stage == 'OPEN' and bar_high >= float(tr['tp1']))
+                if is_buy else
+                (stage == 'OPEN' and bar_low <= float(tr['tp1']))
+            )
+            if tp1_triggered:
                 tr['stage'] = 'STAGE_1'
                 tr['current_sl'] = float(tr['lock1'])  # Move SL to +0.3R
                 tr['units_remaining'] = 0.5
                 tr['tp1_hit_time'] = now_iso
                 tr['realized_r_tp1'] = 1.5 * 0.5  # +0.75R realized
-                tp1_msg = f"🎯 <b>[TP1 (+1.5R)] {sym} ({direction})</b> ชนเป้าแรก! แบ่งปิด 50% ล็อกกำไร +$562.50 และเลื่อน SL -> <code>{tr['lock1']}</code> (+0.3R) Risk-Free 100%!"
-                # cTrader FIX Autonomous 50% Scale-Out
-                if tr.get('fix_position_id'):
+
+                tp1_action = "✅ <b>ไม่ต้องกดอะไรครับ</b> — บอทแบ่งปิดกำไร 50% และขยับจุดกันหน้าทุนให้อัตโนมัติแล้ว (ไม้นี้ไม่ขาดทุน 100% แล้ว!)"
+                tp1_ctrader = ""
+                if tr.get('fix_position_id') and execute_live_fix and not dry_run:
                     try:
                         import ftmo_fix_trader
                         fcfg = ftmo_fix_trader.load_fix_config()
@@ -151,12 +348,18 @@ def update_forward_demo_ledger(live_states):
                             c_ok, c_res = fclient.close_position(tr['fix_position_id'], s_id, direction, half_u)
                             fclient.close()
                             if c_ok:
-                                tp1_msg += f"\n⚡ <b>[FTMO cTrader Live]</b> แบ่งปิด 50% ({half_u:,} units) บน cTrader สำเร็จเรียบร้อย! 🟢"
+                                tp1_action = "✅ <b>ไม่ต้องกดอะไรครับ</b> — บอทแบ่งปิดกำไรครึ่งไม้บน cTrader ให้แล้ว และขยับจุดเฝ้ากันหน้าทุนให้อัตโนมัติ (ไม้นี้ไม่ขาดทุน 100% แล้ว!)"
+                                tp1_ctrader = f"⚡ สถานะ cTrader: แบ่งปิด 50% (<code>{half_u:,} units</code>) สำเร็จ 🟢"
                             else:
-                                tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> แบ่งปิดไม่สำเร็จ: <code>{c_res}</code>"
+                                tp1_action = f"⚠️ <b>บอทแบ่งปิดบน cTrader ไม่สำเร็จ</b> — กรุณาเปิดแอปแบ่งปิด 50% และเลื่อน SL มาที่ <code>{format_price(tr['lock1'], sym)}</code> ครับ"
+                                tp1_ctrader = f"⚠️ สาเหตุ cTrader: <code>{escape_html(str(c_res))}</code>"
                     except Exception as ex:
-                        tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ข้อผิดพลาด: <code>{str(ex)}</code>"
+                        tp1_action = "⚠️ <b>บอทแบ่งปิดบน cTrader ขัดข้อง</b> — กรุณาเปิดแอปเช็คและแบ่งปิด 50% ครับ"
+                        tp1_ctrader = f"⚠️ สาเหตุ cTrader: <code>{escape_html(str(ex))}</code>"
 
+                tp1_msg = _build_tp1_message(
+                    sym, direction, tr['tp1'], tr['lock1'], tr['tp2'], tp1_action, tp1_ctrader
+                )
                 events.append({
                     'type': 'TP1_HIT',
                     'symbol': sym,
@@ -169,8 +372,13 @@ def update_forward_demo_ledger(live_states):
                 stage = 'STAGE_1'
                 current_sl = float(tr['lock1'])
 
-            # Check Stage 2 (+2.5R) if in STAGE_1
-            if stage == 'STAGE_1' and bar_high >= float(tr['stage2']):
+            # --- Check Stage 2 (+2.5R) ---
+            stage2_triggered = (
+                (stage == 'STAGE_1' and bar_high >= float(tr['stage2']))
+                if is_buy else
+                (stage == 'STAGE_1' and bar_low <= float(tr['stage2']))
+            )
+            if stage2_triggered:
                 tr['stage'] = 'STAGE_2'
                 tr['current_sl'] = float(tr['lock2'])  # Move SL to +1.5R
                 events.append({
@@ -180,99 +388,18 @@ def update_forward_demo_ledger(live_states):
                     'entry': entry,
                     'hit_price': float(tr['stage2']),
                     'locked_sl': float(tr['lock2']),
-                    'message': f"🚀 <b>[DEMO STAGE 2 (+2.5R)] {sym} ({direction})</b> ถึงจุดยก SL! เลื่อน Stop Loss ล็อกกำไรขึ้นมาที่ <code>{tr['lock2']}</code> (+1.5R)!"
+                    'message': _build_stage2_message(sym, direction, tr['lock2'], tr['tp2'])
                 })
                 stage = 'STAGE_2'
                 current_sl = float(tr['lock2'])
 
-            # Check TP2 (+3.5R) if in STAGE_1 or STAGE_2
-            if stage in ('STAGE_1', 'STAGE_2') and bar_high >= float(tr['tp2']):
-                trade_closed = True
-                close_reason = 'TP2_HIT'
-                close_price = float(tr['tp2'])
-                r_remaining = 3.5 * 0.5  # +1.75R
-                raw_r = tr.get('realized_r_tp1', 0.0) + r_remaining
-                net_r = round(raw_r - FEE_PER_TRADE_R, 2)
-                pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
-
-            # Check SL
-            elif bar_low <= current_sl:
-                trade_closed = True
-                close_price = current_sl
-                if stage == 'OPEN':
-                    close_reason = 'SL_HIT'
-                    raw_r = -1.0
-                    net_r = round(raw_r - FEE_PER_TRADE_R, 2)  # -1.04R
-                    pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
-                elif stage == 'STAGE_1':
-                    close_reason = 'LOCK1_HIT'
-                    raw_r = tr.get('realized_r_tp1', 0.0) + (0.3 * 0.5)  # +0.75 + 0.15 = +0.90R
-                    net_r = round(raw_r - FEE_PER_TRADE_R, 2)
-                    pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
-                elif stage == 'STAGE_2':
-                    close_reason = 'LOCK2_HIT'
-                    raw_r = tr.get('realized_r_tp1', 0.0) + (1.5 * 0.5)  # +0.75 + 0.75 = +1.50R
-                    net_r = round(raw_r - FEE_PER_TRADE_R, 2)
-                    pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
-
-        else:  # SELL
-            # Check TP1 (+1.5R) if still in OPEN stage
-            if stage == 'OPEN' and bar_low <= float(tr['tp1']):
-                tr['stage'] = 'STAGE_1'
-                tr['current_sl'] = float(tr['lock1'])  # Move SL to +0.3R
-                tr['units_remaining'] = 0.5
-                tr['tp1_hit_time'] = now_iso
-                tr['realized_r_tp1'] = 1.5 * 0.5
-                tp1_msg = f"🎯 <b>[TP1 (+1.5R)] {sym} ({direction})</b> ชนเป้าแรก! แบ่งปิด 50% ล็อกกำไร +$562.50 และเลื่อน SL -> <code>{tr['lock1']}</code> (+0.3R) Risk-Free 100%!"
-                # cTrader FIX Autonomous 50% Scale-Out
-                if tr.get('fix_position_id'):
-                    try:
-                        import ftmo_fix_trader
-                        fcfg = ftmo_fix_trader.load_fix_config()
-                        if fcfg.get('password'):
-                            fclient = ftmo_fix_trader.FtmoFixClient(fcfg)
-                            fclient.send_logon()
-                            half_u = int(round(float(tr.get('volume_units', 100000)) * 0.5))
-                            s_id = tr.get('symbol_id', ftmo_fix_trader.FTMO_SYMBOLS.get(sym, {}).get('id', '1'))
-                            c_ok, c_res = fclient.close_position(tr['fix_position_id'], s_id, direction, half_u)
-                            fclient.close()
-                            if c_ok:
-                                tp1_msg += f"\n⚡ <b>[FTMO cTrader Live]</b> แบ่งปิด 50% ({half_u:,} units) บน cTrader สำเร็จเรียบร้อย! 🟢"
-                            else:
-                                tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> แบ่งปิดไม่สำเร็จ: <code>{c_res}</code>"
-                    except Exception as ex:
-                        tp1_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ข้อผิดพลาด: <code>{str(ex)}</code>"
-
-                events.append({
-                    'type': 'TP1_HIT',
-                    'symbol': sym,
-                    'direction': direction,
-                    'entry': entry,
-                    'hit_price': float(tr['tp1']),
-                    'locked_sl': float(tr['lock1']),
-                    'message': tp1_msg
-                })
-                stage = 'STAGE_1'
-                current_sl = float(tr['lock1'])
-
-            # Check Stage 2 (+2.5R) if in STAGE_1
-            if stage == 'STAGE_1' and bar_low <= float(tr['stage2']):
-                tr['stage'] = 'STAGE_2'
-                tr['current_sl'] = float(tr['lock2'])  # Move SL to +1.5R
-                events.append({
-                    'type': 'STAGE2_HIT',
-                    'symbol': sym,
-                    'direction': direction,
-                    'entry': entry,
-                    'hit_price': float(tr['stage2']),
-                    'locked_sl': float(tr['lock2']),
-                    'message': f"🚀 <b>[DEMO STAGE 2 (+2.5R)] {sym} ({direction})</b> ถึงจุดยก SL! เลื่อน Stop Loss ล็อกกำไรลงมาที่ <code>{tr['lock2']}</code> (+1.5R)!"
-                })
-                stage = 'STAGE_2'
-                current_sl = float(tr['lock2'])
-
-            # Check TP2 (+3.5R) if in STAGE_1 or STAGE_2
-            if stage in ('STAGE_1', 'STAGE_2') and bar_low <= float(tr['tp2']):
+            # --- Check TP2 (+3.5R) ---
+            tp2_triggered = (
+                (stage in ('STAGE_1', 'STAGE_2') and bar_high >= float(tr['tp2']))
+                if is_buy else
+                (stage in ('STAGE_1', 'STAGE_2') and bar_low <= float(tr['tp2']))
+            )
+            if tp2_triggered:
                 trade_closed = True
                 close_reason = 'TP2_HIT'
                 close_price = float(tr['tp2'])
@@ -280,26 +407,6 @@ def update_forward_demo_ledger(live_states):
                 raw_r = tr.get('realized_r_tp1', 0.0) + r_remaining
                 net_r = round(raw_r - FEE_PER_TRADE_R, 2)
                 pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
-
-            # Check SL
-            elif bar_high >= current_sl:
-                trade_closed = True
-                close_price = current_sl
-                if stage == 'OPEN':
-                    close_reason = 'SL_HIT'
-                    raw_r = -1.0
-                    net_r = round(raw_r - FEE_PER_TRADE_R, 2)
-                    pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
-                elif stage == 'STAGE_1':
-                    close_reason = 'LOCK1_HIT'
-                    raw_r = tr.get('realized_r_tp1', 0.0) + (0.3 * 0.5)
-                    net_r = round(raw_r - FEE_PER_TRADE_R, 2)
-                    pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
-                elif stage == 'STAGE_2':
-                    close_reason = 'LOCK2_HIT'
-                    raw_r = tr.get('realized_r_tp1', 0.0) + (1.5 * 0.5)
-                    net_r = round(raw_r - FEE_PER_TRADE_R, 2)
-                    pnl_usd = round(net_r * RISK_PER_TRADE_USD, 2)
 
         if trade_closed:
             tr['exit_time'] = now_iso
@@ -310,11 +417,9 @@ def update_forward_demo_ledger(live_states):
             ledger['current_balance'] = round(ledger['current_balance'] + pnl_usd, 2)
             closed_trades.append(tr)
 
-            outcome_txt = "กำไร 🎉" if pnl_usd > 0 else "ตัดขาดทุนตามแผน 🛡️"
-            close_msg = f"🏁 <b>[ปิดออเดอร์สมบูรณ์] {sym} ({direction})</b>\n• ผลลัพธ์: <b>{outcome_txt}</b>\n• เหตุผล: <code>{close_reason}</code>\n• P&L สุทธิ: <b>{net_r:+}R ({pnl_usd:+,.2f} USD)</b>\n• พอร์ตคงเหลือ: <code>${ledger['current_balance']:,.2f}</code>"
-
-            # cTrader FIX Autonomous Full Close
-            if tr.get('fix_position_id'):
+            close_action = "✅ <b>ไม่ต้องทำอะไรครับ (จบไม้นี้เรียบร้อย)</b> — บอทบันทึกปิดออเดอร์ครบ 100% แล้ว"
+            close_ctrader = ""
+            if tr.get('fix_position_id') and execute_live_fix and not dry_run:
                 try:
                     import ftmo_fix_trader
                     fcfg = ftmo_fix_trader.load_fix_config()
@@ -326,12 +431,19 @@ def update_forward_demo_ledger(live_states):
                         c_ok, c_res = fclient.close_position(tr['fix_position_id'], s_id, direction, rem_u)
                         fclient.close()
                         if c_ok:
-                            close_msg += f"\n⚡ <b>[FTMO cTrader Live]</b> ปิดออเดอร์ทั้งหมดบน cTrader สำเร็จเรียบร้อย! 🟢"
+                            close_action = "✅ <b>ไม่ต้องทำอะไรครับ (จบไม้นี้เรียบร้อย)</b> — บอทปิดออเดอร์บน cTrader ครบ 100% ให้แล้ว"
+                            close_ctrader = "⚡ สถานะ cTrader: ปิดออเดอร์ครบ 100% สำเร็จ 🟢"
                         else:
-                            close_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ปิดออเดอร์ไม่สำเร็จ: <code>{c_res}</code>"
+                            close_action = "⚠️ <b>บอทสั่งปิดบน cTrader ไม่สำเร็จ</b> — กรุณาเปิดแอปเช็คและกดปิดออเดอร์คู่นี้ครับ"
+                            close_ctrader = f"⚠️ สาเหตุ cTrader: <code>{escape_html(str(c_res))}</code>"
                 except Exception as ex:
-                    close_msg += f"\n⚠️ <b>[FTMO cTrader Live]</b> ข้อผิดพลาด: <code>{str(ex)}</code>"
+                    close_action = "⚠️ <b>บอทสั่งปิดบน cTrader ขัดข้อง</b> — กรุณาเปิดแอปเช็คสถานะออเดอร์คู่นี้ครับ"
+                    close_ctrader = f"⚠️ สาเหตุ cTrader: <code>{escape_html(str(ex))}</code>"
 
+            close_msg = _build_close_message(
+                sym, direction, entry, close_price, close_reason,
+                net_r, pnl_usd, ledger['current_balance'], close_action, close_ctrader
+            )
             events.append({
                 'type': 'TRADE_CLOSED',
                 'symbol': sym,
@@ -342,12 +454,10 @@ def update_forward_demo_ledger(live_states):
                 'message': close_msg
             })
         else:
-            # Mark-to-market floating P&L
             fl_r_full = ((c_now - entry) / risk_dist) if is_buy else ((entry - c_now) / risk_dist)
             if stage == 'OPEN':
                 fl_r = fl_r_full
             else:
-                # 50% locked from TP1 (+0.75R) + 50% floating on remaining position
                 fl_r = tr.get('realized_r_tp1', 0.0) + (fl_r_full * 0.5)
             tr['current_price'] = c_now
             tr['floating_r'] = round(fl_r, 2)
@@ -355,65 +465,99 @@ def update_forward_demo_ledger(live_states):
             remaining_open_trades.append(tr)
 
     # -------------------------------------------------------------
-    # 2. CHECK FOR NEW ENTRY_NOW SIGNALS & SYNC ACTIVE TRADES
+    # 2. CHECK FOR NEW ENTRY_NOW SIGNALS & EXECUTE ON CTRADER ATOMICALLY
     # -------------------------------------------------------------
     existing_open_syms = {t['symbol'] for t in remaining_open_trades}
     for s in live_states:
         sym = s['symbol']
         sig = s['overall_signal']
         tk = s['planned_ticket']
-        ot = s.get('active_open_trade')
 
-        if sym not in existing_open_syms:
-            if sig in ('ENTRY_NOW', 'EXECUTE_NOW'):
-                new_ticket_id = f"DEMO-{len(closed_trades) + len(remaining_open_trades) + 1001}"
-                new_trade = {
-                    'ticket_id': new_ticket_id,
-                    'symbol': sym,
-                    'name': s.get('name', sym),
-                    'dir': tk['dir'],
-                    'entry_time': now_iso,
-                    'entry': float(tk['entry']),
-                    'lots': float(tk['lots_100k']),
-                    'sl': float(tk['sl']),
-                    'current_sl': float(tk['sl']),
-                    'initial_sl': float(tk['sl']),
-                    'tp1': float(tk['tp1']),
-                    'lock1': float(tk['lock1']),
-                    'stage2': float(tk['stage2']),
-                    'lock2': float(tk['lock2']),
-                    'tp2': float(tk['tp2']),
-                    'risk_dist': abs(float(tk['entry']) - float(tk['sl'])),
-                    'atr_mult': float(tk.get('atr_mult', 1.0)),
-                    'stage': 'OPEN',
-                    'units_remaining': 1.0,
-                    'current_price': float(s['latest_price']),
-                    'floating_r': 0.0,
-                    'floating_usd': 0.0
-                }
-                remaining_open_trades.append(new_trade)
-                existing_open_syms.add(sym)
+        if sym not in existing_open_syms and sig in ('ENTRY_NOW', 'EXECUTE_NOW'):
+            new_ticket_id = f"DEMO-{len(closed_trades) + len(remaining_open_trades) + 1001}"
+            new_trade = {
+                'ticket_id': new_ticket_id,
+                'symbol': sym,
+                'name': s.get('name', sym),
+                'dir': tk['dir'],
+                'entry_time': now_iso,
+                'entry': float(tk['entry']),
+                'lots': float(tk['lots_100k']),
+                'sl': float(tk['sl']),
+                'current_sl': float(tk['sl']),
+                'initial_sl': float(tk['sl']),
+                'tp1': float(tk['tp1']),
+                'lock1': float(tk['lock1']),
+                'stage2': float(tk['stage2']),
+                'lock2': float(tk['lock2']),
+                'tp2': float(tk['tp2']),
+                'risk_dist': abs(float(tk['entry']) - float(tk['sl'])),
+                'atr_mult': float(tk.get('atr_mult', 1.0)),
+                'stage': 'OPEN',
+                'units_remaining': 1.0,
+                'current_price': float(s['latest_price']),
+                'floating_r': 0.0,
+                'floating_usd': 0.0
+            }
 
-                events.append({
-                    'type': 'TRADE_OPENED',
-                    'symbol': sym,
-                    'direction': tk['dir'],
-                    'ticket_id': new_ticket_id,
-                    'entry': float(tk['entry']),
-                    'lots': float(tk['lots_100k']),
-                    'sl': float(tk['sl']),
-                    'tp1': float(tk['tp1']),
-                    'tp2': float(tk['tp2']),
-                    'message': (
-                        f"🟢🚨 <b>[DEMO AUTO-ENTRY] เปิดออเดอร์ใหม่!</b>\n"
-                        f"• <b>คู่เงิน:</b> <b>{sym} ({tk['dir']})</b>\n"
-                        f"• <b>ราคาเข้า (Entry):</b> <code>{tk['entry']}</code> | <b>ขนาด Lot:</b> <code>{tk['lots_100k']} Lots</code>\n"
-                        f"• <b>Stop Loss:</b> <code>{tk['sl']}</code> (-1.0R)\n"
-                        f"• <b>TP 1:</b> <code>{tk['tp1']}</code> (+1.5R ปิด 50%)\n"
-                        f"• <b>TP 2:</b> <code>{tk['tp2']}</code> (+3.5R เป้าหลัก)\n"
-                        f"• <i>ระบบจัดการเลื่อน SL และปิดกำไรอัตโนมัติตามกฎ 1-2-3-4</i>"
+            entry_action = "✅ <b>บันทึกเข้าพอร์ตจำลอง $100k อัตโนมัติแล้ว</b> (หากเทรดพอร์ตแยก ให้กดเข้า Market ตามตัวเลขด้านล่างครับ)"
+            entry_ctrader = ""
+
+            if execute_live_fix and not dry_run:
+                try:
+                    import ftmo_fix_trader
+                    cfg = ftmo_fix_trader.load_fix_config()
+                    if cfg.get('password'):
+                        fix_res = ftmo_fix_trader.execute_signal(s)
+                        print(f"[FTMO FIX] execute_signal result for {sym}: {fix_res}")
+                        acct_id = cfg.get('account_id', '17235426')
+                        if fix_res.get('ok'):
+                            order_id = str(fix_res.get('res', {}).get('order_id', 'SUCCESS'))
+                            pos_id = str(fix_res.get('res', {}).get('position_id', 'N/A'))
+                            lots = fix_res.get('lots', tk.get('lots_100k', 1.0))
+                            units = int(fix_res.get('units', 100000))
+                            sym_id = str(fix_res.get('symbol_id', '1'))
+                            new_trade['fix_position_id'] = pos_id
+                            new_trade['fix_order_id'] = order_id
+                            new_trade['volume_units'] = units
+                            new_trade['symbol_id'] = sym_id
+                            entry_action = (
+                                f"✅ <b>ไม่ต้องกดเข้าไม้เองครับ</b> — บอทออกออเดอร์ให้ใน cTrader "
+                                f"(<code>#{acct_id}</code>) เรียบร้อยแล้ว! (เปิดแอปเช็คดูได้เลย)"
+                            )
+                            entry_ctrader = (
+                                f"⚡ สถานะ cTrader: เปิดไม้สำเร็จ (PosID <code>{pos_id}</code> | "
+                                f"<code>{lots} Lots</code> / <code>{units:,} Units</code>) 🟢"
+                            )
+                        else:
+                            err_txt = escape_html(str(fix_res.get('error', 'เชื่อมต่อไม่สำเร็จ')))
+                            entry_action = (
+                                "⚠️ <b>บอทยิงออเดอร์เข้า cTrader ไม่สำเร็จ</b> — หากต้องการเทรดไม้นี้ "
+                                "ให้กดเปิดออเดอร์ (Market) ในแอปตามตัวเลขด้านล่างครับ"
+                            )
+                            entry_ctrader = f"⚠️ สาเหตุ cTrader: <code>{err_txt}</code>"
+                except Exception as ex:
+                    entry_action = (
+                        "⚠️ <b>การเชื่อมต่อ cTrader ขัดข้อง</b> — หากต้องการเทรดไม้นี้ "
+                        "ให้กดเปิดออเดอร์ (Market) ในแอปตามตัวเลขด้านล่างครับ"
                     )
-                })
+                    entry_ctrader = f"⚠️ สาเหตุ cTrader: <code>{escape_html(str(ex))}</code>"
+
+            remaining_open_trades.append(new_trade)
+            existing_open_syms.add(sym)
+
+            events.append({
+                'type': 'TRADE_OPENED',
+                'symbol': sym,
+                'direction': tk['dir'],
+                'ticket_id': new_ticket_id,
+                'entry': float(tk['entry']),
+                'lots': float(tk['lots_100k']),
+                'sl': float(tk['sl']),
+                'tp1': float(tk['tp1']),
+                'tp2': float(tk['tp2']),
+                'message': _build_entry_message(sym, tk, entry_action, entry_ctrader)
+            })
 
     # -------------------------------------------------------------
     # 3. RECALCULATE OVERALL PORTFOLIO METRICS
@@ -430,7 +574,6 @@ def update_forward_demo_ledger(live_states):
     ledger['net_profit_usd'] = net_profit_usd
     ledger['net_return_pct'] = round((net_profit_usd / INITIAL_BALANCE) * 100.0, 2)
 
-    # High Water Mark & Drawdown
     if current_equity > ledger.get('high_water_mark', INITIAL_BALANCE):
         ledger['high_water_mark'] = current_equity
     hwm = ledger['high_water_mark']
@@ -438,7 +581,6 @@ def update_forward_demo_ledger(live_states):
     if dd_pct > ledger.get('max_drawdown_pct', 0.0):
         ledger['max_drawdown_pct'] = dd_pct
 
-    # Performance Stats
     total_closed = len(closed_trades)
     wins = [t for t in closed_trades if t.get('pnl_usd', 0.0) > 0]
     losses = [t for t in closed_trades if t.get('pnl_usd', 0.0) < 0]
@@ -464,7 +606,6 @@ def update_forward_demo_ledger(live_states):
         'total_realized_r': total_realized_r
     }
 
-    # FTMO Rules Compliance
     daily_dd = round(max(0.0, (ledger['current_balance'] - current_equity) / ledger['current_balance'] * 100.0), 2)
     tot_dd = dd_pct
     ledger['ftmo_rules']['current_daily_drawdown_pct'] = daily_dd
@@ -474,53 +615,65 @@ def update_forward_demo_ledger(live_states):
     else:
         ledger['ftmo_rules']['status'] = 'PASSING_HEALTHY'
 
-    save_ledger(ledger)
+    if not dry_run:
+        save_ledger(ledger)
     return ledger, events
 
 
 def format_demo_portfolio_summary(ledger):
-    """Formats a crystal-clear portfolio status text for Telegram & Chat."""
-    bal = ledger['current_balance']
-    eq = ledger['current_equity']
-    pnl = ledger['net_profit_usd']
-    ret = ledger['net_return_pct']
-    stats = ledger['stats']
-    open_tr = ledger['open_trades']
-    ftmo = ledger['ftmo_rules']
+    """Formats a crystal-clear portfolio status card for Telegram."""
+    bal = ledger.get('current_balance', INITIAL_BALANCE)
+    eq = ledger.get('current_equity', INITIAL_BALANCE)
+    pnl = ledger.get('net_profit_usd', 0.0)
+    ret = ledger.get('net_return_pct', 0.0)
+    stats = ledger.get('stats', {})
+    open_tr = ledger.get('open_trades', [])
+    ftmo = ledger.get('ftmo_rules', {})
 
     ret_icon = "🟢" if pnl >= 0 else "🔴"
-    bkk_now = (datetime.now(timezone.utc) + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M น.')
+    bkk_str = format_bkk_time()
+
+    if open_tr:
+        action_line = f"✅ <b>ไม่ต้องกดอะไรเพิ่ม</b> — กำลังถือรันเทรนด์อยู่ {len(open_tr)} ไม้ (บอทเฝ้าปิด TP / SL ให้เองอัตโนมัติ)"
+    else:
+        action_line = "✅ <b>พอร์ตว่าง (0 ไม้) — ไม่ต้องทำอะไรครับ</b> รอบอทเข้าไม้อัตโนมัติเมื่อสัญญาณครบเกณฑ์"
 
     lines = [
-        "💼 <b>พอร์ตจำลอง Forward Demo (Paul FTMO Pro V4)</b>",
-        f"🕒 เวลาไทย: <code>{bkk_now}</code>",
+        "💼 <b>สรุปพอร์ต FTMO $100,000 (Paul Pro V4)</b>",
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
         "━━━━━━━━━━━━━━━━━━━━",
-        f"💰 <b>ยอดเงินคงเหลือ (Balance):</b> <code>${bal:,.2f}</code>",
-        f"📊 <b>มูลค่าสุทธิ (Equity):</b> <code>${eq:,.2f}</code>",
-        f"{ret_icon} <b>กำไรสุทธิรวม (P&L):</b> <b>{ret:+.2f}% (${pnl:+,.2f})</b>",
-        f"🛡️ <b>Max Drawdown:</b> <code>{ledger['max_drawdown_pct']:.2f}%</code> (เกณฑ์ FTMO ห้ามเกิน 10%)",
-        f"🏆 <b>สถานะกฎ FTMO:</b> <b>{'✅ ผ่านเกณฑ์ปกติ (PASSING)' if ftmo['status'] == 'PASSING_HEALTHY' else '⚠️ ระวังความเสี่ยง'}</b>",
+        "👉 <b>สถานะพอร์ตตอนนี้:</b>",
+        action_line,
         "━━━━━━━━━━━━━━━━━━━━",
-        f"📈 <b>สถิติออเดอร์ (Forward Stats):</b>",
-        f"• ปิดไปแล้ว: <code>{stats['total_trades']} ไม้</code> (ชนะ {stats['winning_trades']} / แพ้ {stats['losing_trades']})",
-        f"• Win Rate: <b>{stats['win_rate_pct']:.1f}%</b> | Profit Factor: <b>{stats['profit_factor']}</b>",
-        f"• ผลตอบแทนสะสม: <b>{stats['total_realized_r']:+}R</b>",
+        f"💰 เงินคงเหลือ (Balance): <code>${bal:,.2f}</code>",
+        f"📊 มูลค่าพอร์ตสุทธิ (Equity): <code>${eq:,.2f}</code>",
+        f"{ret_icon} กำไร/ขาดทุนรวม: <b>{pnl:+,.2f} USD ({ret:+.2f}%)</b>",
+        f"🛡️ ขาดทุนสูงสุดสะสม (Max DD): <code>{ledger.get('max_drawdown_pct', 0.0):.2f}%</code> <i>(เกณฑ์ FTMO ห้ามเกิน 10%)</i>",
+        f"🏆 กฎความเสี่ยง FTMO: <b>{'✅ ปลอดภัยตามเกณฑ์' if ftmo.get('status', 'PASSING_HEALTHY') == 'PASSING_HEALTHY' else '⚠️ ใกล้เพดานความเสี่ยง'}</b>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📈 <b>สถิติไม้ที่ปิดจบแล้ว:</b>",
+        f"• ปิดจบแล้ว: <code>{stats.get('total_trades', 0)} ไม้</code> (ชนะ {stats.get('winning_trades', 0)} / แพ้ {stats.get('losing_trades', 0)})",
+        f"• อัตราชนะ (Win Rate): <b>{stats.get('win_rate_pct', 0.0):.1f}%</b> | กำไรสะสม: <b>{stats.get('total_realized_r', 0.0):+}R</b>",
         "━━━━━━━━━━━━━━━━━━━━",
     ]
 
     if open_tr:
-        lines.append(f"⚡ <b>ออเดอร์ที่กำลังถืออยู่ ({len(open_tr)} ไม้):</b>")
+        lines.append(f"🔥 <b>ไม้ที่กำลังถืออยู่ตอนนี้ ({len(open_tr)} ไม้):</b>")
         for t in open_tr:
-            fl_color = "🟢" if t['floating_usd'] >= 0 else "🔴"
+            sym = t['symbol']
+            pair_lbl = format_pair_name(sym)
+            dir_lbl = format_dir_short(t['dir'])
+            fl_usd = t.get('floating_usd', 0.0)
+            fl_r = t.get('floating_r', 0.0)
+            fl_icon = "🟢" if fl_usd >= 0 else "🔴"
             lines.append(
-                f"{fl_color} <b>{t['symbol']} ({t['dir']})</b> @ <code>{t['entry']}</code> ({t['lots']} Lots)\n"
-                f"   ↳ P&L: <b>{t['floating_r']:+}R (${t['floating_usd']:+,.2f})</b> | ด่าน: <code>{t['stage']}</code> (SL <code>{t['current_sl']}</code>)"
+                f"• <b>{pair_lbl}</b> ({dir_lbl} <code>{t.get('lots', 1.0)} Lot</code>)\n"
+                f"   ↳ เข้าที่ <code>{format_price(t['entry'], sym)}</code> | {fl_icon} <b>{fl_usd:+,.2f} USD ({fl_r:+}R)</b>\n"
+                f"   ↳ SL ปัจจุบัน: <code>{format_price(t['current_sl'], sym)}</code> | สถานะ: <i>{format_stage_thai(t.get('stage', 'OPEN'))}</i>"
             )
     else:
-        lines.append("💤 <i>ขณะนี้ไม่มีออเดอร์ค้าง — ระบบอยู่ในโหมดสแตนด์บายรอสัญญาณครบ 1-2-3</i>")
+        lines.append("🔥 <b>ไม้ที่กำลังถืออยู่ตอนนี้:</b>\n• ไม่มีออเดอร์ค้าง (พอร์ตว่าง 0 ไม้)")
 
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("💡 <i>ระบบบันทึกและจัดการออเดอร์อัตโนมัติบน Cloud 100% ไม่ต้องเปิดคอม</i>")
     return "\n".join(lines)
 
 
@@ -530,19 +683,6 @@ def reset_ledger():
     save_ledger(clean)
     print("✅ Forward Demo Ledger successfully reset to initial state ($100,000.00 USD, 0 trades).")
     return clean
-
-
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(description='Paul Pro V4 Forward Demo Ledger')
-    parser.add_argument('--reset', action='store_true', help='Reset ledger to initial $100,000 state')
-    args = parser.parse_args()
-
-    if args.reset:
-        reset_ledger()
-    else:
-        l = load_ledger()
-        print(f"Current Balance: ${l['current_balance']:,.2f} | Open Trades: {len(l['open_trades'])} | Closed: {len(l['closed_trades'])}")
 
 
 def bind_fix_execution_to_trade(symbol, position_id, order_id, units, symbol_id):
@@ -560,3 +700,16 @@ def bind_fix_execution_to_trade(symbol, position_id, order_id, units, symbol_id)
                 break
     except Exception as e:
         print(f"[Ledger] Error binding FIX execution: {e}")
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Paul Pro V4 Forward Demo Ledger')
+    parser.add_argument('--reset', action='store_true', help='Reset ledger to initial $100,000 state')
+    args = parser.parse_args()
+
+    if args.reset:
+        reset_ledger()
+    else:
+        l = load_ledger()
+        print(f"Current Balance: ${l['current_balance']:,.2f} | Open Trades: {len(l['open_trades'])} | Closed: {len(l['closed_trades'])}")

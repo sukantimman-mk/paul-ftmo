@@ -2550,36 +2550,72 @@ def build_full_suite():
                 }});
             }} catch (_) {{}}
 
-            showTgStatus('🚀 กำลังส่งเรดาร์สแกนสดทั้ง 6 คู่เงินเข้า Telegram มือถือของคุณ...', false);
+            showTgStatus('🚀 กำลังส่งสรุปสถานะพอร์ต & สัญญาณทั้ง 6 คู่เงินเข้า Telegram มือถือของคุณ...', false);
+
+            const PAIR_NAMES_TG = {{
+                'GC=F': '🥇 XAUUSD (ทองคำ)',
+                'EURUSD=X': '🇪🇺 EURUSD',
+                'GBPUSD=X': '🇬🇧 GBPUSD',
+                'USDJPY=X': '🇯🇵 USDJPY',
+                'USDCAD=X': '🇨🇦 USDCAD',
+                'USDCHF=X': '🇨🇭 USDCHF'
+            }};
+            const cleanPairTg = (sym) => PAIR_NAMES_TG[sym] || String(sym).replace('=X', '');
+            const cleanDirTg = (d) => d === 'BUY' ? '🟢 BUY' : '🔴 SELL';
+
+            const openList = LIVE_STATES.filter(x => !!x.active_open_trade);
+            const entryList = LIVE_STATES.filter(x => !x.active_open_trade && x.overall_signal === 'ENTRY_NOW');
+            const armedList = LIVE_STATES.filter(x => !x.active_open_trade && x.overall_signal === 'SETUP_ARMED');
+            const restList = LIVE_STATES.filter(x => !x.active_open_trade && x.overall_signal !== 'ENTRY_NOW' && x.overall_signal !== 'SETUP_ARMED');
+
+            let actionBox = '✅ <b>ไม่ต้องทำอะไรครับ</b> — ตอนนี้ยังไม่มีสัญญาณเข้าไม้ใหม่' + String.fromCharCode(10) +
+                '<i>(ระบบนี้ไม่ตั้ง Pending ล่วงหน้า — รอแท่ง 4 ชม. ปิดเบรกครบเกณฑ์ บอทจะกดเข้าไม้ให้เองอัตโนมัติ)</i>';
+            if (entryList.length > 0) {{
+                actionBox = `🟢 <b>มีสัญญาณเข้าไม้ใหม่ (${{entryList.map(x => cleanPairTg(x.symbol)).join(', ')}})</b> — บอทส่งคำสั่งเข้าพอร์ตอัตโนมัติแล้ว`;
+            }} else if (openList.length > 0) {{
+                actionBox = `✅ <b>ไม่ต้องกดอะไรครับ (ถือไม้รันกำไรต่อ)</b> — ตอนนี้ถืออยู่ ${{openList.length}} ไม้ บอทเฝ้าปิด TP / SL ให้เองอัตโนมัติ`;
+            }}
 
             const nowStr = new Date().toLocaleString('th-TH');
             let lines = [
-                `🧪 <b>[เชื่อมต่อสำเร็จ 100%!] เรดาร์สแกนสด 6 คู่เงิน (Paul Pro V4)</b>`,
+                `📡 <b>สรุปสถานะพอร์ต & สัญญาณ (เชื่อมต่อสำเร็จ 100%)</b>`,
                 `🕒 เวลาไทย: <code>${{nowStr}}</code>`,
-                `━━━━━━━━━━━━━━━━━━━━`
+                `━━━━━━━━━━━━━━━━━━━━`,
+                `👉 <b>สิ่งที่คุณต้องทำตอนนี้:</b>`,
+                actionBox,
+                `━━━━━━━━━━━━━━━━━━━━`,
+                `🔥 <b>ไม้ที่กำลังถืออยู่ในพอร์ต:</b>`
             ];
 
-            LIVE_STATES.forEach(s => {{
-                const g = s.gates;
-                const tk = s.planned_ticket;
-                const ot = s.active_open_trade;
-                let icon = '🔵';
-                let st = `แผน ${{s.planned_dir}} | ราคา <code>${{s.latest_price}}</code> | รอย่อแตะ EMA50 (<code>${{s.ema50}}</code>)`;
-                if (s.overall_signal === 'ENTRY_NOW') {{
-                    icon = '🟢🚨';
-                    st = `<b>สั่งเข้า ${{s.planned_dir}} ทันที!</b> @ <code>${{s.latest_price}}</code> (SL <code>${{tk.sl}}</code> | TP1 <code>${{tk.tp1}}</code> | <code>${{tk.lots_100k}} Lot</code>)`;
-                }} else if (s.overall_signal === 'SETUP_ARMED') {{
-                    icon = '⏳⚡';
-                    st = `<b>ย่อแตะ EMA50 แล้ว!</b> รอเบรก ${{s.planned_dir}} @ <code>${{tk.entry}}</code> (SL <code>${{tk.sl}}</code> | <code>${{tk.lots_100k}} Lot</code>)`;
-                }}
-                const lights = `[1:${{g.g1_pass?'🟢':'🔴'}} 2:${{g.g2_pass?'🟢':'⏳'}} 3:${{g.g3_pass?'🟢':'⏳'}}]`;
-                lines.push(`${{icon}} <b>${{s.symbol}}</b> ${{lights}}\n   ↳ ${{st}}`);
-                if (ot) {{
-                    lines.push(`   ⚡ <i>ถือออเดอร์ ${{ot.dir}} อยู่: เข้า <code>${{ot.entry_price}}</code> | P&L <b>${{ot.floating_r>=0?'+':''}}${{ot.floating_r}}R</b> | ด่าน ${{ot.stage}} (SL <code>${{ot.current_sl}}</code>)</i>`);
-                }}
-            }});
+            if (openList.length > 0) {{
+                openList.forEach(s => {{
+                    const ot = s.active_open_trade;
+                    lines.push(`• <b>${{cleanPairTg(s.symbol)}}</b> (${{cleanDirTg(ot.dir)}}) — เข้าที่ <code>${{ot.entry}}</code> | P&L <b>${{ot.floating_r>=0?'+':''}}${{ot.floating_r}}R</b> | SL <code>${{ot.current_sl}}</code>`);
+                }});
+            }} else {{
+                lines.push(`• ไม่มีออเดอร์ค้าง (พอร์ตว่าง 0 ไม้)`);
+            }}
+
+            lines.push(``);
+            lines.push(`👀 <b>คู่ที่กำลังเฝ้าระวังใกล้จุดเข้า (ห้ามตั้งไม้ล่วงหน้า):</b>`);
+            if (armedList.length > 0) {{
+                armedList.forEach(s => {{
+                    const tk = s.planned_ticket;
+                    const bw = s.planned_dir === 'BUY' ? 'ปิดสูงกว่า' : 'ปิดต่ำกว่า';
+                    lines.push(`• <b>${{cleanPairTg(s.symbol)}}</b> — เล็งฝั่ง <b>${{cleanDirTg(s.planned_dir)}}</b>` + String.fromCharCode(10) +
+                        `   ↳ ราคาตอนนี้ <code>${{s.latest_price}}</code> | รอแท่ง 4 ชม. ${{bw}} <code>${{tk.entry}}</code> บอทจะเข้าไม้ให้เอง`);
+                }});
+            }} else {{
+                lines.push(`• ไม่มีคู่ที่อยู่ในโซนเฝ้าระวังตอนนี้`);
+            }}
+
+            if (restList.length > 0) {{
+                lines.push(``);
+                lines.push(`💤 <b>คู่ที่ยังพักตัวห่างจุดเข้า (ไม่ต้องสนใจ):</b>` + String.fromCharCode(10) + `• ${{restList.map(x => cleanPairTg(x.symbol)).join(', ')}}`);
+            }}
+
             lines.push(`━━━━━━━━━━━━━━━━━━━━`);
-            lines.push(`✅ <i>บอทพร้อมแจ้งเตือนอัตโนมัติทุกปิดแท่ง H4!</i>`);
+            lines.push(`✅ <i>บอทพร้อมแจ้งเตือนอัตโนมัติทุกปิดแท่ง 4 ชม.!</i>`);
 
             try {{
                 const resp = await fetch(`https://api.telegram.org/bot${{token}}/sendMessage`, {{
@@ -2594,7 +2630,7 @@ def build_full_suite():
                 }});
                 const data = await resp.json();
                 if (data.ok) {{
-                    showTgStatus('🎉 ส่งเรดาร์ทั้ง 6 คู่เงินเข้าแอป Telegram บนมือถือของคุณเรียบร้อยแล้ว! ลองเปิดดูในมือถือได้เลยครับ', false);
+                    showTgStatus('🎉 ส่งสรุปสถานะรูปแบบใหม่อ่านง่ายเข้าแอป Telegram บนมือถือของคุณเรียบร้อยแล้ว!', false);
                 }} else {{
                     showTgStatus(`❌ ส่งไม่สำเร็จ: ${{data.description || 'ตรวจสอบ Bot Token / Chat ID'}}`, true);
                 }}
@@ -2612,25 +2648,48 @@ def build_full_suite():
             }}
             const s = LIVE_STATES[currentLivePairIdx];
             if (!s) return;
+            const PAIR_NAMES_TG = {{
+                'GC=F': '🥇 XAUUSD (ทองคำ)',
+                'EURUSD=X': '🇪🇺 EURUSD',
+                'GBPUSD=X': '🇬🇧 GBPUSD',
+                'USDJPY=X': '🇯🇵 USDJPY',
+                'USDCAD=X': '🇨🇦 USDCAD',
+                'USDCHF=X': '🇨🇭 USDCHF'
+            }};
+            const pairLbl = PAIR_NAMES_TG[s.symbol] || String(s.symbol).replace('=X', '');
             const tk = s.planned_ticket;
             const g = s.gates;
+            const bw = s.planned_dir === 'BUY' ? 'ปิดสูงกว่า' : 'ปิดต่ำกว่า';
+            let hdr = `💤 <b>[พักตัวห่างจุดเข้า] ${{pairLbl}}</b>`;
+            let act = `✅ <b>ไม่ต้องทำอะไรครับ</b> — ราคายังไม่เข้าโซนย่อตัว รอบอทแจ้งเตือนเมื่อใกล้จุดเข้า`;
+            if (s.active_open_trade) {{
+                hdr = `🔥 <b>[กำลังถือไม้อยู่] ${{pairLbl}}</b>`;
+                act = `✅ <b>ไม่ต้องกดอะไรเพิ่มครับ</b> — บอทเฝ้าแบ่งปิด TP1 และตัด SL ให้เองอัตโนมัติ`;
+            }} else if (s.overall_signal === 'ENTRY_NOW') {{
+                hdr = `🟢🚀 <b>[เข้าไม้ใหม่แล้ว!] ${{pairLbl}}</b>`;
+                act = `✅ <b>บอทดำเนินการเข้าไม้ให้อัตโนมัติแล้ว</b> (เช็คแอป cTrader ได้เลยครับ)`;
+            }} else if (s.overall_signal === 'SETUP_ARMED') {{
+                hdr = `👀 <b>[เฝ้าระวังใกล้จุดเข้า — ยังไม่ออกไม้!] ${{pairLbl}}</b>`;
+                act = `✋ <b>ห้ามตั้งไม้ Pending ล่วงหน้าครับ!</b> — รอแท่ง 4 ชม. ${{bw}} <code>${{tk.entry}}</code> บอทจะกดเข้าไม้ให้เองอัตโนมัติ`;
+            }}
             const msg = [
-                `🎯 <b>ใบสั่งเทรดสด: ${{s.symbol}} (${{s.name}})</b>`,
-                `🕯️ แท่ง H4 ล่าสุด: <code>${{s.last_bar_utc}}</code>`,
+                hdr,
+                `🕯️ แท่ง 4 ชม. ล่าสุด: <code>${{s.last_bar_utc}}</code>`,
                 `━━━━━━━━━━━━━━━━━━━━`,
-                `• <b>สถานะปัจจุบัน:</b> ${{s.overall_badge}}`,
-                `• <b>ด่าน 1 (Macro+COT):</b> ${{g.g1_pass?'🟢':'🔴'}} ${{g.g1_text}}`,
-                `• <b>ด่าน 2 (Pullback EMA50):</b> ${{g.g2_pass?'🟢':'⏳'}} ${{g.g2_text}}`,
-                `• <b>ด่าน 3 (3-Bar BOS+RSI):</b> ${{g.g3_pass?'🟢':'⏳'}} ${{g.g3_text}}`,
+                `👉 <b>สิ่งที่คุณต้องทำกับคู่นี้:</b>`,
+                act,
                 `━━━━━━━━━━━━━━━━━━━━`,
-                `📋 <b>พารามิเตอร์สำหรับตั้งไม้ (พอร์ต $100,000 | Risk 0.75% = $750):</b>`,
-                `• <b>ฝั่ง (Direction):</b> <b>${{tk.dir}}</b>`,
-                `• <b>ขนาด Lot Size:</b> <code>${{tk.lots_100k}} Lots</code>`,
-                `• <b>ราคาเข้า (Entry / 3-Bar BOS):</b> <code>${{tk.entry}}</code>`,
-                `• <b>Stop Loss (-1.0R / ${{tk.atr_mult}}x ATR):</b> <code>${{tk.sl}}</code>`,
-                `• <b>TP 1 (+1.5R แบ่งปิด 50%):</b> <code>${{tk.tp1}}</code> <i>(เลื่อน SL -> ${{tk.lock1}})</i>`,
-                `• <b>Stage 2 (+2.5R):</b> <code>${{tk.stage2}}</code> <i>(เลื่อน SL -> ${{tk.lock2}})</i>`,
-                `• <b>TP 2 (+3.5R ปิดที่เหลือ):</b> <code>${{tk.tp2}}</code>`
+                `• ราคาปัจจุบัน: <code>${{s.latest_price}}</code> | แผนฝั่ง: <b>${{tk.dir === 'BUY' ? '🟢 BUY (ขาขึ้น)' : '🔴 SELL (ขาลง)'}}</b>`,
+                `• ด่าน 1 (เทรนด์ใหญ่ & COT): ${{g.g1_pass?'🟢 ผ่าน':'⏳ ยังไม่ผ่าน'}}`,
+                `• ด่าน 2 (ย่อพักฐานแตะ EMA50): ${{g.g2_pass?'🟢 ผ่านแล้ว':'⏳ รอย่อตัว'}}`,
+                `• ด่าน 3 (แท่ง 4 ชม. ปิดเบรก): ${{g.g3_pass?'🟢 เบรกเข้าไม้แล้ว!':'⏳ รอ' + bw + ' ' + tk.entry}}`,
+                `━━━━━━━━━━━━━━━━━━━━`,
+                `📐 <b>ตัวเลขแผนคำนวณล่วงหน้า (บอทใช้เข้าให้อัตโนมัติ — ห้ามตั้งไม้รอ):</b>`,
+                `• ขนาด Lot แผน ($100k): <code>${{tk.lots_100k}} Lots</code>`,
+                `• จุดเบรกที่รอ: <code>${{tk.entry}}</code>`,
+                `• 🛑 SL แผน: <code>${{tk.sl}}</code> <i>(ความเสี่ยง 0.75% = -$750)</i>`,
+                `• 💰 เป้าแบ่งปิดครึ่งไม้ (TP1): <code>${{tk.tp1}}</code> <i>(+1.5R)</i>`,
+                `• 🏆 เป้าปิดทั้งหมด (TP2): <code>${{tk.tp2}}</code> <i>(+3.5R)</i>`
             ].join(String.fromCharCode(10));
 
             try {{
@@ -2641,7 +2700,7 @@ def build_full_suite():
                 }});
                 const data = await resp.json();
                 if (data.ok) {{
-                    showTgStatus(`✅ ส่งใบสั่งเทรดของ <b>${{s.symbol}}</b> เข้า Telegram มือถือเรียบร้อยแล้ว!`, false);
+                    showTgStatus(`✅ ส่งสถานะของ <b>${{pairLbl}}</b> เข้า Telegram มือถือเรียบร้อยแล้ว!`, false);
                 }} else {{
                     showTgStatus(`❌ ส่งไม่สำเร็จ: ${{data.description}}`, true);
                 }}

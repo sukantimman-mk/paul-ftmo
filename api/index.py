@@ -1,7 +1,6 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import urllib.request
-import urllib.parse
 import os
 import datetime
 
@@ -9,6 +8,58 @@ BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 GITHUB_USER = "sukantimman-mk"
 REPO_NAME = "paul-ftmo"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+
+PAIR_DISPLAY_MAP = {
+    "GC=F": ("🥇 XAUUSD (ทองคำ)", "🥇 XAUUSD"),
+    "EURUSD=X": ("🇪🇺 EURUSD", "🇪🇺 EURUSD"),
+    "GBPUSD=X": ("🇬🇧 GBPUSD", "🇬🇧 GBPUSD"),
+    "USDJPY=X": ("🇯🇵 USDJPY", "🇯🇵 USDJPY"),
+    "USDCAD=X": ("🇨🇦 USDCAD", "🇨🇦 USDCAD"),
+    "USDCHF=X": ("🇨🇭 USDCHF", "🇨🇭 USDCHF"),
+}
+
+THAI_MONTHS = [
+    "", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+]
+
+STAGE_THAI = {
+    "OPEN": "ถือเต็มไม้ (รอลุ้นเป้าแรก TP1)",
+    "STAGE_1": "แบ่งปิดกำไร 50% แล้ว + บังหน้าทุนแล้ว (ไร้ความเสี่ยง)",
+    "STAGE_2": "แบ่งปิด 50% แล้ว + ล็อกกำไรเพิ่มที่ +1.5R (รอลุ้น TP2)",
+}
+
+
+def format_pair_name(sym, short=False):
+    info = PAIR_DISPLAY_MAP.get(sym)
+    if info:
+        return info[1] if short else info[0]
+    return str(sym).replace("=X", "")
+
+
+def format_dir_thai(direction):
+    return "🟢 BUY (ขาขึ้น)" if direction == "BUY" else "🔴 SELL (ขาลง)"
+
+
+def format_dir_short(direction):
+    return "🟢 BUY" if direction == "BUY" else "🔴 SELL"
+
+
+def format_bkk_time():
+    bkk = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=7)
+    return f"{bkk.day:02d} {THAI_MONTHS[bkk.month]} {bkk.year} | {bkk.strftime('%H:%M')} น."
+
+
+def format_price(val, sym):
+    try:
+        v = float(val)
+    except Exception:
+        return str(val)
+    if sym == "GC=F":
+        return f"{v:.2f}"
+    if "JPY" in str(sym):
+        return f"{v:.3f}"
+    return f"{v:.4f}"
 
 
 def send_telegram(chat_id, text_html, reply_markup=None):
@@ -25,69 +76,86 @@ def send_telegram(chat_id, text_html, reply_markup=None):
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15):
             pass
     except Exception:
         pass
 
 
-def get_live_scanner_data():
-    url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/main/forward_live_scanner.json?t={int(datetime.datetime.now().timestamp())}"
-    req = urllib.request.Request(url, headers={"User-Agent": "PaulFTMOBot/4.0", "Cache-Control": "no-cache"})
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        return json.loads(resp.read().decode("utf-8"))
-
-
-def get_demo_ledger_data():
-    url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/main/forward_demo_ledger.json?t={int(datetime.datetime.now().timestamp())}"
+def _fetch_github_json(filename, default=None):
+    ts = int(datetime.datetime.now().timestamp())
+    url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/main/{filename}?t={ts}"
     req = urllib.request.Request(url, headers={"User-Agent": "PaulFTMOBot/4.0", "Cache-Control": "no-cache"})
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except Exception:
-        return None
+        return default
+
+
+def get_live_scanner_data():
+    return _fetch_github_json("forward_live_scanner.json", default=[])
+
+
+def get_demo_ledger_data():
+    return _fetch_github_json("forward_demo_ledger.json", default=None)
+
+
+def get_alert_state_data():
+    return _fetch_github_json("telegram_alert_state.json", default={})
 
 
 def format_demo_portfolio(ledger):
     if not ledger:
-        return "💼 <b>พอร์ตจำลอง Forward Demo:</b> กำลังเริ่มระบบรอบแรก กรุณากดอีกครั้งใน 10 วินาทีครับ"
-    bal = ledger.get('current_balance', 100000.0)
-    eq = ledger.get('current_equity', 100000.0)
-    pnl = ledger.get('net_profit_usd', 0.0)
-    ret = ledger.get('net_return_pct', 0.0)
-    stats = ledger.get('stats', {})
-    open_tr = ledger.get('open_trades', [])
+        return "💼 <b>พอร์ต FTMO $100k:</b> กำลังโหลดข้อมูลล่าสุด กรุณากดอีกครั้งใน 5 วินาทีครับ"
+    bal = ledger.get("current_balance", 100000.0)
+    eq = ledger.get("current_equity", 100000.0)
+    pnl = ledger.get("net_profit_usd", 0.0)
+    ret = ledger.get("net_return_pct", 0.0)
+    stats = ledger.get("stats", {})
+    open_tr = ledger.get("open_trades", [])
+    ftmo = ledger.get("ftmo_rules", {})
     ret_icon = "🟢" if pnl >= 0 else "🔴"
-    bkk_now = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=7)).strftime("%Y-%m-%d %H:%M น.")
+    bkk_str = format_bkk_time()
+
+    if open_tr:
+        action_line = f"✅ <b>ไม่ต้องกดอะไรเพิ่ม</b> — กำลังถือรันเทรนด์อยู่ {len(open_tr)} ไม้ (บอทเฝ้าปิด TP / SL ให้เองอัตโนมัติ)"
+    else:
+        action_line = "✅ <b>พอร์ตว่าง (0 ไม้) — ไม่ต้องทำอะไรครับ</b> รอบอทเข้าไม้อัตโนมัติเมื่อสัญญาณครบเกณฑ์"
 
     lines = [
-        "💼 <b>พอร์ตจำลอง Forward Demo ($100,000 | Paul Pro V4)</b>",
-        f"🕒 เวลาไทย: <code>{bkk_now}</code>",
+        "💼 <b>สรุปพอร์ต FTMO $100,000 (Paul Pro V4)</b>",
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
         "━━━━━━━━━━━━━━━━━━━━",
-        f"💰 <b>ยอดเงินคงเหลือ (Balance):</b> <code>${bal:,.2f}</code>",
-        f"📊 <b>มูลค่าสุทธิ (Equity):</b> <code>${eq:,.2f}</code>",
-        f"{ret_icon} <b>กำไรสุทธิรวม (P&L):</b> <b>{ret:+.2f}% (${pnl:+,.2f})</b>",
-        f"🛡️ <b>Max Drawdown:</b> <code>{ledger.get('max_drawdown_pct', 0.0):.2f}%</code> (เกณฑ์ FTMO < 10%)",
-        f"🏆 <b>สถานะกฎ FTMO:</b> <b>✅ ผ่านเกณฑ์ปกติ (PASSING)</b>",
+        "👉 <b>สถานะพอร์ตตอนนี้:</b>",
+        action_line,
         "━━━━━━━━━━━━━━━━━━━━",
-        f"📈 <b>สถิติออเดอร์ (Forward Stats):</b>",
-        f"• ปิดไปแล้ว: <code>{stats.get('total_trades', 0)} ไม้</code> (ชนะ {stats.get('winning_trades', 0)} / แพ้ {stats.get('losing_trades', 0)})",
-        f"• Win Rate: <b>{stats.get('win_rate_pct', 0.0):.1f}%</b> | Profit Factor: <b>{stats.get('profit_factor', 0.0)}</b>",
-        f"• ผลตอบแทนสะสม: <b>{stats.get('total_realized_r', 0.0):+}R</b>",
+        f"💰 เงินคงเหลือ (Balance): <code>${bal:,.2f}</code>",
+        f"📊 มูลค่าพอร์ตสุทธิ (Equity): <code>${eq:,.2f}</code>",
+        f"{ret_icon} กำไร/ขาดทุนรวม: <b>{pnl:+,.2f} USD ({ret:+.2f}%)</b>",
+        f"🛡️ ขาดทุนสูงสุดสะสม (Max DD): <code>{ledger.get('max_drawdown_pct', 0.0):.2f}%</code> <i>(เกณฑ์ FTMO ห้ามเกิน 10%)</i>",
+        f"🏆 กฎความเสี่ยง FTMO: <b>{'✅ ปลอดภัยตามเกณฑ์' if ftmo.get('status', 'PASSING_HEALTHY') == 'PASSING_HEALTHY' else '⚠️ ใกล้เพดานความเสี่ยง'}</b>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📈 <b>สถิติไม้ที่ปิดจบแล้ว:</b>",
+        f"• ปิดจบแล้ว: <code>{stats.get('total_trades', 0)} ไม้</code> (ชนะ {stats.get('winning_trades', 0)} / แพ้ {stats.get('losing_trades', 0)})",
+        f"• อัตราชนะ (Win Rate): <b>{stats.get('win_rate_pct', 0.0):.1f}%</b> | กำไรสะสม: <b>{stats.get('total_realized_r', 0.0):+}R</b>",
         "━━━━━━━━━━━━━━━━━━━━",
     ]
     if open_tr:
-        lines.append(f"⚡ <b>ออเดอร์ที่กำลังถืออยู่ ({len(open_tr)} ไม้):</b>")
+        lines.append(f"🔥 <b>ไม้ที่กำลังถืออยู่ตอนนี้ ({len(open_tr)} ไม้):</b>")
         for t in open_tr:
-            fl_color = "🟢" if t.get('floating_usd', 0.0) >= 0 else "🔴"
+            sym = t["symbol"]
+            fl_usd = t.get("floating_usd", 0.0)
+            fl_r = t.get("floating_r", 0.0)
+            fl_icon = "🟢" if fl_usd >= 0 else "🔴"
+            st_lbl = STAGE_THAI.get(t.get("stage", "OPEN"), t.get("stage", "OPEN"))
             lines.append(
-                f"{fl_color} <b>{t['symbol']} ({t['dir']})</b> @ <code>{t['entry']}</code> ({t['lots']} Lots)\n"
-                f"   ↳ P&L: <b>{t.get('floating_r', 0.0):+}R (${t.get('floating_usd', 0.0):+,.2f})</b> | ด่าน: <code>{t['stage']}</code> (SL <code>{t['current_sl']}</code>)"
+                f"• <b>{format_pair_name(sym)}</b> ({format_dir_short(t['dir'])} <code>{t.get('lots', 1.0)} Lot</code>)\n"
+                f"   ↳ เข้าที่ <code>{format_price(t['entry'], sym)}</code> | {fl_icon} <b>{fl_usd:+,.2f} USD ({fl_r:+}R)</b>\n"
+                f"   ↳ SL ปัจจุบัน: <code>{format_price(t['current_sl'], sym)}</code> | <i>{st_lbl}</i>"
             )
     else:
-        lines.append("💤 <i>ขณะนี้ไม่มีออเดอร์ค้าง — ระบบอยู่ในโหมดสแตนด์บายรอสัญญาณครบ 1-2-3</i>")
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("💡 <i>ระบบบันทึกและจัดการออเดอร์อัตโนมัติบน Cloud 100% ไม่ต้องเปิดคอม</i>")
+        lines.append("🔥 <b>ไม้ที่กำลังถืออยู่ตอนนี้:</b>\n• ไม่มีออเดอร์ค้าง (พอร์ตว่าง 0 ไม้)")
     return "\n".join(lines)
 
 
@@ -109,63 +177,159 @@ def trigger_github_cloud_scan():
         return False
 
 
-def format_radar_summary(live_states):
-    bkk_now = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=7)).strftime("%Y-%m-%d %H:%M น.")
-    lines = [
-        "📡 <b>เรดาร์สแกนสด 6 คู่เงิน (Paul Pro V4 | 1-2-3-4)</b>",
-        f"🕒 เวลาไทย: <code>{bkk_now}</code>",
-        "━━━━━━━━━━━━━━━━━━━━"
-    ]
+def format_radar_summary(live_states, ledger=None):
+    bkk_str = format_bkk_time()
+    open_trades = (ledger or {}).get("open_trades", [])
+    open_syms = {t["symbol"] for t in open_trades}
+
+    armed_pairs = []
+    resting_pairs = []
+    entry_pairs = []
 
     for s in live_states:
         sym = s["symbol"]
-        g = s["gates"]
-        tk = s["planned_ticket"]
-        ot = s.get("active_open_trade")
-        icon = "🔵"
-        status_txt = f"แผน <b>{s['planned_dir']}</b> | ราคา <code>{s['latest_price']}</code> | รอย่อแตะ EMA50 (<code>{s['ema50']}</code>)"
+        if sym in open_syms:
+            continue
+        sig = s.get("overall_signal", "")
+        if sig in ("ENTRY_NOW", "EXECUTE_NOW"):
+            entry_pairs.append(s)
+        elif sig in ("SETUP_ARMED", "READY_WAIT_BOS"):
+            armed_pairs.append(s)
+        else:
+            resting_pairs.append(s)
 
-        if s["overall_signal"] == "ENTRY_NOW":
-            icon = "🟢🚨"
-            status_txt = f"<b>สั่งเข้า {s['planned_dir']} ทันที!</b> @ <code>{s['latest_price']}</code> (SL <code>{tk['sl']}</code> | TP1 <code>{tk['tp1']}</code> | <code>{tk['lots_100k']} Lot</code>)"
-        elif s["overall_signal"] == "SETUP_ARMED":
-            icon = "⏳⚡"
-            status_txt = f"<b>ย่อแตะ EMA50 แล้ว!</b> รอเบรก {s['planned_dir']} @ <code>{tk['entry']}</code> (SL <code>{tk['sl']}</code> | <code>{tk['lots_100k']} Lot</code>)"
+    if entry_pairs:
+        names = ", ".join(format_pair_name(s["symbol"], short=True) for s in entry_pairs)
+        action_box = f"🟢 <b>มีสัญญาณเข้าไม้ ({names})</b> — บอทส่งคำสั่งเข้าพอร์ตอัตโนมัติแล้ว (เช็คแอป cTrader ได้เลย)"
+    elif open_trades:
+        action_box = (
+            f"✅ <b>ไม่ต้องกดอะไรครับ (ถือไม้รันกำไรต่อ)</b>\n"
+            f"ตอนนี้ถืออยู่ <b>{len(open_trades)} ไม้</b> บอทเฝ้าแบ่งปิด TP1 และตัด SL ให้เองอัตโนมัติ"
+        )
+    else:
+        action_box = (
+            "✅ <b>ไม่ต้องทำอะไรครับ</b> — ตอนนี้ยังไม่มีสัญญาณเข้าไม้ใหม่\n"
+            "<i>(ระบบนี้ไม่ตั้ง Pending ล่วงหน้า — รอแท่ง 4 ชม. ปิดเบรกครบเกณฑ์ บอทจะกดเข้าไม้ให้เองอัตโนมัติ)</i>"
+        )
 
-        g_lights = f"[1:{'🟢' if g['g1_pass'] else '🔴'} 2:{'🟢' if g['g2_pass'] else '⏳'} 3:{'🟢' if g['g3_pass'] else '⏳'}]"
-        lines.append(f"{icon} <b>{sym}</b> {g_lights}\n   ↳ {status_txt}")
+    lines = [
+        "📡 <b>สรุปสถานะพอร์ต & สัญญาณทั้ง 6 คู่เงิน</b>",
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "👉 <b>สิ่งที่คุณต้องทำตอนนี้:</b>",
+        action_box,
+        "━━━━━━━━━━━━━━━━━━━━",
+        "🔥 <b>ไม้ที่กำลังถืออยู่ในพอร์ต:</b>",
+    ]
 
-        if ot:
+    if open_trades:
+        for t in open_trades:
+            sym = t["symbol"]
+            fl_usd = t.get("floating_usd", 0.0)
+            fl_r = t.get("floating_r", 0.0)
+            fl_icon = "🟢" if fl_usd >= 0 else "🔴"
             lines.append(
-                f"   ⚡ <i>ถือออเดอร์ {ot['dir']} อยู่: เข้า <code>{ot['entry_price']}</code> | P&L <b>{'+' if ot['floating_r'] >= 0 else ''}{ot['floating_r']}R</b> | ด่าน {ot['stage']}</i>"
+                f"• <b>{format_pair_name(sym)}</b> ({format_dir_short(t['dir'])} <code>{t.get('lots', 1.0)} Lot</code>) — {fl_icon} <b>{fl_usd:+,.2f} USD ({fl_r:+}R)</b>\n"
+                f"   ↳ เข้าที่ <code>{format_price(t['entry'], sym)}</code> | SL <code>{format_price(t['current_sl'], sym)}</code> | TP2 <code>{format_price(t['tp2'], sym)}</code>"
             )
+    else:
+        lines.append("• ไม่มีออเดอร์ค้าง (พอร์ตว่าง 0 ไม้)")
 
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("💡 <i>พิมพ์ /scan เพื่อสั่งดึงแท่งเทียนสดเดี๋ยวนี้ | พิมพ์ /gold เพื่อดูใบสั่งเทรดทอง</i>")
+    lines.append("")
+    lines.append("👀 <b>คู่ที่กำลังเฝ้าระวังใกล้จุดเข้า (ห้ามตั้งไม้ล่วงหน้า):</b>")
+    if armed_pairs:
+        for s in armed_pairs:
+            sym = s["symbol"]
+            tk = s["planned_ticket"]
+            break_word = "ปิดสูงกว่า" if s["planned_dir"] == "BUY" else "ปิดต่ำกว่า"
+            lines.append(
+                f"• <b>{format_pair_name(sym)}</b> — เล็งฝั่ง <b>{format_dir_short(s['planned_dir'])}</b>\n"
+                f"   ↳ ราคาตอนนี้ <code>{format_price(s['latest_price'], sym)}</code> | "
+                f"รอแท่ง 4 ชม. {break_word} <code>{format_price(tk['entry'], sym)}</code> บอทจะเข้าไม้ให้เอง"
+            )
+    else:
+        lines.append("• ไม่มีคู่ที่อยู่ในโซนเฝ้าระวังตอนนี้")
+
+    if resting_pairs:
+        lines.append("")
+        resting_names = ", ".join(format_pair_name(s["symbol"], short=True) for s in resting_pairs)
+        lines.append(f"💤 <b>คู่ที่ยังพักตัวห่างจุดเข้า (ไม่ต้องสนใจ):</b>\n• {resting_names}")
+
+    if ledger:
+        equity = ledger.get("current_equity", 100000.0)
+        init_bal = ledger.get("initial_balance", 100000.0)
+        tot_pnl = round(equity - init_bal, 2)
+        tot_ret = round((tot_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
+        lines.append("━━━━━━━━━━━━━━━━━━━━")
+        lines.append(f"💼 <b>พอร์ต FTMO $100k:</b> <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / {tot_pnl:+,.2f} USD</b>)")
+
     return "\n".join(lines)
 
 
-def format_single_pair_ticket(s):
+def format_single_pair_ticket(s, ledger=None):
+    sym = s["symbol"]
+    pair_lbl = format_pair_name(sym)
     tk = s["planned_ticket"]
     g = s["gates"]
-    return "\n".join([
-        f"🎯 <b>ใบสั่งเทรดสด: {s['symbol']} ({s['name']})</b>",
-        f"🕯️ แท่ง H4: <code>{s['last_bar_utc']}</code>",
+    bkk_str = format_bkk_time()
+    dir_full = format_dir_thai(s["planned_dir"])
+    break_word = "ปิดสูงกว่า" if s["planned_dir"] == "BUY" else "ปิดต่ำกว่า"
+
+    open_tr = None
+    if ledger:
+        open_tr = next((t for t in ledger.get("open_trades", []) if t.get("symbol") == sym), None)
+
+    if open_tr:
+        status_hdr = f"🔥 <b>[กำลังถือไม้อยู่] {pair_lbl}</b>"
+        action_txt = "✅ <b>ไม่ต้องกดอะไรเพิ่มครับ</b> — บอทเฝ้าแบ่งปิด TP1 และตัด SL บน cTrader ให้เองอัตโนมัติ"
+    elif s.get("overall_signal") in ("ENTRY_NOW", "EXECUTE_NOW"):
+        status_hdr = f"🟢🚀 <b>[เข้าไม้ใหม่แล้ว!] {pair_lbl}</b>"
+        action_txt = "✅ <b>บอทดำเนินการเข้าไม้ให้อัตโนมัติแล้ว</b> (เปิดแอป cTrader เช็คดูได้เลยครับ)"
+    elif s.get("overall_signal") in ("SETUP_ARMED", "READY_WAIT_BOS"):
+        status_hdr = f"👀 <b>[เฝ้าระวังใกล้จุดเข้า — ยังไม่ออกไม้!] {pair_lbl}</b>"
+        action_txt = (
+            f"✋ <b>ห้ามตั้งไม้ Pending ล่วงหน้าครับ!</b> — รอแท่ง 4 ชม. {break_word} "
+            f"<code>{format_price(tk['entry'], sym)}</code> แล้วบอทจะกดเข้าไม้ให้เองอัตโนมัติ"
+        )
+    else:
+        status_hdr = f"💤 <b>[พักตัวห่างจุดเข้า] {pair_lbl}</b>"
+        action_txt = "✅ <b>ไม่ต้องทำอะไรครับ</b> — ราคายังไม่เข้าโซนย่อตัว รอบอทแจ้งเตือนเมื่อใกล้จุดเข้า"
+
+    lines = [
+        status_hdr,
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
         "━━━━━━━━━━━━━━━━━━━━",
-        f"• <b>สถานะ:</b> {s['overall_badge']}",
-        f"• <b>ด่าน 1 (Trend+COT):</b> {'🟢' if g['g1_pass'] else '🔴'} {g['g1_text']}",
-        f"• <b>ด่าน 2 (Pullback):</b> {'🟢' if g['g2_pass'] else '⏳'} {g['g2_text']}",
-        f"• <b>ด่าน 3 (3-Bar BOS):</b> {'🟢' if g['g3_pass'] else '⏳'} {g['g3_text']}",
+        "👉 <b>สิ่งที่คุณต้องทำกับคู่นี้:</b>",
+        action_txt,
         "━━━━━━━━━━━━━━━━━━━━",
-        "📋 <b>พารามิเตอร์สำหรับตั้งไม้ (พอร์ต $100k | Risk 0.75% = $750):</b>",
-        f"• <b>ฝั่ง (Direction):</b> <b>{tk['dir']}</b>",
-        f"• <b>ขนาด Lot Size:</b> <code>{tk['lots_100k']} Lots</code>",
-        f"• <b>ราคาเข้า (Entry / BOS):</b> <code>{tk['entry']}</code>",
-        f"• <b>Stop Loss (-1.0R):</b> <code>{tk['sl']}</code>",
-        f"• <b>TP 1 (+1.5R ปิด 50%):</b> <code>{tk['tp1']}</code> <i>(เลื่อน SL -> {tk['lock1']})</i>",
-        f"• <b>Stage 2 (+2.5R):</b> <code>{tk['stage2']}</code> <i>(เลื่อน SL -> {tk['lock2']})</i>",
-        f"• <b>TP 2 (+3.5R เป้าหลัก):</b> <code>{tk['tp2']}</code>"
-    ])
+        f"💵 ราคาปัจจุบัน: <code>{format_price(s['latest_price'], sym)}</code> | แผนฝั่ง: <b>{dir_full}</b>",
+        "📊 <b>เช็คเงื่อนไข 3 ด่าน:</b>",
+        f"• ด่าน 1 (เทรนด์ใหญ่ & กองทุน COT): {'🟢 ผ่าน' if g['g1_pass'] else '⏳ ยังไม่ผ่าน'}",
+        f"• ด่าน 2 (ราคาย่อพักฐานแตะ EMA50): {'🟢 ผ่านแล้ว' if g['g2_pass'] else '⏳ รอย่อตัว'}",
+        f"• ด่าน 3 (แท่ง 4 ชม. ปิดเบรก + RSI): {'🟢 เบรกเข้าไม้แล้ว!' if g['g3_pass'] else f'⏳ รอ{break_word} ' + format_price(tk['entry'], sym)}",
+    ]
+
+    if open_tr:
+        fl_usd = open_tr.get("floating_usd", 0.0)
+        fl_r = open_tr.get("floating_r", 0.0)
+        lines.extend([
+            "━━━━━━━━━━━━━━━━━━━━",
+            "🔥 <b>รายละเอียดไม้ที่ถืออยู่:</b>",
+            f"• ฝั่ง: <b>{format_dir_thai(open_tr['dir'])}</b> | ขนาด: <code>{open_tr.get('lots', 1.0)} Lots</code>",
+            f"• ราคาที่เข้า: <code>{format_price(open_tr['entry'], sym)}</code> | กำไร/ขาดทุน: <b>{fl_usd:+,.2f} USD ({fl_r:+}R)</b>",
+            f"• 🛑 SL ปัจจุบัน: <code>{format_price(open_tr['current_sl'], sym)}</code> | 🏆 TP2: <code>{format_price(open_tr['tp2'], sym)}</code>",
+        ])
+    else:
+        lines.extend([
+            "━━━━━━━━━━━━━━━━━━━━",
+            "📐 <b>ตัวเลขแผนคำนวณล่วงหน้า (บอทใช้เข้าให้อัตโนมัติ — ห้ามตั้งไม้รอ):</b>",
+            f"• ขนาด Lot แผน ($100k): <code>{tk['lots_100k']} Lots</code>",
+            f"• จุดเบรกที่รอ: <code>{format_price(tk['entry'], sym)}</code>",
+            f"• 🛑 SL แผน: <code>{format_price(tk['sl'], sym)}</code> <i>(ความเสี่ยง 0.75% = -$750)</i>",
+            f"• 💰 เป้าแบ่งปิดครึ่งไม้ (TP1): <code>{format_price(tk['tp1'], sym)}</code> <i>(+1.5R)</i>",
+            f"• 🏆 เป้าปิดทั้งหมด (TP2): <code>{format_price(tk['tp2'], sym)}</code> <i>(+3.5R)</i>",
+        ])
+    return "\n".join(lines)
 
 
 class handler(BaseHTTPRequestHandler):
@@ -188,84 +352,96 @@ class handler(BaseHTTPRequestHandler):
             chat_id = msg["chat"]["id"]
             text = msg["text"].strip().lower()
 
+            keyboard = {
+                "keyboard": [
+                    [{"text": "📡 สรุปสถานะตอนนี้"}, {"text": "💼 ดูพอร์ตปัจจุบัน ($100k)"}],
+                    [{"text": "🥇 XAUUSD (ทองคำ)"}, {"text": "🔄 สั่งสแกนกราฟสดเดี๋ยวนี้"}],
+                    [{"text": "🇪🇺 EURUSD"}, {"text": "🇬🇧 GBPUSD"}, {"text": "🇯🇵 USDJPY"}],
+                    [{"text": "🇨🇦 USDCAD"}, {"text": "🇨🇭 USDCHF"}]
+                ],
+                "resize_keyboard": True
+            }
+
             try:
                 if text in ["/start", "/help", "สวัสดี", "เมนู", "hi"]:
                     welcome_text = "\n".join([
-                        f"🤖 <b>สวัสดีครับคุณ {msg['chat'].get('first_name', 'Superman')}!</b>",
-                        "ระบบพร้อมรับคำสั่งสดในแชทตลอด 24 ชั่วโมง (ปิดคอมได้ 100%):",
+                        f"🤖 <b>สวัสดีครับคุณ {msg['chat'].get('first_name', 'Trader')}!</b>",
+                        "บอทแจ้งเตือน & เทรดอัตโนมัติ (Paul FTMO Pro V4) ปรับรูปแบบให้อ่านง่ายใน 3 วินาทีแล้วครับ:",
                         "",
-                        "📌 <b>คำสั่งที่พิมพ์ได้ทันที:</b>",
-                        "• <code>💼 /demo</code> หรือ <code>พอร์ต</code> ➔ ดูสถานะพอร์ต Forward Demo $100k",
-                        "• <code>/update</code> หรือ <code>ขออัพเดทตอนนี้</code> ➔ สรุปเรดาร์ 6 คู่เงินสด",
-                        "• <code>/scan</code> ➔ สั่งให้ Cloud ปลุกขึ้นมาสแกนกราฟสดเดี๋ยวนี้",
-                        "• <code>/gold</code> ➔ ดูใบสั่งเทรดทองคำ (Entry / SL / TP / Lot)",
-                        "• <code>/jpy</code>, <code>/cad</code>, <code>/chf</code>, <code>/gbp</code>, <code>/eur</code> ➔ ดูโพยคู่เงินนั้นๆ"
+                        "📌 <b>วิธีอ่านสถานะง่ายๆ:</b>",
+                        "• 🟢 <b>เข้าไม้ใหม่แล้ว</b> = บอทออกออเดอร์ใน cTrader ให้แล้ว (ไม่ต้องกดเอง)",
+                        "• 💰 <b>แบ่งปิด / ขยับล็อก</b> = บอทแบ่งปิดกำไรครึ่งไม้ให้แล้ว",
+                        "• 🏁 <b>ปิดไม้จบ 100%</b> = จบออเดอร์เรียบร้อย",
+                        "• 👀 <b>เฝ้าระวังใกล้จุดเข้า</b> = ดูเฉยๆ <b>ห้ามตั้ง Pending ล่วงหน้า</b> รอแท่ง 4 ชม. ปิดเบรกบอทจะเข้าให้เอง",
+                        "• ⚪ <b>ยกเลิกเฝ้าระวัง</b> = ราคาไม่เบรกตามเกณฑ์ (ยังไม่ได้ออกไม้ ไม่ต้องกดยกเลิกอะไร)",
+                        "",
+                        "👇 <i>กดปุ่มเมนูด้านล่างเพื่อเช็คสถานะได้ตลอด 24 ชม. ครับ</i>"
                     ])
-                    keyboard = {
-                        "keyboard": [
-                            [{"text": "💼 พอร์ต Demo $100k"}, {"text": "📡 ขออัพเดทเรดาร์สดตอนนี้"}],
-                            [{"text": "🥇 โพยเทรดทองคำ (GC=F)"}, {"text": "🔄 สั่งสแกนสด Cloud"}],
-                            [{"text": "🇯🇵 USDJPY"}, {"text": "🇨🇦 USDCAD"}, {"text": "🇨🇭 USDCHF"}],
-                            [{"text": "🇬🇧 GBPUSD"}, {"text": "🇪🇺 EURUSD"}]
-                        ],
-                        "resize_keyboard": True
-                    }
                     send_telegram(chat_id, welcome_text, keyboard)
 
                 elif any(w in text for w in ["demo", "portfolio", "balance", "พอร์ต", "เดโม", "/demo"]):
                     ledger = get_demo_ledger_data()
-                    send_telegram(chat_id, format_demo_portfolio(ledger))
+                    send_telegram(chat_id, format_demo_portfolio(ledger), keyboard)
 
-                elif any(w in text for w in ["update", "อัพเดท", "เรดาร์", "/radar"]):
+                elif any(w in text for w in ["update", "อัพเดท", "อัปเดต", "สรุปสถานะ", "เรดาร์", "/radar"]):
                     live_data = get_live_scanner_data()
-                    send_telegram(chat_id, format_radar_summary(live_data))
+                    ledger = get_demo_ledger_data()
+                    send_telegram(chat_id, format_radar_summary(live_data, ledger), keyboard)
 
                 elif any(w in text for w in ["scan", "สแกน", "/refresh"]):
                     send_telegram(
                         chat_id,
-                        "⏳ <b>กำลังส่งคำสั่งปลุกเซิร์ฟเวอร์คลาวด์บน GitHub...</b>\nระบบกำลังดึงแท่งเทียน H4 สดเดี๋ยวนี้ ข้อความสรุปเรดาร์จะส่งมาใน ~25 วินาทีครับ!"
+                        "⏳ <b>กำลังสั่งเซิร์ฟเวอร์ Cloud สแกนกราฟแท่ง 4 ชม. สดเดี๋ยวนี้...</b>\nรอประมาณ 25 วินาที บอทจะส่งสรุปสถานะล่าสุดมาให้ครับ!",
+                        keyboard
                     )
                     trigger_github_cloud_scan()
 
                 elif any(w in text for w in ["gold", "ทอง", "xau"]):
                     live_data = get_live_scanner_data()
+                    ledger = get_demo_ledger_data()
                     gold = next((s for s in live_data if s["symbol"] == "GC=F"), None)
                     if gold:
-                        send_telegram(chat_id, format_single_pair_ticket(gold))
+                        send_telegram(chat_id, format_single_pair_ticket(gold, ledger), keyboard)
 
                 elif "jpy" in text:
                     live_data = get_live_scanner_data()
+                    ledger = get_demo_ledger_data()
                     pair = next((s for s in live_data if "JPY" in s["symbol"]), None)
                     if pair:
-                        send_telegram(chat_id, format_single_pair_ticket(pair))
+                        send_telegram(chat_id, format_single_pair_ticket(pair, ledger), keyboard)
 
                 elif "cad" in text:
                     live_data = get_live_scanner_data()
+                    ledger = get_demo_ledger_data()
                     pair = next((s for s in live_data if "CAD" in s["symbol"]), None)
                     if pair:
-                        send_telegram(chat_id, format_single_pair_ticket(pair))
+                        send_telegram(chat_id, format_single_pair_ticket(pair, ledger), keyboard)
 
                 elif "chf" in text:
                     live_data = get_live_scanner_data()
+                    ledger = get_demo_ledger_data()
                     pair = next((s for s in live_data if "CHF" in s["symbol"]), None)
                     if pair:
-                        send_telegram(chat_id, format_single_pair_ticket(pair))
+                        send_telegram(chat_id, format_single_pair_ticket(pair, ledger), keyboard)
 
                 elif "gbp" in text:
                     live_data = get_live_scanner_data()
+                    ledger = get_demo_ledger_data()
                     pair = next((s for s in live_data if "GBP" in s["symbol"]), None)
                     if pair:
-                        send_telegram(chat_id, format_single_pair_ticket(pair))
+                        send_telegram(chat_id, format_single_pair_ticket(pair, ledger), keyboard)
 
                 elif "eur" in text:
                     live_data = get_live_scanner_data()
+                    ledger = get_demo_ledger_data()
                     pair = next((s for s in live_data if "EUR" in s["symbol"]), None)
                     if pair:
-                        send_telegram(chat_id, format_single_pair_ticket(pair))
+                        send_telegram(chat_id, format_single_pair_ticket(pair, ledger), keyboard)
 
                 else:
                     live_data = get_live_scanner_data()
-                    send_telegram(chat_id, format_radar_summary(live_data))
+                    ledger = get_demo_ledger_data()
+                    send_telegram(chat_id, format_radar_summary(live_data, ledger), keyboard)
 
             except Exception as e:
                 send_telegram(chat_id, f"⚠️ เกิดข้อผิดพลาด: {str(e)}")

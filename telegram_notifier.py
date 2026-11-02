@@ -2,6 +2,7 @@
 Paul FTMO V4 - Zero-Cost Cloud & Local Telegram H4 Alert System
 Works 24/5 on GitHub Actions Free Cloud (PC can be 100% turned off, $0 cost)
 OR locally via paul_system_dashboard.html / command line.
+Redesigned for 3-second human readability in plain Thai (Zero spam, zero pending-order confusion).
 """
 
 import os
@@ -24,6 +25,15 @@ if BASE_DIR not in sys.path:
 
 import paul_engine
 import forward_demo_ledger
+from forward_demo_ledger import (
+    escape_html,
+    format_pair_name,
+    format_dir_thai,
+    format_dir_short,
+    format_bkk_time,
+    format_price,
+    format_stage_thai,
+)
 
 CONFIG_PATH = os.path.join(BASE_DIR, 'telegram_config.json')
 STATE_PATH = os.path.join(BASE_DIR, 'telegram_alert_state.json')
@@ -63,7 +73,7 @@ def save_telegram_credentials(bot_token, chat_id, dashboard_url=''):
         'dashboard_url': str(dashboard_url).strip(),
         'updated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
-    with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
+    with open(CONFIG_PATH, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(cfg, f, indent=2, ensure_ascii=False)
     return cfg
 
@@ -98,12 +108,6 @@ def auto_detect_chat_id(bot_token):
         }
     except Exception as e:
         return {'ok': False, 'error': f'เชื่อมต่อ Telegram ไม่สำเร็จ: {str(e)}'}
-
-
-def escape_html(val):
-    if not isinstance(val, str):
-        val = str(val)
-    return val.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
 def send_telegram_message(bot_token, chat_id, text_html):
@@ -247,7 +251,7 @@ def sync_latest_cftc_cot_if_needed():
                 updated = True
 
         if updated:
-            with open(COT_CACHE_PATH, 'w', encoding='utf-8') as f:
+            with open(COT_CACHE_PATH, 'w', encoding='utf-8', newline='\n') as f:
                 json.dump(cot_db, f, indent=2, ensure_ascii=False)
             print("[+] Synced & verified weekly CFTC COT records (52W index + full schema) into cache.")
     except Exception as e:
@@ -255,146 +259,219 @@ def sync_latest_cftc_cot_if_needed():
 
 
 def format_urgent_pair_alert(s, event_type, dashboard_url=''):
-    """Formats a dedicated rich alert message for a single pair when triggered or armed."""
+    """Formats a clear single-pair card in plain Thai (kept for backward compatibility & direct lookups)."""
     sym = s['symbol']
-    name = s['name']
+    pair_lbl = format_pair_name(sym)
     tk = s['planned_ticket']
-    gates = s['gates']
     ot = s.get('active_open_trade')
-    bkk_now = (datetime.now(timezone.utc) + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M น. (เวลาไทย)')
+    bkk_str = format_bkk_time()
+    dir_full = format_dir_thai(s['planned_dir'])
+    break_word = "ปิดสูงกว่า" if s['planned_dir'] == 'BUY' else "ปิดต่ำกว่า"
 
     if event_type in ('ENTRY_NOW', 'EXECUTE_NOW'):
-        header = f"🟢🚨 <b>[เข้าออเดอร์ทันที!] {sym} ({name}) — ด่าน 1-2-3 ผ่านครบ 100%!</b>"
+        header = f"🟢🚀 <b>[เข้าไม้ใหม่แล้ว!] {pair_lbl} — ฝั่ง {tk['dir']} ({tk['lots_100k']} Lots)</b>"
+        action = "✅ <b>บอทดำเนินการเข้าไม้ให้อัตโนมัติแล้ว</b> (เปิดแอป cTrader เช็คดูได้เลยครับ)"
+    elif ot or event_type.startswith('ACTIVE_'):
+        header = f"🔥 <b>[กำลังถือไม้อยู่] {pair_lbl}</b>"
+        action = "✅ <b>ไม่ต้องกดอะไรเพิ่มครับ</b> — บอทเฝ้าแบ่งปิด TP และตัด SL ให้เองอัตโนมัติ"
     elif event_type in ('SETUP_ARMED', 'READY_WAIT_BOS'):
-        header = f"⏳⚡ <b>[เตรียมพร้อมตั้งไม้!] {sym} ({name}) — ราคาย่อแตะเส้นฟ้า EMA50 แล้ว!</b>"
-    elif event_type.startswith('ACTIVE_STAGE_'):
-        header = f"🛡️💰 <b>[อัปเดตไม้ที่ถืออยู่!] {sym} ({name}) — ราคาวิ่งชนเป้าย่อยแล้ว!</b>"
+        header = f"👀 <b>[เฝ้าระวังใกล้จุดเข้า — ยังไม่ออกไม้!] {pair_lbl}</b>"
+        action = (
+            f"✋ <b>ไม่ต้องตั้งไม้ Pending ล่วงหน้าครับ!</b> — รอแท่ง 4 ชม. {break_word} "
+            f"<code>{format_price(tk['entry'], sym)}</code> แล้วบอทจะกดเข้าไม้ให้เองอัตโนมัติ"
+        )
     else:
-        header = f"📡 <b>อัปเดตสัญญาณ {sym} ({name})</b>"
+        header = f"💤 <b>[พักตัวห่างจุดเข้า] {pair_lbl}</b>"
+        action = "✅ <b>ไม่ต้องทำอะไรครับ</b> — ราคายังไม่เข้าโซนย่อตัว รอบอทแจ้งเตือนเมื่อใกล้จุดเข้า"
 
     lines = [
         header,
-        f"🕒 เวลาสแกน: <code>{bkk_now}</code>",
-        f"🕯️ แท่ง H4 ล่าสุด: <code>{s['last_bar_utc']}</code>",
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
         "━━━━━━━━━━━━━━━━━━━━",
-        f"💵 <b>ราคาปัจจุบัน:</b> <code>{s['latest_price']}</code> | <b>แผนฝั่ง:</b> <b>{s['planned_dir']}</b>",
-        f"📊 <b>ตรวจสอบกฎ 1-2-3-4:</b>",
-        f"  {'🟢' if gates['g1_pass'] else '🔴'} <b>ด่าน 1 (Trend+COT):</b> {escape_html(gates['g1_text'])}",
-        f"  {'🟢' if gates['g2_pass'] else '🔴'} <b>ด่าน 2 (Pullback EMA50):</b> {escape_html(gates['g2_text'])}",
-        f"  {'🟢' if gates['g3_pass'] else '⏳'} <b>ด่าน 3 (3-Bar BOS+RSI):</b> {escape_html(gates['g3_text'])}",
+        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        action,
         "━━━━━━━━━━━━━━━━━━━━",
+        f"• คู่เงิน: <b>{pair_lbl}</b> | ราคาตอนนี้: <code>{format_price(s['latest_price'], sym)}</code>",
+        f"• ฝั่งที่เล็ง: <b>{dir_full}</b> | ขนาดแผน: <code>{tk['lots_100k']} Lots</code>",
+        f"• จุดเบรกที่รอ: <code>{format_price(tk['entry'], sym)}</code>",
+        f"• 🛑 SL แผน: <code>{format_price(tk['sl'], sym)}</code> | 💰 TP1: <code>{format_price(tk['tp1'], sym)}</code> | 🏆 TP2: <code>{format_price(tk['tp2'], sym)}</code>",
     ]
-
-    if ot and event_type.startswith('ACTIVE_STAGE_'):
-        e_price = ot.get('entry', ot.get('entry_price', ''))
-        tp2_price = ot.get('tp', ot.get('tp2_price', ''))
-        lines.extend([
-            f"⚡ <b>สถานะไม้ที่ถืออยู่ ({ot.get('dir', '')}):</b>",
-            f"• ราคาเข้า (Entry): <code>{e_price}</code>",
-            f"• กำไรลอยตัวปัจจุบัน: <b>{ot.get('floating_r', 0):+}R (${ot.get('floating_usd', 0):+,.2f})</b>",
-            f"• <b>สิ่งที่ต้องทำทันที (ด่าน 4):</b> สถานะเข้าสู่ <b>{ot.get('stage', '')}</b> -> ตั้ง SL ปัจจุบันไว้ที่ <code>{ot.get('current_sl', '')}</code> และ TP2 ที่ <code>{tp2_price}</code>",
-        ])
-    elif event_type in ('ENTRY_NOW', 'EXECUTE_NOW'):
-        lines.extend([
-            f"🟢 <b>[สถานะ: ด่าน 1-2-3 ผ่านครบ -> กำลังยิงออเดอร์เข้า cTrader!]</b>",
-            f"• <b>ฝั่ง (Direction):</b> <b>{tk['dir']}</b>",
-            f"• <b>ขนาด Lot (FTMO $100k):</b> <code>{tk['lots_100k']} Lots</code> (ความเสี่ยง 0.75% = $750)",
-            f"• <b>ราคาเข้า (Entry):</b> <code>{s['latest_price']}</code>",
-            f"• <b>Stop Loss (-1.0R):</b> <code>{tk['sl']}</code>",
-            f"• <b>TP 1 (+1.5R แบ่งปิด 50%):</b> <code>{tk['tp1']}</code> <i>(แล้วเลื่อน SL มาที่ {tk['lock1']})</i>",
-            f"• <b>Stage 2 (+2.5R):</b> <code>{tk['stage2']}</code> <i>(เลื่อน SL ล็อกกำไรที่ {tk['lock2']})</i>",
-            f"• <b>TP 2 (+3.5R ปิดที่เหลือ):</b> <code>{tk['tp2']}</code>",
-        ])
-    else:  # SETUP_ARMED or READY_WAIT_BOS
-        lines.extend([
-            f"⏳ <b>[สถานะ: ยังไม่ออกไม้ / ยังไม่เข้าตลาด!]</b>",
-            f"⚠️ <i>นี่คือใบเตรียมความพร้อม (Watchlist Plan) ระบบกำลังเฝ้าดูแท่งเทียน H4 หากแท่ง H4 ปิดเบรกระดับ <code>{tk['entry']}</code> และ RSI ผ่านด่าน 3 ครบ บอทจะยิงออเดอร์เข้า cTrader อัตโนมัติทันทีครับ!</i>",
-            "━━━━━━━━━━━━━━━━━━━━",
-            f"🎯 <b>แผนคำนวณล่วงหน้า (พอร์ต $100,000 | ความเสี่ยง 0.75% = $750):</b>",
-            f"• <b>ฝั่ง (Direction):</b> <b>{tk['dir']}</b>",
-            f"• <b>ขนาด Lot ที่จะเข้า:</b> <code>{tk['lots_100k']} Lots</code>",
-            f"• <b>จุดเบรกที่รอ (3-Bar BOS Level):</b> <code>{tk['entry']}</code>",
-            f"• <b>Stop Loss (-1.0R / {tk['atr_mult']}x ATR):</b> <code>{tk['sl']}</code>",
-            f"• <b>TP 1 (+1.5R แบ่งปิด 50%):</b> <code>{tk['tp1']}</code>",
-            f"• <b>Stage 2 (+2.5R):</b> <code>{tk['stage2']}</code>",
-            f"• <b>TP 2 (+3.5R ปิดที่เหลือ):</b> <code>{tk['tp2']}</code>",
-        ])
-
     if dashboard_url:
-        lines.append(f"\n🌐 <a href=\"{dashboard_url}\">คลิกเปิดดูกราฟแท่งเทียน H4 สดบนมือถือ</a>")
-
+        lines.append(f"\n🌐 <a href=\"{dashboard_url}\">เปิดดูกราฟแท่งเทียน 4 ชม. สดบนมือถือ</a>")
     return "\n".join(lines)
 
 
-def format_h4_radar_summary(live_states, is_test=False, dashboard_url=''):
-    """Formats a compact 6-pair H4 radar summary table for Telegram."""
-    bkk_now = (datetime.now(timezone.utc) + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M น.')
-    title = "🧪 <b>[ทดสอบระบบสำเร็จ!] เรดาร์สแกนสด 6 คู่เงิน (Paul Pro V4)</b>" if is_test else "📡 <b>สรุปเรดาร์ H4 สดทั้ง 6 คู่เงิน (Paul Pro V4 | 1-2-3-4)</b>"
+def format_h4_radar_summary(live_states, is_test=False, dashboard_url='', ledger=None, prev_state=None, new_entry_syms=None):
+    """
+    Formats an ultra-clean, 3-second human-readable H4 status summary for Telegram.
+    Clearly separates:
+      1) What the user needs to do right now (Top Action Box)
+      2) Open Trades currently running
+      3) Watchlist pairs near breakout (explicitly stating DO NOT place pending orders)
+      4) Cancelled watchlist pairs (explicitly stating no order was opened, nothing to cancel)
+      5) Resting pairs far from entry (1 compact line)
+      6) FTMO $100k Portfolio & cTrader connection status
+    """
+    bkk_str = format_bkk_time()
+    if ledger is None:
+        ledger = forward_demo_ledger.load_ledger()
+    if prev_state is None:
+        prev_state = {}
+    new_entry_set = set(new_entry_syms or [])
 
-    lines = [
-        title,
-        f"🕒 เวลาไทย: <code>{bkk_now}</code>",
-        "━━━━━━━━━━━━━━━━━━━━"
-    ]
+    open_trades = ledger.get('open_trades', [])
+    open_syms = {t['symbol'] for t in open_trades}
+
+    entry_now_unopened = []
+    armed_pairs = []
+    cancelled_watch_pairs = []
+    resting_pairs = []
 
     for s in live_states:
         sym = s['symbol']
-        g = s['gates']
-        tk = s['planned_ticket']
-        ot = s.get('active_open_trade')
+        if sym in open_syms:
+            continue
+        sig = s['overall_signal']
+        old_sig = prev_state.get(sym, {}).get('pair_key', '').split('|')[0]
 
-        if s['overall_signal'] in ('ENTRY_NOW', 'EXECUTE_NOW'):
-            icon = "🟢🚨"
-            status_txt = f"<b>สั่งเข้า {s['planned_dir']} ทันที!</b> @ <code>{s['latest_price']}</code> (SL <code>{tk['sl']}</code> | TP1 <code>{tk['tp1']}</code> | <code>{tk['lots_100k']} Lot</code>)"
-        elif s['overall_signal'] in ('SETUP_ARMED', 'READY_WAIT_BOS'):
-            icon = "⏳⚡"
-            status_txt = f"<b>ย่อแตะ EMA50 แล้ว!</b> รอเบรก {s['planned_dir']} @ <code>{tk['entry']}</code> (SL <code>{tk['sl']}</code> | <code>{tk['lots_100k']} Lot</code>)"
+        if sig in ('ENTRY_NOW', 'EXECUTE_NOW'):
+            entry_now_unopened.append(s)
+        elif sig in ('SETUP_ARMED', 'READY_WAIT_BOS'):
+            armed_pairs.append(s)
         else:
-            icon = "🔵"
-            status_txt = f"แผน {s['planned_dir']} | ราคา <code>{s['latest_price']}</code> | รอย่อแตะ EMA50 (<code>{s['ema50']}</code>)"
+            if old_sig in ('SETUP_ARMED', 'READY_WAIT_BOS'):
+                cancelled_watch_pairs.append(s)
+            else:
+                resting_pairs.append(s)
 
-        g_lights = f"[1:{'🟢' if g['g1_pass'] else '🔴'} 2:{'🟢' if g['g2_pass'] else '⏳'} 3:{'🟢' if g['g3_pass'] else '⏳'}]"
-        lines.append(f"{icon} <b>{sym}</b> {g_lights}\n   ↳ {status_txt}")
+    title = (
+        "📡 <b>สรุปสถานะพอร์ต & สัญญาณ (ทดสอบข้อความรูปแบบใหม่)</b>"
+        if is_test else
+        "📡 <b>สรุปสถานะพอร์ต & สัญญาณ (รอบปิดแท่ง 4 ชม.)</b>"
+    )
 
-        if ot:
-            e_price = ot.get('entry', ot.get('entry_price', ''))
+    if new_entry_set:
+        joined_new = ", ".join(format_pair_name(sym, short=True) for sym in new_entry_set)
+        action_box = (
+            f"🚀 <b>รอบนี้มี \"เข้าไม้ใหม่\" แล้ว ({joined_new})</b>\n"
+            "บอทส่งคำสั่งเข้าพอร์ตให้แล้ว — ดูรายละเอียดราคาเข้า / SL / TP ในข้อความใบออเดอร์ด้านบนได้เลยครับ"
+        )
+    elif entry_now_unopened:
+        joined_en = ", ".join(format_pair_name(s['symbol'], short=True) for s in entry_now_unopened)
+        action_box = f"🟢 <b>พบสัญญาณเข้าไม้ ({joined_en})</b> — บอทกำลังดำเนินการเข้าออเดอร์ให้อัตโนมัติครับ"
+    elif open_trades:
+        action_box = (
+            f"✅ <b>ไม่ต้องกดอะไรครับ (ถือไม้รันกำไรต่อ)</b>\n"
+            f"ตอนนี้ถืออยู่ <b>{len(open_trades)} ไม้</b> บอทเฝ้าแบ่งปิด TP1 และตัด SL บน cTrader ให้เองอัตโนมัติ"
+        )
+    else:
+        action_box = (
+            "✅ <b>ไม่ต้องทำอะไรครับ</b> — รอบนี้ยังไม่มีสัญญาณเข้าไม้ใหม่\n"
+            "<i>(ระบบนี้ไม่ตั้งไม้ Pending ล่วงหน้า — รอแท่ง 4 ชม. ปิดเบรกครบเกณฑ์ บอทจะกดเข้าไม้ให้เองอัตโนมัติ)</i>"
+        )
+
+    lines = [
+        title,
+        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "👉 <b>สิ่งที่คุณต้องทำตอนนี้:</b>",
+        action_box,
+        "━━━━━━━━━━━━━━━━━━━━",
+    ]
+
+    # Bucket 0 (only if --test caught an unopened ENTRY_NOW)
+    if entry_now_unopened:
+        lines.append("🟢 <b>สัญญาณเข้าไม้รอบนี้:</b>")
+        for s in entry_now_unopened:
+            sym = s['symbol']
+            tk = s['planned_ticket']
             lines.append(
-                f"   ⚡ <i>มีออเดอร์ {ot.get('dir', '')} ค้างอยู่: เข้า <code>{e_price}</code> | P&L <b>{ot.get('floating_r', 0):+}R (${ot.get('floating_usd', 0):+,.0f})</b> | ด่าน {ot.get('stage', '')} (SL <code>{ot.get('current_sl', '')}</code>)</i>"
+                f"• <b>{format_pair_name(sym)}</b> — ฝั่ง <b>{format_dir_short(s['planned_dir'])}</b> "
+                f"(<code>{tk['lots_100k']} Lot</code>) ที่ราคา <code>{format_price(s['latest_price'], sym)}</code>"
+            )
+        lines.append("")
+
+    # Bucket 1: Open Trades
+    lines.append("🔥 <b>ไม้ที่กำลังถืออยู่ในพอร์ต:</b>")
+    if open_trades:
+        for t in open_trades:
+            sym = t['symbol']
+            pair_lbl = format_pair_name(sym)
+            dir_lbl = format_dir_short(t['dir'])
+            fl_usd = t.get('floating_usd', 0.0)
+            fl_r = t.get('floating_r', 0.0)
+            fl_icon = "🟢" if fl_usd >= 0 else "🔴"
+            stage_code = t.get('stage', 'OPEN')
+            tp_info = (
+                f"เป้า TP1 <code>{format_price(t['tp1'], sym)}</code> / TP2 <code>{format_price(t['tp2'], sym)}</code>"
+                if stage_code == 'OPEN' else
+                f"เป้า TP2 <code>{format_price(t['tp2'], sym)}</code> <i>(แบ่งปิดครึ่งแรกแล้ว)</i>"
+            )
+            lines.append(
+                f"• <b>{pair_lbl}</b> ({dir_lbl} <code>{t.get('lots', 1.0)} Lot</code>) — {fl_icon} <b>{fl_usd:+,.2f} USD ({fl_r:+}R)</b>\n"
+                f"   ↳ เข้าที่ <code>{format_price(t['entry'], sym)}</code> | SL <code>{format_price(t['current_sl'], sym)}</code> | {tp_info}"
+            )
+    else:
+        lines.append("• ไม่มีออเดอร์ค้าง (พอร์ตว่าง 0 ไม้)")
+
+    # Bucket 2: Watchlist (SETUP_ARMED)
+    lines.append("")
+    lines.append("👀 <b>คู่ที่กำลังเฝ้าระวังใกล้จุดเข้า (ห้ามตั้งไม้ล่วงหน้า):</b>")
+    if armed_pairs:
+        for s in armed_pairs:
+            sym = s['symbol']
+            tk = s['planned_ticket']
+            pair_lbl = format_pair_name(sym)
+            dir_lbl = format_dir_short(s['planned_dir'])
+            break_word = "ปิดสูงกว่า" if s['planned_dir'] == 'BUY' else "ปิดต่ำกว่า"
+            lines.append(
+                f"• <b>{pair_lbl}</b> — เล็งฝั่ง <b>{dir_lbl}</b>\n"
+                f"   ↳ ราคาตอนนี้ <code>{format_price(s['latest_price'], sym)}</code> | "
+                f"รอแท่ง 4 ชม. {break_word} <code>{format_price(tk['entry'], sym)}</code> บอทจะเข้าไม้ให้เอง"
+            )
+    else:
+        lines.append("• ไม่มีคู่ที่อยู่ในโซนเฝ้าระวังรอบนี้")
+
+    # Bucket 3: Cancelled Watchlist (only shown when a previously watched pair dropped back)
+    if cancelled_watch_pairs:
+        lines.append("")
+        lines.append("⚪ <b>คู่ที่ยกเลิกการเฝ้าระวังรอบนี้:</b>")
+        for s in cancelled_watch_pairs:
+            pair_lbl = format_pair_name(s['symbol'])
+            lines.append(
+                f"• <b>{pair_lbl}</b> — ยกเลิกเฝ้าระวังแล้ว "
+                "<i>(ราคาไม่เบรกจุดเข้า — ก่อนหน้านี้ยังไม่ได้ออกไม้ จึงไม่ต้องกดยกเลิกอะไรครับ)</i>"
             )
 
-    try:
-        ledger = forward_demo_ledger.load_ledger()
-        init_bal = ledger.get('initial_balance', 100000.0)
-        bal = ledger.get('current_balance', 100000.0)
-        equity = ledger.get('current_equity', 100000.0)
-        floating = ledger.get('floating_pnl_usd', 0.0)
-        realized_pnl = round(bal - init_bal, 2)
-        realized_ret = round((realized_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
-        tot_pnl = round(equity - init_bal, 2)
-        tot_ret = round((tot_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
-        open_trades = ledger.get('open_trades', [])
-        open_cnt = len(open_trades)
-        lines.append("━━━━━━━━━━━━━━━━━━━━")
-        lines.append(f"💼 <b>พอร์ตจำลอง Forward Demo ($100k):</b>")
-        lines.append(f"• มูลค่าพอร์ตสุทธิ (Equity): <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / ${tot_pnl:+,.2f}</b>)")
-        lines.append(f"• กำไรลอยตัว (Floating P&L): <b>{floating:+,.2f} USD</b> ({open_cnt} ไม้กำลังวิ่งในตลาด)")
-        lines.append(f"• กำไรที่ปิดจบแล้ว (Realized): <b>{realized_pnl:+,.2f} USD ({realized_ret:+.2f}%)</b>")
-    except Exception:
-        pass
+    # Bucket 4: Resting pairs (WAIT_PULLBACK)
+    if resting_pairs:
+        lines.append("")
+        resting_names = ", ".join(format_pair_name(s['symbol'], short=True) for s in resting_pairs)
+        lines.append(f"💤 <b>คู่ที่ยังพักตัวห่างจุดเข้า (ไม่ต้องสนใจ):</b>\n• {resting_names}")
 
+    # Footer: Portfolio & cTrader Live Status
+    init_bal = ledger.get('initial_balance', 100000.0)
+    equity = ledger.get('current_equity', 100000.0)
+    tot_pnl = round(equity - init_bal, 2)
+    tot_ret = round((tot_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
+    closed_cnt = len(ledger.get('closed_trades', []))
+
+    ctrader_tag = ""
     try:
         import ftmo_fix_trader
         fcfg = ftmo_fix_trader.load_fix_config()
         if fcfg.get('password') and fcfg.get('account_id'):
-            lines.append("━━━━━━━━━━━━━━━━━━━━")
-            lines.append(f"⚡ <b>FTMO cTrader Cloud Live:</b> บัญชี <code>{fcfg['account_id']}</code> ($100k) เชื่อมต่อ FIX API พร้อมยิงออเดอร์อัตโนมัติ 🟢")
+            ctrader_tag = f" (cTrader <code>#{fcfg['account_id']}</code> 🟢)"
     except Exception:
         pass
 
     lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("💡 <i>ระบบรันบน Cloud อัตโนมัติทุกปิดแท่ง H4 (ปิดคอมได้ 100% ฟรี 0 บาท)</i>")
+    lines.append(f"💼 <b>พอร์ต FTMO $100k</b>{ctrader_tag}")
+    lines.append(f"• เงินพอร์ตสุทธิ: <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / {tot_pnl:+,.2f} USD</b>)")
+    lines.append(f"• ถืออยู่: <code>{len(open_trades)} ไม้</code> | ปิดจบแล้ว: <code>{closed_cnt} ไม้</code>")
+
     if dashboard_url:
-        lines.append(f"🌐 <a href=\"{dashboard_url}\">เปิดหน้ากราฟแท่งเทียน H4 ปัจจุบันสด</a>")
+        lines.append(f"🌐 <a href=\"{dashboard_url}\">เปิดดูกราฟแท่งเทียน 4 ชม. สดบนมือถือ</a>")
 
     return "\n".join(lines)
 
@@ -403,24 +480,8 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
     bot_token, chat_id, dashboard_url = load_telegram_credentials()
     sent_messages = []
     errors = []
-    new_state = {}
 
-    # 1. Sync latest CFTC COT & run full live suite
-    sync_latest_cftc_cot_if_needed()
-    suite_res = paul_engine.build_full_suite()
-    live_states = suite_res['live_states']
-
-    # 1.1 Update Forward Demo Ledger ($100k Autonomous Cloud Demo)
-    try:
-        ledger, demo_events = forward_demo_ledger.update_forward_demo_ledger(live_states)
-        for dev in demo_events:
-            if bot_token and chat_id:
-                send_telegram_message(bot_token, chat_id, dev['message'])
-                sent_messages.append(f"DEMO_{dev['type']}")
-    except Exception as e:
-        errors.append(f"Demo Ledger Error: {str(e)}")
-
-    # 2. Load previous alert state to prevent duplicate spam
+    # 1. Load previous alert state first (for watchlist cancellation detection & deduplication)
     prev_state = {}
     if os.path.exists(STATE_PATH):
         try:
@@ -429,83 +490,109 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
         except Exception:
             prev_state = {}
 
-    for s in live_states:
-        sym = s['symbol']
-        sig = s['overall_signal']
-        bar_utc = s['last_bar_utc']
-        ot = s.get('active_open_trade')
-        ot_stage = ot['stage'] if ot else 'NONE'
+    # 2. Sync latest CFTC COT & run full live suite
+    sync_latest_cftc_cot_if_needed()
+    suite_res = paul_engine.build_full_suite()
+    live_states = suite_res['live_states']
 
-        pair_key = f"{sig}|{bar_utc}"
-        stage_key = f"{ot_stage}|{ot['entry_time'] if ot else ''}"
-        new_state[sym] = {'pair_key': pair_key, 'stage_key': stage_key}
-
-        old_pair_key = prev_state.get(sym, {}).get('pair_key', '')
-        old_stage_key = prev_state.get(sym, {}).get('stage_key', '')
-
-        # Trigger 1: ENTRY_NOW or SETUP_ARMED on a new H4 bar
-        if sig in ('ENTRY_NOW', 'EXECUTE_NOW', 'SETUP_ARMED', 'READY_WAIT_BOS') and (force or pair_key != old_pair_key):
-            fix_exec_msg = ""
-            if sig in ('ENTRY_NOW', 'EXECUTE_NOW'):
-                try:
-                    import ftmo_fix_trader
-                    cfg = ftmo_fix_trader.load_fix_config()
-                    if cfg.get('password'):
-                        fix_res = ftmo_fix_trader.execute_signal(s)
-                        print(f"[FTMO FIX] execute_signal result for {sym}: {fix_res}")
-                        if fix_res.get('ok'):
-                            order_id = fix_res.get('res', {}).get('order_id', 'SUCCESS')
-                            pos_id = fix_res.get('res', {}).get('position_id', 'N/A')
-                            lots = fix_res.get('lots', s.get('planned_ticket', {}).get('lots_100k', 1.0))
-                            units = fix_res.get('units', 100000)
-                            sym_id = fix_res.get('symbol_id', '1')
-                            fix_exec_msg = (
-                                f"\n\n⚡ <b>[FTMO LIVE cTrader]</b> ยิงออเดอร์เข้าพอร์ต <code>{cfg.get('account_id')}</code> สำเร็จเรียบร้อย! 🟢\n"
-                                f"• Ticket: <code>{order_id}</code> | PosID: <code>{pos_id}</code>\n"
-                                f"• Volume: <code>{lots} Lots ({units:,} Units)</code>"
-                            )
-                            # Bind to forward ledger open trade
-                            try:
-                                forward_demo_ledger.bind_fix_execution_to_trade(sym, pos_id, order_id, units, sym_id)
-                            except Exception as bex:
-                                print(f"[FTMO FIX] Error binding execution: {bex}")
-                        else:
-                            fix_exec_msg = f"\n\n⚠️ <b>[FTMO LIVE cTrader]</b> ยิงออเดอร์ไม่สำเร็จ: <code>{fix_res.get('error')}</code>"
-                except Exception as ex:
-                    fix_exec_msg = f"\n\n⚠️ <b>[FTMO LIVE cTrader]</b> เกิดข้อผิดพลาด: <code>{str(ex)}</code>"
-
-            msg = format_urgent_pair_alert(s, sig, dashboard_url)
-            if fix_exec_msg:
-                msg += fix_exec_msg
-
-            if bot_token and chat_id:
-                res = send_telegram_message(bot_token, chat_id, msg)
-                if res.get('ok'):
-                    sent_messages.append(f"{sym}:{sig}")
-                else:
-                    errors.append(res.get('error', 'Unknown error'))
-
-        # Trigger 2: Active open trade stage upgraded (e.g. hit TP1 -> STAGE_1 or Stage 2 -> STAGE_2)
-        if ot and ot_stage in ('STAGE_1', 'STAGE_2') and (force or stage_key != old_stage_key):
-            msg = format_urgent_pair_alert(s, f"ACTIVE_{ot_stage}", dashboard_url)
-            if bot_token and chat_id:
-                res = send_telegram_message(bot_token, chat_id, msg)
-                if res.get('ok'):
-                    sent_messages.append(f"{sym}:ACTIVE_{ot_stage}")
-                else:
-                    errors.append(res.get('error', 'Unknown error'))
-
-    # Trigger 3: H4 Radar Summary (always sent on test, or when send_summary=True)
-    if send_summary or is_test:
-        summary_msg = format_h4_radar_summary(live_states, is_test=is_test, dashboard_url=dashboard_url)
+    # 3. Side-effect-free path when --test is used
+    if is_test:
+        ledger = forward_demo_ledger.load_ledger()
+        summary_msg = format_h4_radar_summary(
+            live_states,
+            is_test=True,
+            dashboard_url=dashboard_url,
+            ledger=ledger,
+            prev_state=prev_state,
+            new_entry_syms=[]
+        )
         if bot_token and chat_id:
             res = send_telegram_message(bot_token, chat_id, summary_msg)
             if res.get('ok'):
-                sent_messages.append("H4_RADAR_SUMMARY")
+                sent_messages.append("H4_TEST_SUMMARY")
+            else:
+                errors.append(res.get('error', 'Unknown error'))
+        return {
+            'ok': len(errors) == 0 and bool(bot_token and chat_id),
+            'configured': bool(bot_token and chat_id),
+            'sent_messages': sent_messages,
+            'errors': errors,
+            'generated_at': suite_res['generated_at'],
+            'live_states': live_states
+        }
+
+    # 4. Normal H4 Scan: Update Forward Demo Ledger & Execute Live cTrader Orders Atomically
+    ledger = forward_demo_ledger.load_ledger()
+    demo_events = []
+    new_entry_syms = []
+    try:
+        ledger, demo_events = forward_demo_ledger.update_forward_demo_ledger(
+            live_states,
+            execute_live_fix=True,
+            dry_run=False
+        )
+        for dev in demo_events:
+            if dev.get('type') == 'TRADE_OPENED' and dev.get('symbol'):
+                new_entry_syms.append(dev['symbol'])
+            if bot_token and chat_id:
+                res = send_telegram_message(bot_token, chat_id, dev['message'])
+                if res.get('ok'):
+                    sent_messages.append(f"TRADE_{dev['type']}:{dev.get('symbol', '')}")
+                else:
+                    errors.append(res.get('error', 'Unknown error'))
+    except Exception as e:
+        errors.append(f"Demo Ledger Error: {str(e)}")
+
+    # 5. Send 1 Unified H4 Status Summary Card (deduplicated per H4 slot & paused when weekend market is frozen)
+    now_utc = datetime.now(timezone.utc)
+    h4_slot_key = f"{now_utc.strftime('%Y-%m-%d')}_{(now_utc.hour // 4) * 4:02d}UTC"
+    max_bar_utc = max((s['last_bar_utc'] for s in live_states), default='')
+    is_weekend_frozen = (
+        now_utc.weekday() in (5, 6) and
+        bool(max_bar_utc) and
+        max_bar_utc == prev_state.get('_last_market_bar_utc', '')
+    )
+
+    should_send_summary = send_summary and (
+        force or
+        bool(demo_events) or
+        (h4_slot_key != prev_state.get('_last_summary_slot', '') and not is_weekend_frozen)
+    )
+
+    if should_send_summary:
+        summary_msg = format_h4_radar_summary(
+            live_states,
+            is_test=False,
+            dashboard_url=dashboard_url,
+            ledger=ledger,
+            prev_state=prev_state,
+            new_entry_syms=new_entry_syms
+        )
+        if bot_token and chat_id:
+            res = send_telegram_message(bot_token, chat_id, summary_msg)
+            if res.get('ok'):
+                sent_messages.append("H4_STATUS_SUMMARY")
             else:
                 errors.append(res.get('error', 'Unknown error'))
 
-    with open(STATE_PATH, 'w', encoding='utf-8') as f:
+    # 6. Persist updated pair states for next H4 scan's transition tracking
+    open_trades_by_sym = {t['symbol']: t for t in ledger.get('open_trades', [])}
+    new_state = {
+        '_last_summary_slot': h4_slot_key if should_send_summary else prev_state.get('_last_summary_slot', ''),
+        '_last_market_bar_utc': max_bar_utc
+    }
+    for s in live_states:
+        sym = s['symbol']
+        tr_open = open_trades_by_sym.get(sym)
+        eff_sig = 'ACTIVE_OPEN' if tr_open else s['overall_signal']
+        ot_stage = tr_open.get('stage', 'OPEN') if tr_open else 'NONE'
+        ot_etime = tr_open.get('entry_time', '') if tr_open else ''
+        new_state[sym] = {
+            'pair_key': f"{eff_sig}|{s['last_bar_utc']}",
+            'stage_key': f"{ot_stage}|{ot_etime}"
+        }
+
+    with open(STATE_PATH, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(new_state, f, indent=2, ensure_ascii=False)
 
     return {
@@ -520,9 +607,9 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Paul Pro V4 Telegram H4 Scanner & Notifier')
-    parser.add_argument('--test', action='store_true', help='Send an immediate test radar summary to Telegram')
-    parser.add_argument('--force', action='store_true', help='Force send all active/armed alerts regardless of cache')
-    parser.add_argument('--quiet-summary', action='store_true', help='Only send urgent ENTRY/ARMED/STAGE alerts, skip routine summary')
+    parser.add_argument('--test', action='store_true', help='Send an immediate test status summary to Telegram without modifying state')
+    parser.add_argument('--force', action='store_true', help='Force send H4 status summary even within same H4 slot')
+    parser.add_argument('--quiet-summary', action='store_true', help='Only send trade execution/management alerts, skip H4 status summary')
     args = parser.parse_args()
 
     result = run_alert_scan(

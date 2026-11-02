@@ -2,13 +2,13 @@ name: 📡 Paul Pro V4 - Free Cloud H4 Scanner & Telegram Alert
 
 on:
   schedule:
-    # Runs 5 minutes after every H4 candle close (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
-    # Thai Time (UTC+7): 07:05, 11:05, 15:05, 19:05, 23:05, 03:05 (Every Day)
-    - cron: '2,15 0,4,8,12,16,20 * * *'
+    # Runs once after every H4 candle close (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+    # Thai Time (UTC+7): 07:04, 11:04, 15:04, 19:04, 23:04, 03:04 (Every Day)
+    - cron: '4 0,4,8,12,16,20 * * *'
   workflow_dispatch:
     inputs:
       force_mode:
-        description: 'Force send radar summary'
+        description: 'Force send H4 status summary'
         required: false
         default: 'true'
 
@@ -43,7 +43,11 @@ jobs:
           FTMO_FIX_PORT: ${{ secrets.FTMO_FIX_PORT }}
         run: |
           python -u cot_updater.py || true
-          python -u telegram_notifier.py --force
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force_mode }}" = "true" ]; then
+            python -u telegram_notifier.py --force
+          else
+            python -u telegram_notifier.py
+          fi
 
       - name: 💾 Save Updated Live Charts & Alert State to Cloud
         run: |
