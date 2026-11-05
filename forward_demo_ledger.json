@@ -2,38 +2,39 @@
   "account_name": "Paul FTMO Pro V4 - Cloud Autonomous Demo",
   "currency": "USD",
   "initial_balance": 100000.0,
-  "current_balance": 100000.0,
-  "current_equity": 99437.5,
-  "floating_pnl_usd": -562.5,
-  "net_profit_usd": -562.5,
-  "net_return_pct": -0.56,
+  "current_balance": 99220.0,
+  "current_equity": 99220.0,
+  "floating_pnl_usd": 0,
+  "net_profit_usd": -780.0,
+  "net_return_pct": -0.78,
   "high_water_mark": 100000.0,
-  "max_drawdown_pct": 0.56,
+  "max_drawdown_pct": 0.78,
   "risk_per_trade_pct": 0.75,
   "risk_per_trade_usd": 750.0,
   "fee_per_trade_r": 0.04,
   "started_at_utc": "2026-10-30T06:13:49.579812+00:00",
-  "last_updated_utc": "2026-11-05T13:04:24.827764+00:00",
+  "last_updated_utc": "2026-11-05T17:10:25.086647+00:00",
   "ftmo_rules": {
     "max_daily_loss_pct": 5.0,
     "max_total_loss_pct": 10.0,
     "profit_target_step1_pct": 10.0,
-    "current_daily_drawdown_pct": 0.56,
-    "current_total_drawdown_pct": 0.56,
+    "current_daily_drawdown_pct": 0.0,
+    "current_total_drawdown_pct": 0.78,
     "status": "PASSING_HEALTHY"
   },
   "stats": {
-    "total_trades": 0,
+    "total_trades": 1,
     "winning_trades": 0,
-    "losing_trades": 0,
+    "losing_trades": 1,
     "breakeven_trades": 0,
     "win_rate_pct": 0.0,
     "avg_win_r": 0.0,
-    "avg_loss_r": 0.0,
+    "avg_loss_r": -1.04,
     "profit_factor": 0.0,
-    "total_realized_r": 0
+    "total_realized_r": -1.04
   },
-  "open_trades": [
+  "open_trades": [],
+  "closed_trades": [
     {
       "ticket_id": "DEMO-1001",
       "symbol": "USDCAD=X",
@@ -60,8 +61,12 @@
       "fix_position_id": "16017531",
       "fix_order_id": "17306098",
       "volume_units": 156000,
-      "symbol_id": "8"
+      "symbol_id": "8",
+      "exit_time": "2026-11-05T17:10:24.518546+00:00",
+      "exit_price": 1.3981,
+      "close_reason": "SL_HIT",
+      "net_r": -1.04,
+      "pnl_usd": -780.0
     }
-  ],
-  "closed_trades": []
+  ]
 }
