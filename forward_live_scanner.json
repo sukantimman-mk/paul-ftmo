@@ -3,46 +3,46 @@
     "symbol": "GC=F",
     "name": "Gold (XAU/USD)",
     "dec": 2,
-    "last_bar_utc": "2026-11-06 16:00 UTC",
-    "session_label": "🇺🇸 New York Institutional Session (16:00 UTC | 23:00 น. ไทย)",
-    "latest_price": 4065.8,
+    "last_bar_utc": "2026-11-06 20:00 UTC",
+    "session_label": "Off-Session (20:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
+    "latest_price": 4075.8,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
-    "ema50": 4038.23,
-    "ema200": 4130.94,
-    "atr14": 38.56,
+    "ema50": 4039.97,
+    "ema200": 4130.46,
+    "atr14": 38.36,
     "bos_high": 4090.7,
     "bos_low": 4035.1,
     "bos_trigger_level": 4035.1,
-    "h4_rsi": 52.2,
+    "h4_rsi": 52.8,
     "overall_signal": "WAIT_PULLBACK",
-    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (4038.23)",
+    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (4039.97)",
     "gates": {
       "g1_pass": false,
       "g1_price_ok": false,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (4038.23) < EMA200 (4130.94) | ราคา (4065.8) ยังไม่ผ่าน EMA50 | COT Net +186,451 (Δ -13,414 | Idx 33.2%)",
+      "g1_text": "EMA50 (4039.97) < EMA200 (4130.46) | ราคา (4075.8) ยังไม่ผ่าน EMA50 | COT Net +186,451 (Δ -13,414 | Idx 33.2%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
-      "g2_bars_since_exit": 31,
-      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 31 แท่ง H4",
+      "g2_bars_since_exit": 32,
+      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 32 แท่ง H4",
       "g3_pass": false,
       "g3_bos_ok": false,
       "g3_rsi_ok": true,
-      "g3_session_ok": true,
-      "g3_text": "จุดเบรก 3-Bar Low = 4035.1 | H4 RSI(14) = 52.2 (กรอบ 32–55)"
+      "g3_session_ok": false,
+      "g3_text": "จุดเบรก 3-Bar Low = 4035.1 | H4 RSI(14) = 52.8 (กรอบ 32–55)"
     },
     "planned_ticket": {
       "dir": "SELL",
       "entry": 4035.1,
-      "sl": 4092.94,
-      "tp1": 3948.34,
-      "lock1": 4017.75,
-      "stage2": 3890.5,
-      "lock2": 3948.34,
-      "tp2": 3832.66,
-      "risk_dist": 57.84,
+      "sl": 4092.64,
+      "tp1": 3948.79,
+      "lock1": 4017.84,
+      "stage2": 3891.25,
+      "lock2": 3948.79,
+      "tp2": 3833.71,
+      "risk_dist": 57.54,
       "atr_mult": 1.5,
       "lots_100k": 0.13
     },
@@ -67,6 +67,16 @@
       "dxy_idx": 78.4,
       "verdict": "⚡ COT Flow Shift: กองทุนเริ่มปรับพอร์ตเพิ่มสถานะเข้าหาฝั่งที่เทรด (Weekly Δ Net หนุน)",
       "history_52w": [
+        {
+          "date": "2026-11-03",
+          "noncomm_net": 179548,
+          "noncomm_chg": -6903,
+          "comm_net": -204902,
+          "comm_chg": 10722,
+          "nonrept_net": 25354,
+          "nonrept_chg": -3819,
+          "cot_idx": 26.1
+        },
         {
           "date": "2026-10-27",
           "noncomm_net": 186451,
@@ -576,31 +586,11 @@
           "nonrept_net": 37754,
           "nonrept_chg": 3519,
           "cot_idx": 32.5
-        },
-        {
-          "date": "2025-11-04",
-          "noncomm_net": 202307,
-          "noncomm_chg": -2357,
-          "comm_net": -236542,
-          "comm_chg": 485,
-          "nonrept_net": 34235,
-          "nonrept_chg": 1872,
-          "cot_idx": 29.1
         }
       ]
     },
     "active_open_trade": null,
     "live_candles": [
-      [
-        "2026-10-20 20:00",
-        4138.8,
-        4149.8,
-        4132.0,
-        4132.5,
-        29.3,
-        4175.38,
-        4253.05
-      ],
       [
         "2026-10-21 00:00",
         4132.2,
@@ -1384,12 +1374,22 @@
       [
         "2026-11-06 16:00",
         4063.8,
-        4076.1,
-        4063.2,
-        4065.8,
-        52.2,
-        4038.23,
-        4130.94
+        4088.2,
+        4062.6,
+        4073.0,
+        53.4,
+        4038.51,
+        4131.01
+      ],
+      [
+        "2026-11-06 20:00",
+        4073.2,
+        4078.3,
+        4069.5,
+        4075.8,
+        52.8,
+        4039.97,
+        4130.46
       ]
     ]
   },
@@ -1397,48 +1397,48 @@
     "symbol": "USDJPY=X",
     "name": "USD / Japanese Yen",
     "dec": 3,
-    "last_bar_utc": "2026-11-06 16:00 UTC",
-    "session_label": "🇺🇸 New York Institutional Session (16:00 UTC | 23:00 น. ไทย)",
-    "latest_price": 158.237,
+    "last_bar_utc": "2026-11-06 20:00 UTC",
+    "session_label": "Off-Session (20:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
+    "latest_price": 158.448,
     "weekly_trend": "BULLISH",
     "planned_dir": "BUY",
-    "ema50": 157.966,
-    "ema200": 157.832,
-    "atr14": 0.48,
+    "ema50": 157.995,
+    "ema200": 157.841,
+    "atr14": 0.477,
     "bos_high": 158.653,
-    "bos_low": 157.686,
+    "bos_low": 157.78,
     "bos_trigger_level": 158.653,
-    "h4_rsi": 46.9,
+    "h4_rsi": 50.2,
     "overall_signal": "WAIT_PULLBACK",
-    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (157.966)",
+    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (157.995)",
     "gates": {
       "g1_pass": false,
       "g1_price_ok": true,
       "g1_cot_ok": false,
-      "g1_text": "EMA50 (157.966) > EMA200 (157.832) | ราคา (158.237) ยืนเหนือ EMA50 | COT Net -101,591 (Δ -31,713 | Idx 6.6%)",
+      "g1_text": "EMA50 (157.995) > EMA200 (157.841) | ราคา (158.448) ยืนเหนือ EMA50 | COT Net -101,591 (Δ -31,713 | Idx 6.6%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
-      "g2_bars_since_exit": 30,
-      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 30 แท่ง H4",
+      "g2_bars_since_exit": 31,
+      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 31 แท่ง H4",
       "g3_pass": false,
       "g3_bos_ok": false,
       "g3_rsi_ok": true,
-      "g3_session_ok": true,
-      "g3_text": "จุดเบรก 3-Bar High = 158.653 | H4 RSI(14) = 46.9 (กรอบ 45–68)"
+      "g3_session_ok": false,
+      "g3_text": "จุดเบรก 3-Bar High = 158.653 | H4 RSI(14) = 50.2 (กรอบ 45–68)"
     },
     "planned_ticket": {
       "dir": "BUY",
       "entry": 158.653,
-      "sl": 157.933,
-      "tp1": 159.733,
-      "lock1": 158.869,
-      "stage2": 160.453,
-      "lock2": 159.733,
-      "tp2": 161.173,
-      "risk_dist": 0.72,
+      "sl": 157.938,
+      "tp1": 159.726,
+      "lock1": 158.868,
+      "stage2": 160.442,
+      "lock2": 159.726,
+      "tp2": 161.157,
+      "risk_dist": 0.716,
       "atr_mult": 1.5,
-      "lots_100k": 1.63
+      "lots_100k": 1.64
     },
     "cot": {
       "contract": "JAPANESE YEN",
@@ -1461,6 +1461,16 @@
       "dxy_idx": 78.4,
       "verdict": "🛡️ COT Neutral / Non-Extreme (35%–65%): ไม่อยู่โซนตึงตัวสุดขีด เทรดตามการเบรกโครงสร้าง H4 BOS",
       "history_52w": [
+        {
+          "date": "2026-11-03",
+          "noncomm_net": 102321,
+          "noncomm_chg": 730,
+          "comm_net": -103167,
+          "comm_chg": 1923,
+          "nonrept_net": 846,
+          "nonrept_chg": -2653,
+          "cot_idx": 93.6
+        },
         {
           "date": "2026-10-27",
           "noncomm_net": 101591,
@@ -1970,31 +1980,11 @@
           "nonrept_net": -453,
           "nonrept_chg": 2961,
           "cot_idx": 42.2
-        },
-        {
-          "date": "2025-11-04",
-          "noncomm_net": 51265,
-          "noncomm_chg": -16850,
-          "comm_net": -47851,
-          "comm_chg": 20762,
-          "nonrept_net": -3414,
-          "nonrept_chg": -3912,
-          "cot_idx": 47.6
         }
       ]
     },
     "active_open_trade": null,
     "live_candles": [
-      [
-        "2026-10-20 12:00",
-        158.14,
-        158.22,
-        157.821,
-        158.205,
-        56.4,
-        158.151,
-        157.847
-      ],
       [
         "2026-10-20 16:00",
         158.199,
@@ -2778,12 +2768,22 @@
       [
         "2026-11-06 16:00",
         158.242,
-        158.403,
-        158.195,
-        158.237,
-        46.9,
-        157.966,
-        157.832
+        158.544,
+        157.993,
+        158.488,
+        51.0,
+        157.976,
+        157.835
+      ],
+      [
+        "2026-11-06 20:00",
+        158.493,
+        158.529,
+        158.443,
+        158.448,
+        50.2,
+        157.995,
+        157.841
       ]
     ]
   },
@@ -2791,48 +2791,48 @@
     "symbol": "USDCAD=X",
     "name": "USD / Canadian Dollar",
     "dec": 4,
-    "last_bar_utc": "2026-11-06 16:00 UTC",
-    "session_label": "🇺🇸 New York Institutional Session (16:00 UTC | 23:00 น. ไทย)",
-    "latest_price": 1.4105,
+    "last_bar_utc": "2026-11-06 20:00 UTC",
+    "session_label": "Off-Session (20:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
+    "latest_price": 1.4134,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
-    "ema50": 1.4009,
-    "ema200": 1.4054,
-    "atr14": 0.0033,
-    "bos_high": 1.4126,
-    "bos_low": 1.4034,
-    "bos_trigger_level": 1.4034,
-    "h4_rsi": 87.5,
+    "ema50": 1.4015,
+    "ema200": 1.4055,
+    "atr14": 0.0032,
+    "bos_high": 1.4134,
+    "bos_low": 1.4048,
+    "bos_trigger_level": 1.4048,
+    "h4_rsi": 89.4,
     "overall_signal": "WAIT_PULLBACK",
-    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (1.4009)",
+    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (1.4015)",
     "gates": {
       "g1_pass": false,
       "g1_price_ok": false,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (1.4009) < EMA200 (1.4054) | ราคา (1.4105) ยังไม่ผ่าน EMA50 | COT Net +66,424 (Δ -8,285 | Idx 47.7%)",
+      "g1_text": "EMA50 (1.4015) < EMA200 (1.4055) | ราคา (1.4134) ยังไม่ผ่าน EMA50 | COT Net +66,424 (Δ -8,285 | Idx 47.7%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
-      "g2_bars_since_exit": 11,
-      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 11 แท่ง H4",
+      "g2_bars_since_exit": 12,
+      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 12 แท่ง H4",
       "g3_pass": false,
       "g3_bos_ok": false,
       "g3_rsi_ok": false,
-      "g3_session_ok": true,
-      "g3_text": "จุดเบรก 3-Bar Low = 1.4034 | H4 RSI(14) = 87.5 (กรอบ 32–55)"
+      "g3_session_ok": false,
+      "g3_text": "จุดเบรก 3-Bar Low = 1.4048 | H4 RSI(14) = 89.4 (กรอบ 32–55)"
     },
     "planned_ticket": {
       "dir": "SELL",
-      "entry": 1.4034,
-      "sl": 1.4083,
-      "tp1": 1.396,
-      "lock1": 1.4019,
-      "stage2": 1.391,
-      "lock2": 1.396,
-      "tp2": 1.3861,
-      "risk_dist": 0.0049,
+      "entry": 1.4048,
+      "sl": 1.4096,
+      "tp1": 1.3976,
+      "lock1": 1.4034,
+      "stage2": 1.3928,
+      "lock2": 1.3976,
+      "tp2": 1.388,
+      "risk_dist": 0.0048,
       "atr_mult": 1.5,
-      "lots_100k": 1.52
+      "lots_100k": 1.56
     },
     "cot": {
       "contract": "CANADIAN DOLLAR",
@@ -2855,6 +2855,16 @@
       "dxy_idx": 78.4,
       "verdict": "⚡ COT Flow Shift: กองทุนเริ่มปรับพอร์ตเพิ่มสถานะเข้าหาฝั่งที่เทรด (Weekly Δ Net หนุน)",
       "history_52w": [
+        {
+          "date": "2026-11-03",
+          "noncomm_net": -41775,
+          "noncomm_chg": 24649,
+          "comm_net": 49384,
+          "comm_chg": -24876,
+          "nonrept_net": -7609,
+          "nonrept_chg": 227,
+          "cot_idx": 63.8
+        },
         {
           "date": "2026-10-27",
           "noncomm_net": -66424,
@@ -3364,31 +3374,11 @@
           "nonrept_net": -16243,
           "nonrept_chg": -2362,
           "cot_idx": 19.9
-        },
-        {
-          "date": "2025-11-04",
-          "noncomm_net": -159512,
-          "noncomm_chg": -9468,
-          "comm_net": 173393,
-          "comm_chg": 9982,
-          "nonrept_net": -13881,
-          "nonrept_chg": -514,
-          "cot_idx": 18.4
         }
       ]
     },
     "active_open_trade": null,
     "live_candles": [
-      [
-        "2026-10-20 12:00",
-        1.4056,
-        1.406,
-        1.4028,
-        1.4048,
-        22.1,
-        1.4165,
-        1.4114
-      ],
       [
         "2026-10-20 16:00",
         1.4048,
@@ -4172,12 +4162,22 @@
       [
         "2026-11-06 16:00",
         1.4104,
-        1.4108,
+        1.4134,
         1.4089,
-        1.4105,
-        87.5,
-        1.4009,
+        1.4128,
+        88.8,
+        1.401,
         1.4054
+      ],
+      [
+        "2026-11-06 20:00",
+        1.4131,
+        1.4138,
+        1.4126,
+        1.4134,
+        89.4,
+        1.4015,
+        1.4055
       ]
     ]
   },
@@ -4185,48 +4185,48 @@
     "symbol": "USDCHF=X",
     "name": "USD / Swiss Franc",
     "dec": 4,
-    "last_bar_utc": "2026-11-06 16:00 UTC",
-    "session_label": "🇺🇸 New York Institutional Session (16:00 UTC | 23:00 น. ไทย)",
-    "latest_price": 0.8192,
+    "last_bar_utc": "2026-11-06 20:00 UTC",
+    "session_label": "Off-Session (20:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
+    "latest_price": 0.8209,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
-    "ema50": 0.8203,
-    "ema200": 0.8234,
-    "atr14": 0.0029,
+    "ema50": 0.8204,
+    "ema200": 0.8233,
+    "atr14": 0.0027,
     "bos_high": 0.822,
-    "bos_low": 0.816,
-    "bos_trigger_level": 0.816,
-    "h4_rsi": 55.2,
-    "overall_signal": "SETUP_ARMED",
-    "overall_badge": "⚡ เตรียมพร้อม! รอเบรก Low 0.816",
+    "bos_low": 0.8166,
+    "bos_trigger_level": 0.8166,
+    "h4_rsi": 59.9,
+    "overall_signal": "WAIT_PULLBACK",
+    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (0.8204)",
     "gates": {
-      "g1_pass": true,
-      "g1_price_ok": true,
+      "g1_pass": false,
+      "g1_price_ok": false,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (0.8203) < EMA200 (0.8234) | ราคา (0.8192) อยู่ใต้ EMA50 | COT Net +20,049 (Δ +1,899 | Idx 7.3%)",
+      "g1_text": "EMA50 (0.8204) < EMA200 (0.8233) | ราคา (0.8209) ยังไม่ผ่าน EMA50 | COT Net +20,049 (Δ +1,899 | Idx 7.3%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
-      "g2_bars_since_exit": 35,
-      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 35 แท่ง H4",
+      "g2_bars_since_exit": 36,
+      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 36 แท่ง H4",
       "g3_pass": false,
       "g3_bos_ok": false,
       "g3_rsi_ok": false,
-      "g3_session_ok": true,
-      "g3_text": "จุดเบรก 3-Bar Low = 0.816 | H4 RSI(14) = 55.2 (กรอบ 32–55)"
+      "g3_session_ok": false,
+      "g3_text": "จุดเบรก 3-Bar Low = 0.8166 | H4 RSI(14) = 59.9 (กรอบ 32–55)"
     },
     "planned_ticket": {
       "dir": "SELL",
-      "entry": 0.816,
-      "sl": 0.8203,
-      "tp1": 0.8095,
-      "lock1": 0.8147,
-      "stage2": 0.8051,
-      "lock2": 0.8095,
-      "tp2": 0.8008,
-      "risk_dist": 0.0043,
+      "entry": 0.8166,
+      "sl": 0.8206,
+      "tp1": 0.8105,
+      "lock1": 0.8154,
+      "stage2": 0.8065,
+      "lock2": 0.8105,
+      "tp2": 0.8024,
+      "risk_dist": 0.004,
       "atr_mult": 1.5,
-      "lots_100k": 1.72
+      "lots_100k": 1.85
     },
     "cot": {
       "contract": "SWISS FRANC",
@@ -4249,6 +4249,16 @@
       "dxy_idx": 78.4,
       "verdict": "🛡️ COT Neutral / Non-Extreme (35%–65%): ไม่อยู่โซนตึงตัวสุดขีด เทรดตามการเบรกโครงสร้าง H4 BOS",
       "history_52w": [
+        {
+          "date": "2026-11-03",
+          "noncomm_net": -16589,
+          "noncomm_chg": 3460,
+          "comm_net": 29792,
+          "comm_chg": -3841,
+          "nonrept_net": -13203,
+          "nonrept_chg": 381,
+          "cot_idx": 100.0
+        },
         {
           "date": "2026-10-27",
           "noncomm_net": -20049,
@@ -4758,31 +4768,11 @@
           "nonrept_net": -7157,
           "nonrept_chg": 207,
           "cot_idx": 30.3
-        },
-        {
-          "date": "2025-11-04",
-          "noncomm_net": -31887,
-          "noncomm_chg": -4029,
-          "comm_net": 39251,
-          "comm_chg": 7788,
-          "nonrept_net": -7364,
-          "nonrept_chg": -3759,
-          "cot_idx": 48.4
         }
       ]
     },
     "active_open_trade": null,
     "live_candles": [
-      [
-        "2026-10-20 12:00",
-        0.8237,
-        0.8261,
-        0.8222,
-        0.8259,
-        63.3,
-        0.8282,
-        0.8249
-      ],
       [
         "2026-10-20 16:00",
         0.8259,
@@ -5566,12 +5556,22 @@
       [
         "2026-11-06 16:00",
         0.8203,
-        0.8203,
-        0.819,
-        0.8192,
-        55.2,
-        0.8203,
+        0.8207,
+        0.8184,
+        0.8205,
+        58.9,
+        0.8204,
         0.8234
+      ],
+      [
+        "2026-11-06 20:00",
+        0.8205,
+        0.821,
+        0.8205,
+        0.8209,
+        59.9,
+        0.8204,
+        0.8233
       ]
     ]
   },
@@ -5579,48 +5579,48 @@
     "symbol": "GBPUSD=X",
     "name": "British Pound / USD",
     "dec": 4,
-    "last_bar_utc": "2026-11-06 16:00 UTC",
-    "session_label": "🇺🇸 New York Institutional Session (16:00 UTC | 23:00 น. ไทย)",
-    "latest_price": 1.3368,
+    "last_bar_utc": "2026-11-06 20:00 UTC",
+    "session_label": "Off-Session (20:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
+    "latest_price": 1.3351,
     "weekly_trend": "BULLISH",
     "planned_dir": "BUY",
-    "ema50": 1.3407,
-    "ema200": 1.3362,
-    "atr14": 0.0029,
-    "bos_high": 1.3435,
+    "ema50": 1.3404,
+    "ema200": 1.3361,
+    "atr14": 0.0028,
+    "bos_high": 1.3409,
     "bos_low": 1.3344,
-    "bos_trigger_level": 1.3435,
-    "h4_rsi": 24.8,
+    "bos_trigger_level": 1.3409,
+    "h4_rsi": 22.3,
     "overall_signal": "WAIT_PULLBACK",
-    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (1.3407)",
+    "overall_badge": "⏳ รอราคาย่อแตะเส้นฟ้า EMA50 (1.3404)",
     "gates": {
       "g1_pass": false,
       "g1_price_ok": false,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (1.3407) > EMA200 (1.3362) | ราคา (1.3368) ยังไม่ผ่าน EMA50 | COT Net -79,414 (Δ +1,006 | Idx 29.6%)",
+      "g1_text": "EMA50 (1.3404) > EMA200 (1.3361) | ราคา (1.3351) ยังไม่ผ่าน EMA50 | COT Net -79,414 (Δ +1,006 | Idx 29.6%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
-      "g2_bars_since_exit": 112,
+      "g2_bars_since_exit": 113,
       "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 99 แท่ง H4",
       "g3_pass": false,
       "g3_bos_ok": false,
       "g3_rsi_ok": false,
-      "g3_session_ok": true,
-      "g3_text": "จุดเบรก 3-Bar High = 1.3435 | H4 RSI(14) = 24.8 (กรอบ 45–68)"
+      "g3_session_ok": false,
+      "g3_text": "จุดเบรก 3-Bar High = 1.3409 | H4 RSI(14) = 22.3 (กรอบ 45–68)"
     },
     "planned_ticket": {
       "dir": "BUY",
-      "entry": 1.3435,
-      "sl": 1.3391,
-      "tp1": 1.35,
-      "lock1": 1.3448,
-      "stage2": 1.3544,
-      "lock2": 1.35,
-      "tp2": 1.3587,
-      "risk_dist": 0.0043,
+      "entry": 1.3409,
+      "sl": 1.3367,
+      "tp1": 1.3472,
+      "lock1": 1.3422,
+      "stage2": 1.3514,
+      "lock2": 1.3472,
+      "tp2": 1.3556,
+      "risk_dist": 0.0042,
       "atr_mult": 1.5,
-      "lots_100k": 1.72
+      "lots_100k": 1.79
     },
     "cot": {
       "contract": "BRITISH POUND",
@@ -5643,6 +5643,16 @@
       "dxy_idx": 78.4,
       "verdict": "⚡ COT Flow Shift: กองทุนเริ่มปรับพอร์ตเพิ่มสถานะเข้าหาฝั่งที่เทรด (Weekly Δ Net หนุน)",
       "history_52w": [
+        {
+          "date": "2026-11-03",
+          "noncomm_net": -59821,
+          "noncomm_chg": 19593,
+          "comm_net": 68999,
+          "comm_chg": -20899,
+          "nonrept_net": -9178,
+          "nonrept_chg": 1306,
+          "cot_idx": 50.7
+        },
         {
           "date": "2026-10-27",
           "noncomm_net": -79414,
@@ -6152,31 +6162,11 @@
           "nonrept_net": -11399,
           "nonrept_chg": 409,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-04",
-          "noncomm_net": -55019,
-          "noncomm_chg": -34757,
-          "comm_net": 66827,
-          "comm_chg": 39727,
-          "nonrept_net": -11808,
-          "nonrept_chg": -4970,
-          "cot_idx": 0.0
         }
       ]
     },
     "active_open_trade": null,
     "live_candles": [
-      [
-        "2026-10-20 12:00",
-        1.3345,
-        1.3409,
-        1.3343,
-        1.3377,
-        60.6,
-        1.3284,
-        1.3322
-      ],
       [
         "2026-10-20 16:00",
         1.3376,
@@ -6960,12 +6950,22 @@
       [
         "2026-11-06 16:00",
         1.3361,
-        1.3369,
-        1.3359,
-        1.3368,
-        24.8,
-        1.3407,
-        1.3362
+        1.3374,
+        1.3347,
+        1.3351,
+        21.1,
+        1.3406,
+        1.3361
+      ],
+      [
+        "2026-11-06 20:00",
+        1.3351,
+        1.3353,
+        1.3349,
+        1.3351,
+        22.3,
+        1.3404,
+        1.3361
       ]
     ]
   },
@@ -6973,48 +6973,48 @@
     "symbol": "EURUSD=X",
     "name": "Euro / USD",
     "dec": 4,
-    "last_bar_utc": "2026-11-06 16:00 UTC",
-    "session_label": "🇺🇸 New York Institutional Session (16:00 UTC | 23:00 น. ไทย)",
-    "latest_price": 1.1156,
+    "last_bar_utc": "2026-11-06 20:00 UTC",
+    "session_label": "Off-Session (20:00 UTC | รอแท่ง 11/15/19/23 น. ไทย)",
+    "latest_price": 1.1142,
     "weekly_trend": "BEARISH",
     "planned_dir": "SELL",
-    "ema50": 1.1201,
-    "ema200": 1.1261,
-    "atr14": 0.0028,
-    "bos_high": 1.1203,
+    "ema50": 1.1198,
+    "ema200": 1.1259,
+    "atr14": 0.0026,
+    "bos_high": 1.1194,
     "bos_low": 1.1136,
     "bos_trigger_level": 1.1136,
-    "h4_rsi": 26.6,
+    "h4_rsi": 25.8,
     "overall_signal": "SETUP_ARMED",
     "overall_badge": "⚡ เตรียมพร้อม! รอเบรก Low 1.1136",
     "gates": {
       "g1_pass": true,
       "g1_price_ok": true,
       "g1_cot_ok": true,
-      "g1_text": "EMA50 (1.1201) < EMA200 (1.1261) | ราคา (1.1156) อยู่ใต้ EMA50 | COT Net -143,894 (Δ -9,370 | Idx 0.0%)",
+      "g1_text": "EMA50 (1.1198) < EMA200 (1.1259) | ราคา (1.1142) อยู่ใต้ EMA50 | COT Net -143,894 (Δ -9,370 | Idx 0.0%)",
       "g2_pass": true,
       "g2_touched_ema": true,
       "g2_cooldown_ok": true,
-      "g2_bars_since_exit": 37,
-      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 37 แท่ง H4",
+      "g2_bars_since_exit": 38,
+      "g2_text": "ย่อแตะ EMA50 แล้วใน 10 แท่งล่าสุด | เว้นระยะห่างไม้เก่า 38 แท่ง H4",
       "g3_pass": false,
       "g3_bos_ok": false,
       "g3_rsi_ok": false,
-      "g3_session_ok": true,
-      "g3_text": "จุดเบรก 3-Bar Low = 1.1136 | H4 RSI(14) = 26.6 (กรอบ 32–55)"
+      "g3_session_ok": false,
+      "g3_text": "จุดเบรก 3-Bar Low = 1.1136 | H4 RSI(14) = 25.8 (กรอบ 32–55)"
     },
     "planned_ticket": {
       "dir": "SELL",
       "entry": 1.1136,
-      "sl": 1.1178,
-      "tp1": 1.1073,
-      "lock1": 1.1123,
-      "stage2": 1.1031,
-      "lock2": 1.1073,
-      "tp2": 1.0989,
-      "risk_dist": 0.0042,
+      "sl": 1.1175,
+      "tp1": 1.1078,
+      "lock1": 1.1124,
+      "stage2": 1.1038,
+      "lock2": 1.1078,
+      "tp2": 1.0999,
+      "risk_dist": 0.0039,
       "atr_mult": 1.5,
-      "lots_100k": 1.79
+      "lots_100k": 1.92
     },
     "cot": {
       "contract": "EURO FX",
@@ -7037,6 +7037,16 @@
       "dxy_idx": 78.4,
       "verdict": "✅ COT Aligned + Momentum: กองทุน Hedge Funds ถือครองสุทธิฝั่งเดียวกับออเดอร์ และสะสมสัญญาเพิ่ม",
       "history_52w": [
+        {
+          "date": "2026-11-03",
+          "noncomm_net": -157791,
+          "noncomm_chg": -13897,
+          "comm_net": 124851,
+          "comm_chg": 10367,
+          "nonrept_net": 32940,
+          "nonrept_chg": 3530,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-10-27",
           "noncomm_net": -143894,
@@ -7546,31 +7556,11 @@
           "nonrept_net": 37784,
           "nonrept_chg": 2967,
           "cot_idx": 73.2
-        },
-        {
-          "date": "2025-11-04",
-          "noncomm_net": 91795,
-          "noncomm_chg": -15538,
-          "comm_net": -126612,
-          "comm_chg": 24984,
-          "nonrept_net": 34817,
-          "nonrept_chg": -9446,
-          "cot_idx": 82.1
         }
       ]
     },
     "active_open_trade": null,
     "live_candles": [
-      [
-        "2026-10-20 12:00",
-        1.1216,
-        1.1264,
-        1.1216,
-        1.1235,
-        44.2,
-        1.1223,
-        1.1338
-      ],
       [
         "2026-10-20 16:00",
         1.1235,
@@ -8354,12 +8344,22 @@
       [
         "2026-11-06 16:00",
         1.1151,
-        1.1156,
-        1.115,
-        1.1156,
-        26.6,
-        1.1201,
-        1.1261
+        1.1161,
+        1.114,
+        1.1142,
+        23.4,
+        1.12,
+        1.126
+      ],
+      [
+        "2026-11-06 20:00",
+        1.1142,
+        1.1143,
+        1.114,
+        1.1142,
+        25.8,
+        1.1198,
+        1.1259
       ]
     ]
   }
