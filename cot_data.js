@@ -9,7 +9,7 @@ window.COT_DATA = {
     "report_date": "2026-11-03",
     "iso_week": 45,
     "published_at": "2026-11-06",
-    "last_updated": "2026-11-06 20:45:14",
+    "last_updated": "2026-11-07 00:55:44",
     "weeks_tracked": [
       "2026-11-03",
       "2026-10-27",

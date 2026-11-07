@@ -14,7 +14,7 @@
     "stage_key": "NONE|"
   },
   "USDCHF=X": {
-    "pair_key": "WAIT_PULLBACK|2026-11-06 20:00 UTC",
+    "pair_key": "SETUP_ARMED|2026-11-06 20:00 UTC",
     "stage_key": "NONE|"
   },
   "GBPUSD=X": {
