@@ -1,28 +1,28 @@
 {
-  "_last_summary_slot": "2026-11-11_04UTC",
-  "_last_market_bar_utc": "2026-11-11 04:00 UTC",
+  "_last_summary_slot": "2026-11-11_16UTC",
+  "_last_market_bar_utc": "2026-11-11 16:00 UTC",
   "GC=F": {
-    "pair_key": "WAIT_PULLBACK|2026-11-11 04:00 UTC",
-    "stage_key": "NONE|"
+    "pair_key": "ACTIVE_OPEN|2026-11-11 12:00 UTC",
+    "stage_key": "OPEN|2026-11-11T16:04:25.590350+00:00"
   },
   "USDJPY=X": {
-    "pair_key": "WAIT_PULLBACK|2026-11-11 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-11-11 16:00 UTC",
     "stage_key": "NONE|"
   },
   "USDCAD=X": {
-    "pair_key": "WAIT_PULLBACK|2026-11-11 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-11-11 16:00 UTC",
     "stage_key": "NONE|"
   },
   "USDCHF=X": {
-    "pair_key": "WAIT_PULLBACK|2026-11-11 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-11-11 16:00 UTC",
     "stage_key": "NONE|"
   },
   "GBPUSD=X": {
-    "pair_key": "WAIT_PULLBACK|2026-11-11 04:00 UTC",
+    "pair_key": "WAIT_PULLBACK|2026-11-11 16:00 UTC",
     "stage_key": "NONE|"
   },
   "EURUSD=X": {
-    "pair_key": "SETUP_ARMED|2026-11-11 04:00 UTC",
+    "pair_key": "SETUP_ARMED|2026-11-11 16:00 UTC",
     "stage_key": "NONE|"
   }
 }
