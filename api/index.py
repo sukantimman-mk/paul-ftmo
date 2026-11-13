@@ -332,6 +332,102 @@ def format_single_pair_ticket(s, ledger=None):
     return "\n".join(lines)
 
 
+def _fetch_github_csv(filename):
+    ts = int(datetime.datetime.now().timestamp())
+    url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/main/{filename}?t={ts}"
+    req = urllib.request.Request(url, headers={"User-Agent": "PaulFTMOBot/4.0", "Cache-Control": "no-cache"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            lines = resp.read().decode("utf-8").splitlines()
+            if not lines:
+                return []
+            import csv
+            reader = csv.DictReader(lines)
+            return list(reader)
+    except Exception:
+        return []
+
+
+def format_trade_history(ledger, trades_data=None, limit=5):
+    bkk_str = format_bkk_time()
+    open_tr = ledger.get("open_trades", []) if ledger else []
+    
+    lines = [
+        "📜 <b>ประวัติออเดอร์ล่าสุด (Paul FTMO Pro V4)</b>",
+        f"🕒 <code>{bkk_str}</code>",
+        "━━━━━━━━━━━━━━━━━━",
+    ]
+
+    # Active Open Trades
+    if open_tr:
+        lines.append(f"🔥 <b>ไม้ที่กำลังถืออยู่ ({len(open_tr)} ไม้):</b>")
+        for t in open_tr:
+            sym = t['symbol']
+            pair_lbl = format_pair_name(sym, short=True)
+            dir_lbl = format_dir_short(t['dir'])
+            fl_usd = t.get('floating_usd', 0.0)
+            fl_r = t.get('floating_r', 0.0)
+            fl_icon = "🟢" if fl_usd >= 0 else "🔴"
+            stage_code = t.get('stage', 'OPEN')
+            lock_txt = " <i>(บังทุนแล้ว)</i>" if stage_code != 'OPEN' else ""
+            lines.append(
+                f"• <b>{pair_lbl}</b> ({dir_lbl} <code>{t.get('lots', 1.0)}L</code>) @ <code>{format_price(t['entry'], sym)}</code>\n"
+                f"   ↳ กำไรลอย: {fl_icon} <b>{fl_usd:+,.1f}$ ({fl_r:+.1f}R)</b> | SL <code>{format_price(t['current_sl'], sym)}</code>{lock_txt}"
+            )
+        lines.append("")
+        lines.append("━━━━━━━━━━━━━━━━━━")
+    else:
+        lines.append("💼 <b>พอร์ตว่าง:</b> ไม่มีออเดอร์ค้างอยู่ในขณะนี้")
+        lines.append("━━━━━━━━━━━━━━━━━━")
+
+    # Closed Trades
+    if trades_data:
+        closed_tail = trades_data[-limit:][::-1]
+        lines.append(f"🏁 <b>ประวัติ {len(closed_tail)} ไม้ล่าสุดที่ปิดจบแล้ว:</b>\n")
+        idx = 1
+        for r in closed_tail:
+            sym = str(r.get('symbol', ''))
+            pair_lbl = format_pair_name(sym, short=True)
+            dir_lbl = format_dir_short(str(r.get('dir', '')))
+            try:
+                pnl = float(r.get('pnl_usd', 0.0))
+            except Exception:
+                pnl = 0.0
+            pnl_icon = "🟢" if pnl >= 0 else "🔴"
+            res = str(r.get('res', ''))
+            res_thai = (
+                "ชน TP เต็ม 🎉" if res == 'FULL_WIN' else
+                "แบ่งปิด TP1 + ล็อกทุน" if res in ('TRAIL_WIN', 'PARTIAL_WIN') else
+                "ชน SL ตามแผน"
+            )
+            try:
+                r_val = float(r.get('r_net_after_fee', 0.0))
+            except Exception:
+                r_val = 0.0
+
+            lines.append(
+                f"{idx}. <b>{pair_lbl}</b> ({dir_lbl}) — {pnl_icon} <b>{pnl:+,.2f}$ ({r_val:+.2f}R)</b>\n"
+                f"   • เข้า: <code>{format_price(r.get('entry_price'), sym)}</code> ➔ ปิด: <code>{format_price(r.get('exit_price'), sym)}</code> ({res_thai})\n"
+                f"   • เวลา: <code>{r.get('entry_time', '')}</code> ➔ <code>{r.get('exit_time', '')}</code>\n"
+            )
+            idx += 1
+            
+        lines.append("━━━━━━━━━━━━━━━━━━")
+        total_cnt = len(trades_data)
+        wins = [x for x in trades_data if x.get('res') in ('FULL_WIN', 'TRAIL_WIN', 'PARTIAL_WIN')]
+        wr = (len(wins) / total_cnt) * 100 if total_cnt > 0 else 0.0
+        try:
+            tot_pnl = sum(float(x.get('pnl_usd', 0.0)) for x in trades_data)
+        except Exception:
+            tot_pnl = 0.0
+            
+        lines.append("📊 <b>สถิติรวมของระบบ:</b>")
+        lines.append(f"• ทั้งหมด: <code>{total_cnt} ไม้</code> | Win Rate: <b>{wr:.1f}%</b>")
+        lines.append(f"• กำไรสะสมสุทธิ: <b>{tot_pnl:+,.2f} USD</b>")
+
+    return "\n".join(lines)
+
+
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -354,10 +450,10 @@ class handler(BaseHTTPRequestHandler):
 
             keyboard = {
                 "keyboard": [
-                    [{"text": "📡 สรุปสถานะตอนนี้"}, {"text": "💼 ดูพอร์ตปัจจุบัน ($100k)"}],
-                    [{"text": "🥇 XAUUSD (ทองคำ)"}, {"text": "🔄 สั่งสแกนกราฟสดเดี๋ยวนี้"}],
-                    [{"text": "🇪🇺 EURUSD"}, {"text": "🇬🇧 GBPUSD"}, {"text": "🇯🇵 USDJPY"}],
-                    [{"text": "🇨🇦 USDCAD"}, {"text": "🇨🇭 USDCHF"}]
+                    [{"text": "📜 ดูประวัติออเดอร์"}, {"text": "📡 สรุปสถานะตอนนี้"}],
+                    [{"text": "💼 ดูพอร์ต ($100k)"}, {"text": "🔄 สั่งสแกนกราฟสด"}],
+                    [{"text": "🥇 XAUUSD (ทองคำ)"}, {"text": "🇪🇺 EURUSD"}, {"text": "🇬🇧 GBPUSD"}],
+                    [{"text": "🇯🇵 USDJPY"}, {"text": "🇨🇦 USDCAD"}, {"text": "🇨🇭 USDCHF"}]
                 ],
                 "resize_keyboard": True
             }
@@ -378,6 +474,11 @@ class handler(BaseHTTPRequestHandler):
                         "👇 <i>กดปุ่มเมนูด้านล่างเพื่อเช็คสถานะได้ตลอด 24 ชม. ครับ</i>"
                     ])
                     send_telegram(chat_id, welcome_text, keyboard)
+
+                elif any(w in text for w in ["history", "ประวัติ", "ขอดูประวัติ", "ออเดอร์", "orders", "trades", "ไม้", "/history", "/trades"]):
+                    ledger = get_demo_ledger_data()
+                    trades = _fetch_github_csv("paul_pro_trades.csv")
+                    send_telegram(chat_id, format_trade_history(ledger, trades), keyboard)
 
                 elif any(w in text for w in ["demo", "portfolio", "balance", "พอร์ต", "เดโม", "/demo"]):
                     ledger = get_demo_ledger_data()
