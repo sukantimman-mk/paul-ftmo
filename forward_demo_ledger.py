@@ -164,21 +164,16 @@ def save_ledger(ledger):
 
 def _build_tp1_message(sym, direction, tp1_price, lock1_price, tp2_price, action_html, ctrader_line=""):
     pair_lbl = format_pair_name(sym)
-    dir_lbl = format_dir_short(direction)
     bkk_str = format_bkk_time()
     lines = [
-        f"💰🛡️ <b>[แบ่งปิดกำไรครึ่งไม้ TP1!] {pair_lbl}</b>",
-        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        f"💰 <b>[ชนเป้าแรก TP1 แบ่งปิด 50%] {pair_lbl}</b>",
+        "━━━━━━━━━━━━━━━━━━",
+        f"• ราคาชนเป้า: <code>{format_price(tp1_price, sym)}</code> <i>(ล็อกกำไร +0.75R)</i>",
+        f"• 🛡️ เลื่อน SL บังทุนแล้วที่: <code>{format_price(lock1_price, sym)}</code> <i>(ไร้ความเสี่ยง 100%)</i>",
+        f"• 🏆 เป้าหมาย TP2 ที่เหลือ: <code>{format_price(tp2_price, sym)}</code> <i>(+3.5R)</i>",
+        "━━━━━━━━━━━━━━━━━━",
         action_html,
-        "━━━━━━━━━━━━━━━━━━━━",
-        "📊 <b>สรุปสถานะไม้นี้:</b>",
-        f"• คู่เงิน: <b>{pair_lbl} ({dir_lbl})</b>",
-        f"• ราคาชนเป้าแรก (TP1): <code>{format_price(tp1_price, sym)}</code>",
-        "• กำไรที่ล็อกเข้าพอร์ตแล้ว (50% แรก): <b>+$562.50 (+0.75R)</b>",
-        f"• 🛡️ จุดกันหน้าทุนใหม่ (SL ล่าสุด): <code>{format_price(lock1_price, sym)}</code> <i>(+0.3R)</i>",
-        f"• 🏆 เป้าต่อไปของอีกครึ่งไม้ (TP2): <code>{format_price(tp2_price, sym)}</code> <i>(+3.5R)</i>",
+        f"🕒 <code>{bkk_str}</code>",
     ]
     if ctrader_line:
         lines.append(ctrader_line)
@@ -187,19 +182,16 @@ def _build_tp1_message(sym, direction, tp1_price, lock1_price, tp2_price, action
 
 def _build_stage2_message(sym, direction, lock2_price, tp2_price):
     pair_lbl = format_pair_name(sym)
-    dir_lbl = format_dir_short(direction)
     bkk_str = format_bkk_time()
     lines = [
-        f"🚀🔒 <b>[ขยับล็อกกำไรเพิ่ม!] {pair_lbl} วิ่งทะลุ +2.5R</b>",
-        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
-        "✅ <b>ไม่ต้องกดอะไรครับ (ถือรันกำไรต่อ)</b> — บอทขยับจุดเฝ้าล็อกกำไรตามหลังราคาให้แล้ว รอลุ้นชนเป้าใหญ่ TP2",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "📊 <b>สรุปสถานะไม้นี้:</b>",
-        f"• คู่เงิน: <b>{pair_lbl} ({dir_lbl})</b>",
-        f"• 🔒 จุดล็อกกำไรใหม่ (SL ล่าสุด): <code>{format_price(lock2_price, sym)}</code> <i>(การันตีกำไร +1.5R)</i>",
-        f"• 🏆 เป้าปิดทั้งหมด (TP2): <code>{format_price(tp2_price, sym)}</code> <i>(+3.5R)</i>",
+        f"🔒 <b>[ล็อกกำไรเพิ่ม +1.5R] {pair_lbl}</b>",
+        "━━━━━━━━━━━━━━━━━━",
+        f"• ราคาพุ่งทะลุ +2.5R ขยับ SL ตามหลังราคา",
+        f"• 🛡️ SL ล่าสุดล็อกที่: <code>{format_price(lock2_price, sym)}</code> <i>(การันตีกำไร +1.5R แน่นอน)</i>",
+        f"• 🏆 เป้าหมายใหญ่ TP2: <code>{format_price(tp2_price, sym)}</code> <i>(+3.5R)</i>",
+        "━━━━━━━━━━━━━━━━━━",
+        "✅ ถือรันกำไรต่ออัตโนมัติ (ไม่ต้องกดอะไร)",
+        f"🕒 <code>{bkk_str}</code>",
     ]
     return "\n".join(lines)
 
@@ -210,23 +202,21 @@ def _build_close_message(sym, direction, entry_price, close_price, close_reason,
     bkk_str = format_bkk_time()
     is_win = pnl_usd >= 0
     header = (
-        f"🏁🎉 <b>[ปิดไม้จบ 100% — กำไร!] {pair_lbl} ({pnl_usd:+,.2f} USD)</b>"
+        f"🏁🎉 <b>[ปิดไม้สำเร็จ — กำไร!] {pair_lbl} ({dir_lbl})</b>"
         if is_win else
-        f"🏁🛡️ <b>[ปิดไม้จบ 100% — ตัดขาดทุนตามแผน] {pair_lbl} ({pnl_usd:+,.2f} USD)</b>"
+        f"🏁🛡️ <b>[ปิดไม้ — ตัดขาดทุนตามแผน] {pair_lbl} ({dir_lbl})</b>"
     )
+    pnl_sign = "+" if pnl_usd >= 0 else ""
     lines = [
         header,
-        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        "━━━━━━━━━━━━━━━━━━",
+        f"• ผลลัพธ์: <b>{pnl_sign}{pnl_usd:,.2f} USD ({net_r:+}R)</b>",
+        f"• สาเหตุ: {format_close_reason_thai(close_reason)}",
+        f"• จุดเข้า: <code>{format_price(entry_price, sym)}</code> ➔ ปิด: <code>{format_price(close_price, sym)}</code>",
+        f"• พอร์ตล่าสุด: <code>${new_balance:,.2f}</code>",
+        "━━━━━━━━━━━━━━━━━━",
         action_html,
-        "━━━━━━━━━━━━━━━━━━━━",
-        "📊 <b>สรุปผลลัพธ์ไม้นี้:</b>",
-        f"• คู่เงิน: <b>{pair_lbl} ({dir_lbl})</b>",
-        f"• สาเหตุที่ปิด: <b>{format_close_reason_thai(close_reason)}</b>",
-        f"• ราคาเข้า: <code>{format_price(entry_price, sym)}</code> ➔ ราคาปิด: <code>{format_price(close_price, sym)}</code>",
-        f"• 💵 กำไร/ขาดทุนสุทธิ: <b>{pnl_usd:+,.2f} USD ({net_r:+}R)</b> <i>(หักค่าธรรมเนียมแล้ว)</i>",
-        f"• 💼 เงินพอร์ตรวมล่าสุด: <code>${new_balance:,.2f}</code>",
+        f"🕒 <code>{bkk_str}</code>",
     ]
     if ctrader_line:
         lines.append(ctrader_line)
@@ -235,27 +225,21 @@ def _build_close_message(sym, direction, entry_price, close_price, close_reason,
 
 def _build_entry_message(sym, tk, action_html, ctrader_line=""):
     pair_lbl = format_pair_name(sym)
-    dir_full = format_dir_thai(tk['dir'])
+    dir_short = format_dir_short(tk['dir'])
     bkk_str = format_bkk_time()
     lines = [
-        f"🟢🚀 <b>[เข้าไม้ใหม่แล้ว!] {pair_lbl} — ฝั่ง {tk['dir']} ({tk['lots_100k']} Lots)</b>",
-        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
+        f"🚀 <b>[เปิดไม้ใหม่] {pair_lbl}</b>",
+        "━━━━━━━━━━━━━━━━━━",
+        f"• ฝั่ง: <b>{dir_short}</b> | ขนาด: <code>{tk['lots_100k']} Lot</code>",
+        f"• จุดเข้า: <code>{format_price(tk['entry'], sym)}</code>",
+        f"• 🛑 SL: <code>{format_price(tk['sl'], sym)}</code> <i>(-0.75R)</i>",
+        f"• 💰 TP1: <code>{format_price(tk['tp1'], sym)}</code> <i>(+1.5R)</i> | 🏆 TP2: <code>{format_price(tk['tp2'], sym)}</code> <i>(+3.5R)</i>",
+        "━━━━━━━━━━━━━━━━━━",
         action_html,
-        "━━━━━━━━━━━━━━━━━━━━",
-        "📋 <b>รายละเอียดออเดอร์ที่เข้า:</b>",
-        f"• คู่เงิน: <b>{pair_lbl}</b>",
-        f"• ฝั่ง: <b>{dir_full}</b> | ขนาด: <code>{tk['lots_100k']} Lots</code>",
-        f"• ราคาที่เข้า: <code>{format_price(tk['entry'], sym)}</code>",
-        f"• 🛑 จุดตัดขาดทุน (SL): <code>{format_price(tk['sl'], sym)}</code> <i>(ความเสี่ยง 0.75% = -$750)</i>",
-        f"• 💰 เป้าแบ่งปิดครึ่งไม้ (TP1): <code>{format_price(tk['tp1'], sym)}</code> <i>(+1.5R)</i>",
-        f"• 🏆 เป้าปิดทั้งหมด (TP2): <code>{format_price(tk['tp2'], sym)}</code> <i>(+3.5R)</i>",
+        f"🕒 <code>{bkk_str}</code>",
     ]
     if ctrader_line:
-        lines.append("━━━━━━━━━━━━━━━━━━━━")
         lines.append(ctrader_line)
-    lines.append("🤖 <i>บอทจะเฝ้าแบ่งปิด TP1 (50%) และตัด SL ให้อัตโนมัติทุกแท่ง 4 ชม. ครับ</i>")
     return "\n".join(lines)
 
 

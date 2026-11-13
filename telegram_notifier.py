@@ -259,58 +259,69 @@ def sync_latest_cftc_cot_if_needed():
 
 
 def format_urgent_pair_alert(s, event_type, dashboard_url=''):
-    """Formats a clear single-pair card in plain Thai (kept for backward compatibility & direct lookups)."""
+    """Formats an ultra-clean, modern single-pair ticket in plain Thai (zero spam, zero confusion)."""
     sym = s['symbol']
     pair_lbl = format_pair_name(sym)
     tk = s['planned_ticket']
     ot = s.get('active_open_trade')
     bkk_str = format_bkk_time()
-    dir_full = format_dir_thai(s['planned_dir'])
-    break_word = "ปิดสูงกว่า" if s['planned_dir'] == 'BUY' else "ปิดต่ำกว่า"
+    dir_short = format_dir_short(s['planned_dir'])
+    break_word = "ปิดเหนือ" if s['planned_dir'] == 'BUY' else "ปิดหลุด"
 
     if event_type in ('ENTRY_NOW', 'EXECUTE_NOW'):
-        header = f"🟢🚀 <b>[เข้าไม้ใหม่แล้ว!] {pair_lbl} — ฝั่ง {tk['dir']} ({tk['lots_100k']} Lots)</b>"
-        action = "✅ <b>บอทดำเนินการเข้าไม้ให้อัตโนมัติแล้ว</b> (เปิดแอป cTrader เช็คดูได้เลยครับ)"
+        header = f"🚀 <b>[เปิดไม้ใหม่] {pair_lbl}</b>"
+        body = [
+            f"• ฝั่ง: <b>{dir_short}</b> | ขนาด: <code>{tk['lots_100k']} Lot</code>",
+            f"• จุดเข้า: <code>{format_price(s['latest_price'], sym)}</code>",
+            f"• 🛑 SL: <code>{format_price(tk['sl'], sym)}</code> <i>(-0.75R)</i>",
+            f"• 💰 TP1: <code>{format_price(tk['tp1'], sym)}</code> <i>(+1.5R)</i> | 🏆 TP2: <code>{format_price(tk['tp2'], sym)}</code> <i>(+3.5R)</i>",
+            "━━━━━━━━━━━━━━━━━━",
+            "✅ <b>บอทส่งออเดอร์เข้า cTrader เรียบร้อย</b> (ไม่ต้องกดอะไร)",
+        ]
     elif ot or event_type.startswith('ACTIVE_'):
-        header = f"🔥 <b>[กำลังถือไม้อยู่] {pair_lbl}</b>"
-        action = "✅ <b>ไม่ต้องกดอะไรเพิ่มครับ</b> — บอทเฝ้าแบ่งปิด TP และตัด SL ให้เองอัตโนมัติ"
+        header = f"🔥 <b>[สถานะไม้ในพอร์ต] {pair_lbl}</b>"
+        body = [
+            f"• ฝั่ง: <b>{dir_short}</b> | เข้าที่: <code>{format_price(ot.get('entry', tk['entry']), sym)}</code>",
+            f"• 🛡️ SL ล่าสุด: <code>{format_price(ot.get('current_sl', tk['sl']), sym)}</code>",
+            "━━━━━━━━━━━━━━━━━━",
+            "✅ <b>บอทเฝ้ารันเทรนด์และล็อกทุนให้อัตโนมัติ</b>",
+        ]
     elif event_type in ('SETUP_ARMED', 'READY_WAIT_BOS'):
-        header = f"👀 <b>[เฝ้าระวังใกล้จุดเข้า — ยังไม่ออกไม้!] {pair_lbl}</b>"
-        action = (
-            f"✋ <b>ไม่ต้องตั้งไม้ Pending ล่วงหน้าครับ!</b> — รอแท่ง 4 ชม. {break_word} "
-            f"<code>{format_price(tk['entry'], sym)}</code> แล้วบอทจะกดเข้าไม้ให้เองอัตโนมัติ"
-        )
+        header = f"⚡ <b>[จ่อเบรกเข้าไม้] {pair_lbl}</b>"
+        body = [
+            f"• เล็งฝั่ง: <b>{dir_short}</b> | ราคาตอนนี้: <code>{format_price(s['latest_price'], sym)}</code>",
+            f"• เงื่อนไข: รอแท่ง 4 ชม. {break_word} <code>{format_price(tk['entry'], sym)}</code>",
+            "━━━━━━━━━━━━━━━━━━",
+            "✋ <b>ไม่ต้องตั้งไม้ล่วงหน้า</b> — เมื่อแท่งยืนยัน บอทจะกดเข้าไม้ให้เองอัตโนมัติ",
+        ]
     else:
-        header = f"💤 <b>[พักตัวห่างจุดเข้า] {pair_lbl}</b>"
-        action = "✅ <b>ไม่ต้องทำอะไรครับ</b> — ราคายังไม่เข้าโซนย่อตัว รอบอทแจ้งเตือนเมื่อใกล้จุดเข้า"
+        header = f"⏳ <b>[รอจังหวะ] {pair_lbl}</b>"
+        body = [
+            f"• ราคาตอนนี้: <code>{format_price(s['latest_price'], sym)}</code>",
+            "━━━━━━━━━━━━━━━━━━",
+            "✅ ราคายังไม่เข้าโซนย่อตัว (ไม่ต้องทำอะไร)",
+        ]
 
     lines = [
         header,
-        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "👉 <b>สิ่งที่คุณต้องทำ:</b>",
-        action,
-        "━━━━━━━━━━━━━━━━━━━━",
-        f"• คู่เงิน: <b>{pair_lbl}</b> | ราคาตอนนี้: <code>{format_price(s['latest_price'], sym)}</code>",
-        f"• ฝั่งที่เล็ง: <b>{dir_full}</b> | ขนาดแผน: <code>{tk['lots_100k']} Lots</code>",
-        f"• จุดเบรกที่รอ: <code>{format_price(tk['entry'], sym)}</code>",
-        f"• 🛑 SL แผน: <code>{format_price(tk['sl'], sym)}</code> | 💰 TP1: <code>{format_price(tk['tp1'], sym)}</code> | 🏆 TP2: <code>{format_price(tk['tp2'], sym)}</code>",
-    ]
+        f"🕒 <code>{bkk_str}</code>",
+        "━━━━━━━━━━━━━━━━━━",
+    ] + body
     if dashboard_url:
-        lines.append(f"\n🌐 <a href=\"{dashboard_url}\">เปิดดูกราฟแท่งเทียน 4 ชม. สดบนมือถือ</a>")
+        lines.append(f"🌐 <a href=\"{dashboard_url}\">ดูกราฟ H4 บนเว็บ</a>")
     return "\n".join(lines)
 
 
 def format_h4_radar_summary(live_states, is_test=False, dashboard_url='', ledger=None, prev_state=None, new_entry_syms=None):
     """
-    Formats an ultra-clean, 3-second human-readable H4 status summary for Telegram.
-    Clearly separates:
-      1) What the user needs to do right now (Top Action Box)
-      2) Open Trades currently running
-      3) Watchlist pairs near breakout (explicitly stating DO NOT place pending orders)
-      4) Cancelled watchlist pairs (explicitly stating no order was opened, nothing to cancel)
-      5) Resting pairs far from entry (1 compact line)
-      6) FTMO $100k Portfolio & cTrader connection status
+    Formats a modern, uncluttered, readable H4 status summary for Telegram.
+    Clean card layout designed for fast reading on mobile:
+      1) Compact header with Thai time
+      2) 1-line clear action status (know what to do in 2 seconds)
+      3) Active open trades (clean 2-line format per trade)
+      4) Breakout watchlist (only shown if there are armed pairs)
+      5) Resting pairs (compact 1-line list)
+      6) FTMO $100k Account snapshot
     """
     bkk_str = format_bkk_time()
     if ledger is None:
@@ -324,7 +335,6 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url='', ledger
 
     entry_now_unopened = []
     armed_pairs = []
-    cancelled_watch_pairs = []
     resting_pairs = []
 
     for s in live_states:
@@ -332,146 +342,94 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url='', ledger
         if sym in open_syms:
             continue
         sig = s['overall_signal']
-        old_sig = prev_state.get(sym, {}).get('pair_key', '').split('|')[0]
-
         if sig in ('ENTRY_NOW', 'EXECUTE_NOW'):
             entry_now_unopened.append(s)
         elif sig in ('SETUP_ARMED', 'READY_WAIT_BOS'):
             armed_pairs.append(s)
         else:
-            if old_sig in ('SETUP_ARMED', 'READY_WAIT_BOS'):
-                cancelled_watch_pairs.append(s)
-            else:
-                resting_pairs.append(s)
-
-    title = (
-        "📡 <b>สรุปสถานะพอร์ต & สัญญาณ (ทดสอบข้อความรูปแบบใหม่)</b>"
-        if is_test else
-        "📡 <b>สรุปสถานะพอร์ต & สัญญาณ (รอบปิดแท่ง 4 ชม.)</b>"
-    )
-
-    if new_entry_set:
-        joined_new = ", ".join(format_pair_name(sym, short=True) for sym in new_entry_set)
-        action_box = (
-            f"🚀 <b>รอบนี้มี \"เข้าไม้ใหม่\" แล้ว ({joined_new})</b>\n"
-            "บอทส่งคำสั่งเข้าพอร์ตให้แล้ว — ดูรายละเอียดราคาเข้า / SL / TP ในข้อความใบออเดอร์ด้านบนได้เลยครับ"
-        )
-    elif entry_now_unopened:
-        joined_en = ", ".join(format_pair_name(s['symbol'], short=True) for s in entry_now_unopened)
-        action_box = f"🟢 <b>พบสัญญาณเข้าไม้ ({joined_en})</b> — บอทกำลังดำเนินการเข้าออเดอร์ให้อัตโนมัติครับ"
-    elif open_trades:
-        action_box = (
-            f"✅ <b>ไม่ต้องกดอะไรครับ (ถือไม้รันกำไรต่อ)</b>\n"
-            f"ตอนนี้ถืออยู่ <b>{len(open_trades)} ไม้</b> บอทเฝ้าแบ่งปิด TP1 และตัด SL บน cTrader ให้เองอัตโนมัติ"
-        )
-    else:
-        action_box = (
-            "✅ <b>ไม่ต้องทำอะไรครับ</b> — รอบนี้ยังไม่มีสัญญาณเข้าไม้ใหม่\n"
-            "<i>(ระบบนี้ไม่ตั้งไม้ Pending ล่วงหน้า — รอแท่ง 4 ชม. ปิดเบรกครบเกณฑ์ บอทจะกดเข้าไม้ให้เองอัตโนมัติ)</i>"
-        )
+            resting_pairs.append(s)
 
     lines = [
-        title,
-        f"🕒 <code>{bkk_str} (เวลาไทย)</code>",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "👉 <b>สิ่งที่คุณต้องทำตอนนี้:</b>",
-        action_box,
-        "━━━━━━━━━━━━━━━━━━━━",
+        f"📡 <b>Paul FTMO H4 Status</b> • <code>{bkk_str}</code>",
+        "━━━━━━━━━━━━━━━━━━",
     ]
 
-    # Bucket 0 (only if --test caught an unopened ENTRY_NOW)
-    if entry_now_unopened:
-        lines.append("🟢 <b>สัญญาณเข้าไม้รอบนี้:</b>")
-        for s in entry_now_unopened:
-            sym = s['symbol']
-            tk = s['planned_ticket']
-            lines.append(
-                f"• <b>{format_pair_name(sym)}</b> — ฝั่ง <b>{format_dir_short(s['planned_dir'])}</b> "
-                f"(<code>{tk['lots_100k']} Lot</code>) ที่ราคา <code>{format_price(s['latest_price'], sym)}</code>"
-            )
-        lines.append("")
+    # Action Status Banner
+    if new_entry_set:
+        joined_new = ", ".join(format_pair_name(sym, short=True) for sym in new_entry_set)
+        lines.append(f"🟢 <b>สถานะ:</b> มีเข้าไม้ใหม่ ({joined_new}) บอทส่งออเดอร์แล้ว")
+    elif entry_now_unopened:
+        joined_en = ", ".join(format_pair_name(s['symbol'], short=True) for s in entry_now_unopened)
+        lines.append(f"🟢 <b>สถานะ:</b> พบสัญญาณเข้า ({joined_en}) บอทกำลังส่งออเดอร์")
+    elif open_trades:
+        lines.append(f"🟢 <b>สถานะ:</b> ถือ {len(open_trades)} ไม้รันเทรนด์ (บอทคุม SL/TP อัตโนมัติ — ไม่ต้องกดอะไร)")
+    elif armed_pairs:
+        lines.append("⚡ <b>สถานะ:</b> มีคู่จ่อเบรก (รอแท่ง 4 ชม. ปิดยืนยัน — บอทจะเข้าให้อัตโนมัติ)")
+    else:
+        lines.append("💤 <b>สถานะ:</b> ไม่มีสัญญาณใหม่ (พอร์ตว่าง — ไม่ต้องทำอะไร)")
 
-    # Bucket 1: Open Trades
-    lines.append("🔥 <b>ไม้ที่กำลังถืออยู่ในพอร์ต:</b>")
+    lines.append("━━━━━━━━━━━━━━━━━━")
+
+    # 1. Open Trades
     if open_trades:
+        lines.append(f"💼 <b>ไม้ที่กำลังถือ ({len(open_trades)} ไม้):</b>")
         for t in open_trades:
             sym = t['symbol']
-            pair_lbl = format_pair_name(sym)
+            pair_lbl = format_pair_name(sym, short=True)
             dir_lbl = format_dir_short(t['dir'])
             fl_usd = t.get('floating_usd', 0.0)
             fl_r = t.get('floating_r', 0.0)
             fl_icon = "🟢" if fl_usd >= 0 else "🔴"
             stage_code = t.get('stage', 'OPEN')
-            tp_info = (
-                f"เป้า TP1 <code>{format_price(t['tp1'], sym)}</code> / TP2 <code>{format_price(t['tp2'], sym)}</code>"
-                if stage_code == 'OPEN' else
-                f"เป้า TP2 <code>{format_price(t['tp2'], sym)}</code> <i>(แบ่งปิดครึ่งแรกแล้ว)</i>"
-            )
+            lock_txt = " <i>(บังทุนแล้ว)</i>" if stage_code != 'OPEN' else ""
             lines.append(
-                f"• <b>{pair_lbl}</b> ({dir_lbl} <code>{t.get('lots', 1.0)} Lot</code>) — {fl_icon} <b>{fl_usd:+,.2f} USD ({fl_r:+}R)</b>\n"
-                f"   ↳ เข้าที่ <code>{format_price(t['entry'], sym)}</code> | SL <code>{format_price(t['current_sl'], sym)}</code> | {tp_info}"
+                f"• <b>{pair_lbl}</b> ({dir_lbl} <code>{t.get('lots', 1.0)}L</code>) {fl_icon} <b>{fl_usd:+,.1f}$ ({fl_r:+.1f}R)</b>\n"
+                f"   เข้า <code>{format_price(t['entry'], sym)}</code> | SL <code>{format_price(t['current_sl'], sym)}</code>{lock_txt} | TP <code>{format_price(t['tp2'], sym)}</code>"
             )
-    else:
-        lines.append("• ไม่มีออเดอร์ค้าง (พอร์ตว่าง 0 ไม้)")
+        lines.append("")
 
-    # Bucket 2: Watchlist (SETUP_ARMED)
-    lines.append("")
-    lines.append("👀 <b>คู่ที่กำลังเฝ้าระวังใกล้จุดเข้า (ห้ามตั้งไม้ล่วงหน้า):</b>")
+    # 2. Watchlist (Armed pairs only)
     if armed_pairs:
+        lines.append(f"⚡ <b>จ่อเบรกเข้าไม้ ({len(armed_pairs)} คู่):</b>")
         for s in armed_pairs:
             sym = s['symbol']
             tk = s['planned_ticket']
-            pair_lbl = format_pair_name(sym)
+            pair_lbl = format_pair_name(sym, short=True)
             dir_lbl = format_dir_short(s['planned_dir'])
-            break_word = "ปิดสูงกว่า" if s['planned_dir'] == 'BUY' else "ปิดต่ำกว่า"
+            action_txt = "หลุด" if s['planned_dir'] == 'SELL' else "ทะลุ"
             lines.append(
-                f"• <b>{pair_lbl}</b> — เล็งฝั่ง <b>{dir_lbl}</b>\n"
-                f"   ↳ ราคาตอนนี้ <code>{format_price(s['latest_price'], sym)}</code> | "
-                f"รอแท่ง 4 ชม. {break_word} <code>{format_price(tk['entry'], sym)}</code> บอทจะเข้าไม้ให้เอง"
+                f"• <b>{pair_lbl}</b> {dir_lbl} <code>{format_price(s['latest_price'], sym)}</code> ➔ รอ {action_txt} <code>{format_price(tk['entry'], sym)}</code>"
             )
-    else:
-        lines.append("• ไม่มีคู่ที่อยู่ในโซนเฝ้าระวังรอบนี้")
-
-    # Bucket 3: Cancelled Watchlist (only shown when a previously watched pair dropped back)
-    if cancelled_watch_pairs:
         lines.append("")
-        lines.append("⚪ <b>คู่ที่ยกเลิกการเฝ้าระวังรอบนี้:</b>")
-        for s in cancelled_watch_pairs:
-            pair_lbl = format_pair_name(s['symbol'])
-            lines.append(
-                f"• <b>{pair_lbl}</b> — ยกเลิกเฝ้าระวังแล้ว "
-                "<i>(ราคาไม่เบรกจุดเข้า — ก่อนหน้านี้ยังไม่ได้ออกไม้ จึงไม่ต้องกดยกเลิกอะไรครับ)</i>"
-            )
 
-    # Bucket 4: Resting pairs (WAIT_PULLBACK)
+    # 3. Resting Pairs
     if resting_pairs:
-        lines.append("")
         resting_names = ", ".join(format_pair_name(s['symbol'], short=True) for s in resting_pairs)
-        lines.append(f"💤 <b>คู่ที่ยังพักตัวห่างจุดเข้า (ไม่ต้องสนใจ):</b>\n• {resting_names}")
+        lines.append(f"⏳ <b>รอพักตัว:</b> {resting_names}")
+        lines.append("")
 
-    # Footer: Portfolio & cTrader Live Status
+    # 4. FTMO Account Snapshot
     init_bal = ledger.get('initial_balance', 100000.0)
     equity = ledger.get('current_equity', 100000.0)
     tot_pnl = round(equity - init_bal, 2)
     tot_ret = round((tot_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
-    closed_cnt = len(ledger.get('closed_trades', []))
 
     ctrader_tag = ""
     try:
         import ftmo_fix_trader
         fcfg = ftmo_fix_trader.load_fix_config()
         if fcfg.get('password') and fcfg.get('account_id'):
-            ctrader_tag = f" (cTrader <code>#{fcfg['account_id']}</code> 🟢)"
+            ctrader_tag = f" • cTrader #{fcfg['account_id']} 🟢"
     except Exception:
         pass
 
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append(f"💼 <b>พอร์ต FTMO $100k</b>{ctrader_tag}")
-    lines.append(f"• เงินพอร์ตสุทธิ: <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / {tot_pnl:+,.2f} USD</b>)")
-    lines.append(f"• ถืออยู่: <code>{len(open_trades)} ไม้</code> | ปิดจบแล้ว: <code>{closed_cnt} ไม้</code>")
+    lines.append("━━━━━━━━━━━━━━━━━━")
+    lines.append(f"📊 <b>พอร์ต FTMO $100k</b>{ctrader_tag}")
+    lines.append(f"• Equity: <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / {tot_pnl:+,.2f}$</b>)")
+    lines.append(f"• ถืออยู่: <code>{len(open_trades)} ไม้</code> | ปิดจบแล้ว: <code>{len(ledger.get('closed_trades', []))} ไม้</code>")
 
     if dashboard_url:
-        lines.append(f"🌐 <a href=\"{dashboard_url}\">เปิดดูกราฟแท่งเทียน 4 ชม. สดบนมือถือ</a>")
+        lines.append(f"🌐 <a href=\"{dashboard_url}\">ดูกราฟ H4 สดบนมือถือ</a>")
 
     return "\n".join(lines)
 
