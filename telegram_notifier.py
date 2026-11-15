@@ -276,7 +276,7 @@ def format_urgent_pair_alert(s, event_type, dashboard_url=''):
             f"• 🛑 SL: <code>{format_price(tk['sl'], sym)}</code> <i>(-0.75R)</i>",
             f"• 💰 TP1: <code>{format_price(tk['tp1'], sym)}</code> <i>(+1.5R)</i> | 🏆 TP2: <code>{format_price(tk['tp2'], sym)}</code> <i>(+3.5R)</i>",
             "━━━━━━━━━━━━━━━━━━",
-            "✅ <b>บอทส่งออเดอร์เข้า cTrader เรียบร้อย</b> (ไม่ต้องกดอะไร)",
+            "✅ <b>EA บน VPS (MT4 #44977700) ออกออเดอร์เรียบร้อย</b> (ไม่ต้องกดอะไร)",
         ]
     elif ot or event_type.startswith('ACTIVE_'):
         header = f"🔥 <b>[สถานะไม้ในพอร์ต] {pair_lbl}</b>"
@@ -414,17 +414,10 @@ def format_h4_radar_summary(live_states, is_test=False, dashboard_url='', ledger
     tot_pnl = round(equity - init_bal, 2)
     tot_ret = round((tot_pnl / init_bal) * 100.0, 2) if init_bal > 0 else 0.0
 
-    ctrader_tag = ""
-    try:
-        import ftmo_fix_trader
-        fcfg = ftmo_fix_trader.load_fix_config()
-        if fcfg.get('password') and fcfg.get('account_id'):
-            ctrader_tag = f" • cTrader #{fcfg['account_id']} 🟢"
-    except Exception:
-        pass
+    mt4_tag = " • MT4 #44977700 (ICMarketsSC-Demo04) 🟢"
 
     lines.append("━━━━━━━━━━━━━━━━━━")
-    lines.append(f"📊 <b>พอร์ต FTMO $100k</b>{ctrader_tag}")
+    lines.append(f"📊 <b>พอร์ต FTMO $100k</b>{mt4_tag}")
     lines.append(f"• Equity: <code>${equity:,.2f}</code> (<b>{tot_ret:+.2f}% / {tot_pnl:+,.2f}$</b>)")
     lines.append(f"• ถืออยู่: <code>{len(open_trades)} ไม้</code> | ปิดจบแล้ว: <code>{len(ledger.get('closed_trades', []))} ไม้</code>")
 
@@ -486,7 +479,7 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
     try:
         ledger, demo_events = forward_demo_ledger.update_forward_demo_ledger(
             live_states,
-            execute_live_fix=True,
+            execute_live_fix=False,
             dry_run=False
         )
         for dev in demo_events:

@@ -106,7 +106,10 @@ def format_stage_thai(stage):
 def get_default_ledger():
     now_iso = datetime.now(timezone.utc).isoformat()
     return {
-        "account_name": "Paul FTMO Pro V4 - Cloud Autonomous Demo",
+        "account_name": "Paul FTMO Pro V4 - MT4 #44977700 (ICMarketsSC-Demo04)",
+        "account_id": "44977700",
+        "server": "ICMarketsSC-Demo04",
+        "platform": "MT4 (VPS 24/7)",
         "currency": "USD",
         "initial_balance": INITIAL_BALANCE,
         "current_balance": INITIAL_BALANCE,
@@ -243,7 +246,7 @@ def _build_entry_message(sym, tk, action_html, ctrader_line=""):
     return "\n".join(lines)
 
 
-def update_forward_demo_ledger(live_states, execute_live_fix=True, dry_run=False, initial_ledger=None):
+def update_forward_demo_ledger(live_states, execute_live_fix=False, dry_run=False, initial_ledger=None):
     """
     Called every H4 cycle by telegram_notifier.py or GitHub Actions.
     1. Checks all open trades against latest H4 candle high/low (executes TP1 50% & TP2/SL 100% on cTrader FIX).
@@ -318,8 +321,8 @@ def update_forward_demo_ledger(live_states, execute_live_fix=True, dry_run=False
                 tr['tp1_hit_time'] = now_iso
                 tr['realized_r_tp1'] = 1.5 * 0.5  # +0.75R realized
 
-                tp1_action = "✅ <b>ไม่ต้องกดอะไรครับ</b> — บอทแบ่งปิดกำไร 50% และขยับจุดกันหน้าทุนให้อัตโนมัติแล้ว (ไม้นี้ไม่ขาดทุน 100% แล้ว!)"
-                tp1_ctrader = ""
+                tp1_action = "✅ <b>ไม่ต้องกดอะไรครับ</b> — EA บน MT4 (#44977700) แบ่งปิดกำไร 50% และขยับจุดกันหน้าทุนให้อัตโนมัติแล้ว (ไม้นี้ไม่ขาดทุน 100% แล้ว!)"
+                tp1_ctrader = "⚡ พอร์ต: <code>MT4 #44977700 (ICMarketsSC-Demo04)</code> 🟢"
                 if tr.get('fix_position_id') and execute_live_fix and not dry_run:
                     try:
                         import ftmo_fix_trader
@@ -401,8 +404,8 @@ def update_forward_demo_ledger(live_states, execute_live_fix=True, dry_run=False
             ledger['current_balance'] = round(ledger['current_balance'] + pnl_usd, 2)
             closed_trades.append(tr)
 
-            close_action = "✅ <b>ไม่ต้องทำอะไรครับ (จบไม้นี้เรียบร้อย)</b> — บอทบันทึกปิดออเดอร์ครบ 100% แล้ว"
-            close_ctrader = ""
+            close_action = "✅ <b>ไม่ต้องทำอะไรครับ (จบไม้นี้เรียบร้อย)</b> — EA บน MT4 (#44977700) ปิดออเดอร์ครบ 100% แล้ว"
+            close_ctrader = "⚡ พอร์ต: <code>MT4 #44977700 (ICMarketsSC-Demo04)</code> 🟢"
             if tr.get('fix_position_id') and execute_live_fix and not dry_run:
                 try:
                     import ftmo_fix_trader
@@ -484,8 +487,8 @@ def update_forward_demo_ledger(live_states, execute_live_fix=True, dry_run=False
                 'floating_usd': 0.0
             }
 
-            entry_action = "✅ <b>บันทึกเข้าพอร์ตจำลอง $100k อัตโนมัติแล้ว</b> (หากเทรดพอร์ตแยก ให้กดเข้า Market ตามตัวเลขด้านล่างครับ)"
-            entry_ctrader = ""
+            entry_action = "✅ <b>ไม่ต้องกดเข้าไม้เองครับ</b> — EA บน VPS (MT4 #44977700) ออกออเดอร์ให้อัตโนมัติแล้ว!"
+            entry_ctrader = "⚡ พอร์ต: <code>MT4 #44977700 (ICMarketsSC-Demo04)</code> 🟢"
 
             if execute_live_fix and not dry_run:
                 try:

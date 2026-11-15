@@ -8,3 +8,5 @@ ftmo_fix_config.json
 .env
 .env.*
 *.secret
+vps_mt4_credentials.json
+*.rdp
