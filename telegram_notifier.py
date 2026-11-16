@@ -260,10 +260,10 @@ def sync_latest_cftc_cot_if_needed():
 
 def publish_cot_bridge_to_telegram(bot_token, live_states):
     """
-    Publishes the latest weekly CFTC COT values for all 6 Tier-1 assets into the bot's
-    Telegram description via https://api.telegram.org/bot<TOKEN>/setMyDescription so that
-    PaulProV4_FTMO_EA.mq4 on the VPS can auto-fetch weekly COT updates 24/7 using the
-    already-whitelisted https://api.telegram.org URL (zero manual EA updates ever needed).
+    Publishes the latest weekly CFTC COT values + 4-week history + release dates for all 6 Tier-1
+    assets into the bot's Telegram description via https://api.telegram.org/bot<TOKEN>/setMyDescription
+    so that PaulProV4_FTMO_EA.mq4 on the VPS can auto-fetch weekly COT updates & 4-week history 24/7
+    using the already-whitelisted https://api.telegram.org URL (zero manual EA updates ever needed).
     """
     if not bot_token or not live_states:
         return
@@ -278,19 +278,38 @@ def publish_cot_bridge_to_telegram(bot_token, live_states):
         }
         parts = []
         rep_date = ""
+        pub_date = ""
+        next_pub_date = ""
         for s in live_states:
             tag = sym_to_tag.get(s.get('symbol', ''))
             cot = s.get('cot', {})
             if tag and cot:
                 if not rep_date and cot.get('report_date'):
                     rep_date = str(cot['report_date'])
-                r_net = int(cot.get('raw_net', 0))
-                r_chg = int(cot.get('raw_chg_net', 0))
-                r_idx = float(cot.get('raw_cot_idx', 50.0))
-                parts.append(f"{tag}:{r_net},{r_chg},{r_idx:.1f}")
+                if not pub_date and cot.get('published_friday'):
+                    pub_date = str(cot['published_friday'])
+                    try:
+                        dt_pub = datetime.strptime(pub_date, '%Y-%m-%d')
+                        next_pub_date = (dt_pub + timedelta(days=7)).strftime('%Y-%m-%d')
+                    except Exception:
+                        next_pub_date = ""
+                hist = cot.get('history_52w', [])[:4]
+                w_strs = []
+                if hist:
+                    for w in hist:
+                        wn = int(w.get('noncomm_net', 0))
+                        wc = int(w.get('noncomm_chg', 0))
+                        wi = float(w.get('cot_idx', 50.0))
+                        w_strs.append(f"{wn},{wc},{wi:.1f}")
+                else:
+                    r_net = int(cot.get('raw_net', 0))
+                    r_chg = int(cot.get('raw_chg_net', 0))
+                    r_idx = float(cot.get('raw_cot_idx', 50.0))
+                    w_strs.append(f"{r_net},{r_chg},{r_idx:.1f}")
+                parts.append(f"{tag}:" + ";".join(w_strs))
         if not parts:
             return
-        desc = f"Paul FTMO Pro V4.1 Official Bot\nCOT_SYNC|{rep_date}|" + "|".join(parts) + "|"
+        desc = f"COT_SYNC|{rep_date},{pub_date},{next_pub_date}|" + "|".join(parts) + "|"
         url = f"https://api.telegram.org/bot{bot_token}/setMyDescription"
         encoded = urllib.parse.urlencode({'description': desc}).encode('utf-8')
         req = urllib.request.Request(url, data=encoded, headers={'User-Agent': 'PaulFTMOBot/4.1'})
