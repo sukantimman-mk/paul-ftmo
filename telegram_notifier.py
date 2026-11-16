@@ -258,6 +258,48 @@ def sync_latest_cftc_cot_if_needed():
         print(f"[!] Note: CFTC live sync skipped ({e}), using existing cache.")
 
 
+def publish_cot_bridge_to_telegram(bot_token, live_states):
+    """
+    Publishes the latest weekly CFTC COT values for all 6 Tier-1 assets into the bot's
+    Telegram description via https://api.telegram.org/bot<TOKEN>/setMyDescription so that
+    PaulProV4_FTMO_EA.mq4 on the VPS can auto-fetch weekly COT updates 24/7 using the
+    already-whitelisted https://api.telegram.org URL (zero manual EA updates ever needed).
+    """
+    if not bot_token or not live_states:
+        return
+    try:
+        sym_to_tag = {
+            'GC=F': 'XAU',
+            'EURUSD=X': 'EUR',
+            'GBPUSD=X': 'GBP',
+            'USDJPY=X': 'JPY',
+            'USDCAD=X': 'CAD',
+            'USDCHF=X': 'CHF',
+        }
+        parts = []
+        rep_date = ""
+        for s in live_states:
+            tag = sym_to_tag.get(s.get('symbol', ''))
+            cot = s.get('cot', {})
+            if tag and cot:
+                if not rep_date and cot.get('report_date'):
+                    rep_date = str(cot['report_date'])
+                r_net = int(cot.get('raw_net', 0))
+                r_chg = int(cot.get('raw_chg_net', 0))
+                r_idx = float(cot.get('raw_cot_idx', 50.0))
+                parts.append(f"{tag}:{r_net},{r_chg},{r_idx:.1f}")
+        if not parts:
+            return
+        desc = f"Paul FTMO Pro V4.1 Official Bot\nCOT_SYNC|{rep_date}|" + "|".join(parts) + "|"
+        url = f"https://api.telegram.org/bot{bot_token}/setMyDescription"
+        encoded = urllib.parse.urlencode({'description': desc}).encode('utf-8')
+        req = urllib.request.Request(url, data=encoded, headers={'User-Agent': 'PaulFTMOBot/4.1'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            resp.read()
+    except Exception as e:
+        print(f"[!] Note: Telegram COT Bridge update skipped: {e}")
+
+
 def format_urgent_pair_alert(s, event_type, dashboard_url=''):
     """Formats an ultra-clean, modern single-pair ticket in plain Thai (zero spam, zero confusion)."""
     sym = s['symbol']
@@ -445,6 +487,7 @@ def run_alert_scan(send_summary=True, is_test=False, force=False):
     sync_latest_cftc_cot_if_needed()
     suite_res = paul_engine.build_full_suite()
     live_states = suite_res['live_states']
+    publish_cot_bridge_to_telegram(bot_token, live_states)
 
     # 3. Side-effect-free path when --test is used
     if is_test:

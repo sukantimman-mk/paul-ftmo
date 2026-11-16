@@ -234,6 +234,23 @@ int OnInit()
    if(ShowOnChartHUD)
       UpdateHUD();
 
+   // 4. Send 1-Time Live Connection Confirmation from MT4 VPS to Telegram (deduplicated across 6 charts)
+   if(EnableTelegramAlerts)
+     {
+      string gvPing = "PaulV4_Global_LastInitPing";
+      datetime nowT = TimeCurrent();
+      if(!GlobalVariableCheck(gvPing) || (nowT - (datetime)GlobalVariableGet(gvPing)) > 120)
+        {
+         GlobalVariableSet(gvPing, (double)nowT);
+         SendTelegramMessage(StringFormat("<b>[MT4 VPS CONNECTED 24/7] Paul FTMO Pro V4.1</b>\n"
+                                          "----------------------------------\n"
+                                          "Account: <code>#%d (%s)</code>\n"
+                                          "Balance: <code>$%.2f</code> | Equity: <code>$%.2f</code>\n"
+                                          "Status: <b>Direct MT4 -> Telegram WebRequest Active 24/7!</b>",
+                                          AccountNumber(), AccountServer(), AccountBalance(), AccountEquity()));
+        }
+     }
+
    Print("[OK - Paul Pro V4.1 EA] Initialized on ", Symbol(), " | Mode: ",
          (ProfitLockMode == EXIT_HYBRID_50_50 ? "Hybrid 50/50 Partial Close" : "Pure Trailing Runner"),
          " | Risk: ", DoubleToString(RiskPercentPerTrade, 2), "%");
@@ -309,41 +326,117 @@ bool CheckFtmoGuardian(double &dailyLossPctOut, double &totalLossPctOut)
   }
 
 //+------------------------------------------------------------------+
+//| Helper: Parse Single Asset Token from COT_SYNC Telegram Bridge   |
+//+------------------------------------------------------------------+
+void ParseAndStoreCotTag(string resp, string tag)
+  {
+   string marker = "|" + tag + ":";
+   int p1 = StringFind(resp, marker);
+   if(p1 < 0)
+      return;
+   int startPos = p1 + StringLen(marker);
+   int p2 = StringFind(resp, "|", startPos);
+   if(p2 <= startPos)
+      return;
+
+   string payload = StringSubstr(resp, startPos, p2 - startPos);
+   string parts[];
+   int cnt = StringSplit(payload, ',', parts);
+   if(cnt >= 3)
+     {
+      GlobalVariableSet("PaulV4_COT_" + tag + "_Net", StringToDouble(parts[0]));
+      GlobalVariableSet("PaulV4_COT_" + tag + "_Chg", StringToDouble(parts[1]));
+      GlobalVariableSet("PaulV4_COT_" + tag + "_Idx", StringToDouble(parts[2]));
+      GlobalVariableSet("PaulV4_COT_" + tag + "_Synced", 1.0);
+     }
+  }
+
+//+------------------------------------------------------------------+
+//| Auto-Sync Weekly CFTC COT via Whitelisted Telegram API (Zero-Touch)|
+//+------------------------------------------------------------------+
+void SyncLiveCotViaTelegramBridge()
+  {
+   if(!EnableTelegramAlerts || StringLen(TelegramBotToken) < 10)
+      return;
+   if(IsTesting() || IsOptimization())
+      return;
+
+   string gvSyncKey = "PaulV4_COT_LastSyncTime";
+   datetime nowT = TimeCurrent();
+   if(GlobalVariableCheck(gvSyncKey) && (nowT - (datetime)GlobalVariableGet(gvSyncKey)) < 43200)
+      return; // Already synced within the last 12 hours across all 6 charts
+
+   GlobalVariableSet(gvSyncKey, (double)nowT);
+
+   string url = "https://api.telegram.org/bot" + TelegramBotToken + "/getMyDescription";
+   string headers = "";
+   char postData[];
+   char resultData[];
+   string resultHeaders = "";
+
+   ResetLastError();
+   int resCode = WebRequest("GET", url, headers, 5000, postData, resultData, resultHeaders);
+   if(resCode == 200)
+     {
+      string resp = CharArrayToString(resultData, 0, WHOLE_ARRAY, CP_UTF8);
+      if(StringFind(resp, "COT_SYNC|") >= 0)
+        {
+         ParseAndStoreCotTag(resp, "XAU");
+         ParseAndStoreCotTag(resp, "EUR");
+         ParseAndStoreCotTag(resp, "GBP");
+         ParseAndStoreCotTag(resp, "JPY");
+         ParseAndStoreCotTag(resp, "CAD");
+         ParseAndStoreCotTag(resp, "CHF");
+         Print("[CFTC COT Auto-Sync] Successfully synced latest weekly CFTC COT data via Telegram API Bridge!");
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
 //| Get Pair-Equivalent COT Data (Direct & Inverted USD-Base Handled)|
 //+------------------------------------------------------------------+
 void GetPairCotSnapshot(double &pairNetOut, double &pairChgOut, double &pairIdxOut, string &cotVerdictOut, bool isBuyEval)
   {
+   SyncLiveCotViaTelegramBridge();
+
    string sym = Symbol();
    StringToUpper(sym);
 
-   // Default Verified CFTC COT Snapshot (As of Latest Release)
-   // Values are already converted to Pair-Equivalent (Inverted for JPY, CAD, CHF)
+   // Default Verified CFTC COT Snapshot (Overridden Automatically by Live Cloud COT_SYNC)
    double rawNet = 0.0, rawChg = 0.0, rawIdx = 50.0;
    bool isUsdBase = false;
+   string tag = "";
 
    if(StringFind(sym, "XAU") >= 0 || StringFind(sym, "GOLD") >= 0)
      {
-      rawNet = 179548;  rawChg = -6903;   rawIdx = 26.1; isUsdBase = false;
+      tag = "XAU"; rawNet = 179548;  rawChg = -6903;   rawIdx = 26.1; isUsdBase = false;
      }
    else if(StringFind(sym, "EUR") >= 0)
      {
-      rawNet = -157791; rawChg = -12450;  rawIdx = 0.0;  isUsdBase = false;
+      tag = "EUR"; rawNet = -157791; rawChg = -12450;  rawIdx = 0.0;  isUsdBase = false;
      }
    else if(StringFind(sym, "GBP") >= 0)
      {
-      rawNet = -59821;  rawChg = -4120;   rawIdx = 50.7; isUsdBase = false;
+      tag = "GBP"; rawNet = -59821;  rawChg = -4120;   rawIdx = 50.7; isUsdBase = false;
      }
    else if(StringFind(sym, "JPY") >= 0)
      {
-      rawNet = 102321;  rawChg = 8420;    rawIdx = 93.6; isUsdBase = true;
+      tag = "JPY"; rawNet = 102321;  rawChg = 8420;    rawIdx = 93.6; isUsdBase = true;
      }
    else if(StringFind(sym, "CAD") >= 0)
      {
-      rawNet = -41775;  rawChg = -3210;   rawIdx = 63.8; isUsdBase = true;
+      tag = "CAD"; rawNet = -41775;  rawChg = -3210;   rawIdx = 63.8; isUsdBase = true;
      }
    else if(StringFind(sym, "CHF") >= 0)
      {
-      rawNet = -16589;  rawChg = 1150;    rawIdx = 100.0; isUsdBase = true;
+      tag = "CHF"; rawNet = -16589;  rawChg = 1150;    rawIdx = 100.0; isUsdBase = true;
+     }
+
+   if(tag != "" && GlobalVariableCheck("PaulV4_COT_" + tag + "_Synced"))
+     {
+      rawNet = GlobalVariableGet("PaulV4_COT_" + tag + "_Net");
+      rawChg = GlobalVariableGet("PaulV4_COT_" + tag + "_Chg");
+      rawIdx = GlobalVariableGet("PaulV4_COT_" + tag + "_Idx");
      }
 
    if(isUsdBase)
