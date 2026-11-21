@@ -1,16 +1,17 @@
 // CFTC COT Institutional Data (Paul FTMO Pro Edition - 52-Week History)
-window.COT_INDICES = {"AUSTRALIAN DOLLAR": {"net": -151753, "min52": -151753, "max52": 85644, "idx52": 0.0, "min3y": -151753, "max3y": 85644, "idx3y": 0.0, "weeks": 110}, "ETHER CASH SETTLED": {"net": 1293, "min52": 436, "max52": 5281, "idx52": 17.7, "min3y": -1554, "max3y": 5281, "idx3y": 41.7, "weeks": 110}, "BITCOIN": {"net": 2375, "min52": -734, "max52": 3904, "idx52": 67.0, "min3y": -2486, "max3y": 3904, "idx3y": 76.1, "weeks": 110}, "SO AFRICAN RAND": {"net": 11176, "min52": 2837, "max52": 17200, "idx52": 58.1, "min3y": -3812, "max3y": 31976, "idx3y": 41.9, "weeks": 110}, "NZ DOLLAR": {"net": -55366, "min52": -65189, "max52": 10518, "idx52": 13.0, "min3y": -65189, "max3y": 10518, "idx3y": 13.0, "weeks": 110}, "BRAZILIAN REAL": {"net": 59214, "min52": 17617, "max52": 72813, "idx52": 75.4, "min3y": -38494, "max3y": 82558, "idx3y": 80.7, "weeks": 110}, "EURO FX": {"net": -136396, "min52": -157791, "max52": 180305, "idx52": 6.3, "min3y": -157791, "max3y": 180305, "idx3y": 6.3, "weeks": 110}, "USD INDEX": {"net": 13813, "min52": -16347, "max52": 22499, "idx52": 77.6, "min3y": -16347, "max3y": 22499, "idx3y": 77.6, "weeks": 110}, "JAPANESE YEN": {"net": 123113, "min52": -163412, "max52": 123113, "idx52": 100.0, "min3y": -163412, "max3y": 179212, "idx3y": 83.6, "weeks": 110}, "BRITISH POUND": {"net": -43216, "min52": -106964, "max52": -13911, "idx52": 68.5, "min3y": -106964, "max3y": 93135, "idx3y": 31.9, "weeks": 110}, "MEXICAN PESO": {"net": 21793, "min52": 10701, "max52": 109301, "idx52": 11.2, "min3y": -1544, "max3y": 109301, "idx3y": 21.1, "weeks": 110}, "SWISS FRANC": {"net": -9153, "min52": -44198, "max52": -9153, "idx52": 100.0, "min3y": -44198, "max3y": -9153, "idx3y": 100.0, "weeks": 110}, "CANADIAN DOLLAR": {"net": -32592, "min52": -179095, "max52": 36159, "idx52": 68.1, "min3y": -183566, "max3y": 36159, "idx3y": 68.7, "weeks": 110}, "SILVER": {"net": 19364, "min52": 19364, "max52": 44709, "idx52": 0.0, "min3y": 19364, "max3y": 67174, "idx3y": 0.0, "weeks": 110}, "GOLD": {"net": 190107, "min52": 154260, "max52": 251238, "idx52": 37.0, "min3y": 154260, "max3y": 302508, "idx3y": 24.2, "weeks": 110}};
+window.COT_INDICES = {"AUSTRALIAN DOLLAR": {"net": -182060, "min52": -182060, "max52": 85644, "idx52": 0.0, "min3y": -182060, "max3y": 85644, "idx3y": 0.0, "weeks": 110}, "ETHER CASH SETTLED": {"net": 1078, "min52": 436, "max52": 5281, "idx52": 13.3, "min3y": -1554, "max3y": 5281, "idx3y": 38.5, "weeks": 110}, "BITCOIN": {"net": 1528, "min52": -734, "max52": 3904, "idx52": 48.8, "min3y": -2486, "max3y": 3904, "idx3y": 62.8, "weeks": 110}, "SO AFRICAN RAND": {"net": 8476, "min52": 2837, "max52": 17200, "idx52": 39.3, "min3y": -3812, "max3y": 30793, "idx3y": 35.5, "weeks": 110}, "NZ DOLLAR": {"net": -63245, "min52": -65189, "max52": 10518, "idx52": 2.6, "min3y": -65189, "max3y": 10518, "idx3y": 2.6, "weeks": 110}, "BRAZILIAN REAL": {"net": 49566, "min52": 17617, "max52": 72813, "idx52": 57.9, "min3y": -38494, "max3y": 82558, "idx3y": 72.7, "weeks": 110}, "EURO FX": {"net": -142710, "min52": -157791, "max52": 180305, "idx52": 4.5, "min3y": -157791, "max3y": 180305, "idx3y": 4.5, "weeks": 110}, "USD INDEX": {"net": 13345, "min52": -16347, "max52": 22499, "idx52": 76.4, "min3y": -16347, "max3y": 22499, "idx3y": 76.4, "weeks": 110}, "JAPANESE YEN": {"net": 116317, "min52": -163412, "max52": 123113, "idx52": 97.6, "min3y": -163412, "max3y": 179212, "idx3y": 81.6, "weeks": 110}, "BRITISH POUND": {"net": -32304, "min52": -106964, "max52": -13911, "idx52": 80.2, "min3y": -106964, "max3y": 85802, "idx3y": 38.7, "weeks": 110}, "MEXICAN PESO": {"net": 25247, "min52": 10701, "max52": 109301, "idx52": 14.8, "min3y": -1544, "max3y": 109301, "idx3y": 24.2, "weeks": 110}, "SWISS FRANC": {"net": -8281, "min52": -44198, "max52": -8281, "idx52": 100.0, "min3y": -44198, "max3y": -8281, "idx3y": 100.0, "weeks": 110}, "CANADIAN DOLLAR": {"net": -45048, "min52": -179095, "max52": 36159, "idx52": 62.3, "min3y": -183566, "max3y": 36159, "idx3y": 63.0, "weeks": 110}, "GOLD": {"net": 166132, "min52": 154260, "max52": 251238, "idx52": 12.2, "min3y": 154260, "max3y": 302508, "idx3y": 8.0, "weeks": 110}, "SILVER": {"net": 18291, "min52": 18291, "max52": 44709, "idx52": 0.0, "min3y": 18291, "max3y": 67174, "idx3y": 0.0, "weeks": 110}};
 window.COT_DATA = {
   "metadata": {
     "title": "CFTC COT Institutional Money Flow Matrix (Paul FTMO Pro Edition)",
     "source": "U.S. Commodity Futures Trading Commission (CFTC) - Legacy Futures Only",
     "cftc_api_endpoint": "https://publicreporting.cftc.gov/resource/6dca-aqww.json",
     "cftc_web_url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm",
-    "report_date": "2026-11-10",
-    "iso_week": 46,
-    "published_at": "2026-11-13",
-    "last_updated": "2026-11-20 16:54:39",
+    "report_date": "2026-11-17",
+    "iso_week": 47,
+    "published_at": "2026-11-20",
+    "last_updated": "2026-11-21 01:21:37",
     "weeks_tracked": [
+      "2026-11-17",
       "2026-11-10",
       "2026-11-03",
       "2026-10-27",
@@ -62,160 +63,159 @@ window.COT_DATA = {
       "2025-12-09",
       "2025-12-02",
       "2025-11-25",
-      "2025-11-18",
-      "2025-11-10"
+      "2025-11-18"
     ],
     "total_assets_tracked": 15
   },
   "cot_indices": {
     "AUSTRALIAN DOLLAR": {
-      "net": -151753,
-      "min52": -151753,
+      "net": -182060,
+      "min52": -182060,
       "max52": 85644,
       "idx52": 0.0,
-      "min3y": -151753,
+      "min3y": -182060,
       "max3y": 85644,
       "idx3y": 0.0,
       "weeks": 110
     },
     "ETHER CASH SETTLED": {
-      "net": 1293,
+      "net": 1078,
       "min52": 436,
       "max52": 5281,
-      "idx52": 17.7,
+      "idx52": 13.3,
       "min3y": -1554,
       "max3y": 5281,
-      "idx3y": 41.7,
+      "idx3y": 38.5,
       "weeks": 110
     },
     "BITCOIN": {
-      "net": 2375,
+      "net": 1528,
       "min52": -734,
       "max52": 3904,
-      "idx52": 67.0,
+      "idx52": 48.8,
       "min3y": -2486,
       "max3y": 3904,
-      "idx3y": 76.1,
+      "idx3y": 62.8,
       "weeks": 110
     },
     "SO AFRICAN RAND": {
-      "net": 11176,
+      "net": 8476,
       "min52": 2837,
       "max52": 17200,
-      "idx52": 58.1,
+      "idx52": 39.3,
       "min3y": -3812,
-      "max3y": 31976,
-      "idx3y": 41.9,
+      "max3y": 30793,
+      "idx3y": 35.5,
       "weeks": 110
     },
     "NZ DOLLAR": {
-      "net": -55366,
+      "net": -63245,
       "min52": -65189,
       "max52": 10518,
-      "idx52": 13.0,
+      "idx52": 2.6,
       "min3y": -65189,
       "max3y": 10518,
-      "idx3y": 13.0,
+      "idx3y": 2.6,
       "weeks": 110
     },
     "BRAZILIAN REAL": {
-      "net": 59214,
+      "net": 49566,
       "min52": 17617,
       "max52": 72813,
-      "idx52": 75.4,
+      "idx52": 57.9,
       "min3y": -38494,
       "max3y": 82558,
-      "idx3y": 80.7,
+      "idx3y": 72.7,
       "weeks": 110
     },
     "EURO FX": {
-      "net": -136396,
+      "net": -142710,
       "min52": -157791,
       "max52": 180305,
-      "idx52": 6.3,
+      "idx52": 4.5,
       "min3y": -157791,
       "max3y": 180305,
-      "idx3y": 6.3,
+      "idx3y": 4.5,
       "weeks": 110
     },
     "USD INDEX": {
-      "net": 13813,
+      "net": 13345,
       "min52": -16347,
       "max52": 22499,
-      "idx52": 77.6,
+      "idx52": 76.4,
       "min3y": -16347,
       "max3y": 22499,
-      "idx3y": 77.6,
+      "idx3y": 76.4,
       "weeks": 110
     },
     "JAPANESE YEN": {
-      "net": 123113,
+      "net": 116317,
       "min52": -163412,
       "max52": 123113,
-      "idx52": 100.0,
+      "idx52": 97.6,
       "min3y": -163412,
       "max3y": 179212,
-      "idx3y": 83.6,
+      "idx3y": 81.6,
       "weeks": 110
     },
     "BRITISH POUND": {
-      "net": -43216,
+      "net": -32304,
       "min52": -106964,
       "max52": -13911,
-      "idx52": 68.5,
+      "idx52": 80.2,
       "min3y": -106964,
-      "max3y": 93135,
-      "idx3y": 31.9,
+      "max3y": 85802,
+      "idx3y": 38.7,
       "weeks": 110
     },
     "MEXICAN PESO": {
-      "net": 21793,
+      "net": 25247,
       "min52": 10701,
       "max52": 109301,
-      "idx52": 11.2,
+      "idx52": 14.8,
       "min3y": -1544,
       "max3y": 109301,
-      "idx3y": 21.1,
+      "idx3y": 24.2,
       "weeks": 110
     },
     "SWISS FRANC": {
-      "net": -9153,
+      "net": -8281,
       "min52": -44198,
-      "max52": -9153,
+      "max52": -8281,
       "idx52": 100.0,
       "min3y": -44198,
-      "max3y": -9153,
+      "max3y": -8281,
       "idx3y": 100.0,
       "weeks": 110
     },
     "CANADIAN DOLLAR": {
-      "net": -32592,
+      "net": -45048,
       "min52": -179095,
       "max52": 36159,
-      "idx52": 68.1,
+      "idx52": 62.3,
       "min3y": -183566,
       "max3y": 36159,
-      "idx3y": 68.7,
-      "weeks": 110
-    },
-    "SILVER": {
-      "net": 19364,
-      "min52": 19364,
-      "max52": 44709,
-      "idx52": 0.0,
-      "min3y": 19364,
-      "max3y": 67174,
-      "idx3y": 0.0,
+      "idx3y": 63.0,
       "weeks": 110
     },
     "GOLD": {
-      "net": 190107,
+      "net": 166132,
       "min52": 154260,
       "max52": 251238,
-      "idx52": 37.0,
+      "idx52": 12.2,
       "min3y": 154260,
       "max3y": 302508,
-      "idx3y": 24.2,
+      "idx3y": 8.0,
+      "weeks": 110
+    },
+    "SILVER": {
+      "net": 18291,
+      "min52": 18291,
+      "max52": 44709,
+      "idx52": 0.0,
+      "min3y": 18291,
+      "max3y": 67174,
+      "idx3y": 0.0,
       "weeks": 110
     }
   },
@@ -229,24 +229,43 @@ window.COT_DATA = {
       "market_name": "GOLD - COMMODITY EXCHANGE INC.",
       "cftc_code": "088691",
       "commodity_group": "NATURAL RESOURCES",
-      "latest_date": "2026-11-10",
-      "net_position": 190107,
-      "prev_net_position": 179548,
-      "weekly_change": 10559,
-      "change_noncomm_long": 5704,
-      "change_noncomm_short": -4855,
+      "latest_date": "2026-11-17",
+      "net_position": 166132,
+      "prev_net_position": 190107,
+      "weekly_change": -23975,
+      "change_noncomm_long": -16183,
+      "change_noncomm_short": 7792,
       "min_52w": 154260,
       "max_52w": 251238,
-      "cot_index_52w": 37.0,
-      "cot_index_3y": 24.2,
+      "cot_index_52w": 12.2,
+      "cot_index_3y": 8.0,
       "bias": "BULLISH",
       "intensity": "STRONG",
-      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
-      "tactical_state": "TREND CONTINUATION",
-      "latest_long": 226234,
-      "latest_short": 36127,
-      "open_interest": 404725,
+      "flow": "PROFIT-TAKING (สถาบันเริ่มรินปิดทำกำไร)",
+      "tactical_state": "PULLBACK RISK",
+      "latest_long": 210051,
+      "latest_short": 43919,
+      "open_interest": 407834,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 407834,
+        "change_open_interest": 3109,
+        "noncomm_long": 210051,
+        "noncomm_short": 43919,
+        "noncomm_spread": 73515,
+        "noncomm_net": 166132,
+        "change_noncomm_long": -16183,
+        "change_noncomm_short": 7792,
+        "comm_long": 77005,
+        "comm_short": 270755,
+        "comm_net": -193750,
+        "change_comm_long": 6542,
+        "change_comm_short": -17230,
+        "nonrept_long": 47263,
+        "nonrept_short": 19645,
+        "nonrept_net": 27618
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 404725,
         "change_open_interest": 5556,
@@ -265,32 +284,7 @@ window.COT_DATA = {
         "nonrept_short": 18883,
         "nonrept_net": 27415
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 399169,
-        "change_open_interest": 2359,
-        "noncomm_long": 220530,
-        "noncomm_short": 40982,
-        "noncomm_spread": 68289,
-        "noncomm_net": 179548,
-        "change_noncomm_long": -3194,
-        "change_noncomm_short": 3709,
-        "comm_long": 64326,
-        "comm_short": 269228,
-        "comm_net": -204902,
-        "change_comm_long": 217,
-        "change_comm_short": -10505,
-        "nonrept_long": 46024,
-        "nonrept_short": 20670,
-        "nonrept_net": 25354
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 210339,
-          "long": 269556,
-          "short": 59217
-        },
         {
           "date": "2025-11-25",
           "net": 204588,
@@ -596,9 +590,25 @@ window.COT_DATA = {
           "net": 190107,
           "long": 226234,
           "short": 36127
+        },
+        {
+          "date": "2026-11-17",
+          "net": 166132,
+          "long": 210051,
+          "short": 43919
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 166132,
+          "noncomm_chg": -23975,
+          "comm_net": -193750,
+          "comm_chg": 23772,
+          "nonrept_net": 27618,
+          "nonrept_chg": 203,
+          "cot_idx": 12.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 190107,
@@ -628,19 +638,19 @@ window.COT_DATA = {
           "nonrept_net": 29173,
           "nonrept_chg": -6544,
           "cot_idx": 33.2
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 199865,
-          "noncomm_chg": -8014,
-          "comm_net": -235582,
-          "comm_chg": 6949,
-          "nonrept_net": 35717,
-          "nonrept_chg": 1065,
-          "cot_idx": 47.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 166132,
+          "noncomm_chg": -23975,
+          "comm_net": -193750,
+          "comm_chg": 23772,
+          "nonrept_net": 27618,
+          "nonrept_chg": 203,
+          "cot_idx": 12.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 190107,
@@ -1150,16 +1160,6 @@ window.COT_DATA = {
           "nonrept_net": 36815,
           "nonrept_chg": 1569,
           "cot_idx": 30.7
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 210339,
-          "noncomm_chg": 3270,
-          "comm_net": -245585,
-          "comm_chg": -762,
-          "nonrept_net": 35246,
-          "nonrept_chg": -2508,
-          "cot_idx": 34.8
         }
       ],
       "rank": 1
@@ -1173,24 +1173,43 @@ window.COT_DATA = {
       "market_name": "JAPANESE YEN - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "097741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": 123113,
-      "prev_net_position": 102321,
-      "weekly_change": 20792,
-      "change_noncomm_long": 22561,
-      "change_noncomm_short": 1769,
+      "latest_date": "2026-11-17",
+      "net_position": 116317,
+      "prev_net_position": 123113,
+      "weekly_change": -6796,
+      "change_noncomm_long": 8997,
+      "change_noncomm_short": 15793,
       "min_52w": -163412,
       "max_52w": 123113,
-      "cot_index_52w": 100.0,
-      "cot_index_3y": 83.6,
+      "cot_index_52w": 97.6,
+      "cot_index_3y": 81.6,
       "bias": "BULLISH",
       "intensity": "STRONG",
-      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
-      "tactical_state": "TREND CONTINUATION",
-      "latest_long": 249759,
-      "latest_short": 126646,
-      "open_interest": 388875,
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 258756,
+      "latest_short": 142439,
+      "open_interest": 390361,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 390361,
+        "change_open_interest": 1486,
+        "noncomm_long": 258756,
+        "noncomm_short": 142439,
+        "noncomm_spread": 4564,
+        "noncomm_net": 116317,
+        "change_noncomm_long": 8997,
+        "change_noncomm_short": 15793,
+        "comm_long": 92545,
+        "comm_short": 204045,
+        "comm_net": -111500,
+        "change_comm_long": -7652,
+        "change_comm_short": -11688,
+        "nonrept_long": 34496,
+        "nonrept_short": 39313,
+        "nonrept_net": -4817
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 388875,
         "change_open_interest": 8234,
@@ -1209,32 +1228,7 @@ window.COT_DATA = {
         "nonrept_short": 42585,
         "nonrept_net": -7577
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 380641,
-        "change_open_interest": 6615,
-        "noncomm_long": 227198,
-        "noncomm_short": 124877,
-        "noncomm_spread": 4152,
-        "noncomm_net": 102321,
-        "change_noncomm_long": 1682,
-        "change_noncomm_short": 952,
-        "comm_long": 113315,
-        "comm_short": 216482,
-        "comm_net": -103167,
-        "change_comm_long": 4094,
-        "change_comm_short": 2171,
-        "nonrept_long": 35976,
-        "nonrept_short": 35130,
-        "nonrept_net": 846
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 31157,
-          "long": 169890,
-          "short": 138733
-        },
         {
           "date": "2025-11-25",
           "net": 26517,
@@ -1540,9 +1534,25 @@ window.COT_DATA = {
           "net": 123113,
           "long": 249759,
           "short": 126646
+        },
+        {
+          "date": "2026-11-17",
+          "net": 116317,
+          "long": 258756,
+          "short": 142439
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -1572,19 +1582,19 @@ window.COT_DATA = {
           "nonrept_net": 3499,
           "nonrept_chg": 2290,
           "cot_idx": 93.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 69878,
-          "noncomm_chg": 19671,
-          "comm_net": -71087,
-          "comm_chg": -22500,
-          "nonrept_net": 1209,
-          "nonrept_chg": 2829,
-          "cot_idx": 82.2
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -2094,16 +2104,6 @@ window.COT_DATA = {
           "nonrept_net": 967,
           "nonrept_chg": 1597,
           "cot_idx": 26.8
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 31157,
-          "noncomm_chg": -17319,
-          "comm_net": -30527,
-          "comm_chg": 17496,
-          "nonrept_net": -630,
-          "nonrept_chg": -177,
-          "cot_idx": 29.0
         }
       ],
       "rank": 2
@@ -2117,24 +2117,43 @@ window.COT_DATA = {
       "market_name": "BRAZILIAN REAL - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "102741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": 59214,
-      "prev_net_position": 46033,
-      "weekly_change": 13181,
-      "change_noncomm_long": -7886,
-      "change_noncomm_short": -21067,
+      "latest_date": "2026-11-17",
+      "net_position": 49566,
+      "prev_net_position": 59214,
+      "weekly_change": -9648,
+      "change_noncomm_long": -8559,
+      "change_noncomm_short": 1089,
       "min_52w": 17617,
       "max_52w": 72813,
-      "cot_index_52w": 75.4,
-      "cot_index_3y": 80.7,
+      "cot_index_52w": 57.9,
+      "cot_index_3y": 72.7,
       "bias": "BULLISH",
-      "intensity": "STRONG",
+      "intensity": "MODERATE",
       "flow": "PROFIT-TAKING (สถาบันเริ่มรินปิดทำกำไร)",
       "tactical_state": "PULLBACK RISK",
-      "latest_long": 87502,
-      "latest_short": 28288,
-      "open_interest": 110985,
+      "latest_long": 78943,
+      "latest_short": 29377,
+      "open_interest": 109912,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 109912,
+        "change_open_interest": -1073,
+        "noncomm_long": 78943,
+        "noncomm_short": 29377,
+        "noncomm_spread": 2068,
+        "noncomm_net": 49566,
+        "change_noncomm_long": -8559,
+        "change_noncomm_short": 1089,
+        "comm_long": 24885,
+        "comm_short": 76372,
+        "comm_net": -51487,
+        "change_comm_long": 6769,
+        "change_comm_short": -3203,
+        "nonrept_long": 4016,
+        "nonrept_short": 2095,
+        "nonrept_net": 1921
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 110985,
         "change_open_interest": -62621,
@@ -2153,32 +2172,7 @@ window.COT_DATA = {
         "nonrept_short": 1929,
         "nonrept_net": 2245
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 173606,
-        "change_open_interest": 4868,
-        "noncomm_long": 95388,
-        "noncomm_short": 49355,
-        "noncomm_spread": 4019,
-        "noncomm_net": 46033,
-        "change_noncomm_long": -211,
-        "change_noncomm_short": -13358,
-        "comm_long": 47370,
-        "comm_short": 100150,
-        "comm_net": -52780,
-        "change_comm_long": -11759,
-        "change_comm_short": 3629,
-        "nonrept_long": 26829,
-        "nonrept_short": 20082,
-        "nonrept_net": 6747
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 53819,
-          "long": 74494,
-          "short": 20675
-        },
         {
           "date": "2025-11-25",
           "net": 56781,
@@ -2484,9 +2478,25 @@ window.COT_DATA = {
           "net": 59214,
           "long": 87502,
           "short": 28288
+        },
+        {
+          "date": "2026-11-17",
+          "net": 49566,
+          "long": 78943,
+          "short": 29377
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 49566,
+          "noncomm_chg": -9648,
+          "comm_net": -51487,
+          "comm_chg": 9972,
+          "nonrept_net": 1921,
+          "nonrept_chg": -324,
+          "cot_idx": 57.9
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 59214,
@@ -2516,19 +2526,19 @@ window.COT_DATA = {
           "nonrept_net": 4506,
           "nonrept_chg": 40,
           "cot_idx": 27.7
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 32518,
-          "noncomm_chg": -14200,
-          "comm_net": -36984,
-          "comm_chg": 13875,
-          "nonrept_net": 4466,
-          "nonrept_chg": 325,
-          "cot_idx": 27.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 49566,
+          "noncomm_chg": -9648,
+          "comm_net": -51487,
+          "comm_chg": 9972,
+          "nonrept_net": 1921,
+          "nonrept_chg": -324,
+          "cot_idx": 57.9
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 59214,
@@ -3038,16 +3048,6 @@ window.COT_DATA = {
           "nonrept_net": 3848,
           "nonrept_chg": 119,
           "cot_idx": 78.7
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 53819,
-          "noncomm_chg": -3586,
-          "comm_net": -57548,
-          "comm_chg": 3285,
-          "nonrept_net": 3729,
-          "nonrept_chg": 301,
-          "cot_idx": 76.3
         }
       ],
       "rank": 3
@@ -3061,24 +3061,43 @@ window.COT_DATA = {
       "market_name": "MEXICAN PESO - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "095741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": 21793,
-      "prev_net_position": 18017,
-      "weekly_change": 3776,
-      "change_noncomm_long": 285,
-      "change_noncomm_short": -3491,
+      "latest_date": "2026-11-17",
+      "net_position": 25247,
+      "prev_net_position": 21793,
+      "weekly_change": 3454,
+      "change_noncomm_long": 97,
+      "change_noncomm_short": -3357,
       "min_52w": 10701,
       "max_52w": 109301,
-      "cot_index_52w": 11.2,
-      "cot_index_3y": 21.1,
+      "cot_index_52w": 14.8,
+      "cot_index_3y": 24.2,
       "bias": "BULLISH",
       "intensity": "MODERATE",
       "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
       "tactical_state": "TREND CONTINUATION",
-      "latest_long": 98608,
-      "latest_short": 76815,
-      "open_interest": 280942,
+      "latest_long": 98705,
+      "latest_short": 73458,
+      "open_interest": 279437,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 279437,
+        "change_open_interest": -1505,
+        "noncomm_long": 98705,
+        "noncomm_short": 73458,
+        "noncomm_spread": 1727,
+        "noncomm_net": 25247,
+        "change_noncomm_long": 97,
+        "change_noncomm_short": -3357,
+        "comm_long": 173856,
+        "comm_short": 199308,
+        "comm_net": -25452,
+        "change_comm_long": -406,
+        "change_comm_short": 2779,
+        "nonrept_long": 5149,
+        "nonrept_short": 4944,
+        "nonrept_net": 205
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 280942,
         "change_open_interest": -2285,
@@ -3097,32 +3116,7 @@ window.COT_DATA = {
         "nonrept_short": 5091,
         "nonrept_net": 474
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 283227,
-        "change_open_interest": 3868,
-        "noncomm_long": 98323,
-        "noncomm_short": 80306,
-        "noncomm_spread": 2697,
-        "noncomm_net": 18017,
-        "change_noncomm_long": 2458,
-        "change_noncomm_short": 5284,
-        "comm_long": 177374,
-        "comm_short": 195635,
-        "comm_net": -18261,
-        "change_comm_long": 1421,
-        "change_comm_short": -1484,
-        "nonrept_long": 4833,
-        "nonrept_short": 4589,
-        "nonrept_net": 244
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 95828,
-          "long": 132165,
-          "short": 36337
-        },
         {
           "date": "2025-11-25",
           "net": 95187,
@@ -3428,9 +3422,25 @@ window.COT_DATA = {
           "net": 21793,
           "long": 98608,
           "short": 76815
+        },
+        {
+          "date": "2026-11-17",
+          "net": 25247,
+          "long": 98705,
+          "short": 73458
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 25247,
+          "noncomm_chg": 3454,
+          "comm_net": -25452,
+          "comm_chg": -3185,
+          "nonrept_net": 205,
+          "nonrept_chg": -269,
+          "cot_idx": 14.8
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 21793,
@@ -3460,19 +3470,19 @@ window.COT_DATA = {
           "nonrept_net": 323,
           "nonrept_chg": -480,
           "cot_idx": 10.3
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 17023,
-          "noncomm_chg": 1781,
-          "comm_net": -17826,
-          "comm_chg": -1730,
-          "nonrept_net": 803,
-          "nonrept_chg": -51,
-          "cot_idx": 6.4
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 25247,
+          "noncomm_chg": 3454,
+          "comm_net": -25452,
+          "comm_chg": -3185,
+          "nonrept_net": 205,
+          "nonrept_chg": -269,
+          "cot_idx": 14.8
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 21793,
@@ -3982,16 +3992,6 @@ window.COT_DATA = {
           "nonrept_net": 3621,
           "nonrept_chg": -428,
           "cot_idx": 99.3
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 95828,
-          "noncomm_chg": 10647,
-          "comm_net": -99877,
-          "comm_chg": -10061,
-          "nonrept_net": 4049,
-          "nonrept_chg": -586,
-          "cot_idx": 100.0
         }
       ],
       "rank": 4
@@ -4005,13 +4005,13 @@ window.COT_DATA = {
       "market_name": "SILVER - COMMODITY EXCHANGE INC.",
       "cftc_code": "084691",
       "commodity_group": "NATURAL RESOURCES",
-      "latest_date": "2026-11-10",
-      "net_position": 19364,
-      "prev_net_position": 21251,
-      "weekly_change": -1887,
-      "change_noncomm_long": -851,
-      "change_noncomm_short": 1036,
-      "min_52w": 19364,
+      "latest_date": "2026-11-17",
+      "net_position": 18291,
+      "prev_net_position": 19364,
+      "weekly_change": -1073,
+      "change_noncomm_long": -156,
+      "change_noncomm_short": 917,
+      "min_52w": 18291,
       "max_52w": 44709,
       "cot_index_52w": 0.0,
       "cot_index_3y": 0.0,
@@ -4019,10 +4019,29 @@ window.COT_DATA = {
       "intensity": "NEUTRAL",
       "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
       "tactical_state": "RANGING",
-      "latest_long": 36151,
-      "latest_short": 16787,
-      "open_interest": 115652,
+      "latest_long": 35995,
+      "latest_short": 17704,
+      "open_interest": 122945,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 122945,
+        "change_open_interest": 7293,
+        "noncomm_long": 35995,
+        "noncomm_short": 17704,
+        "noncomm_spread": 23672,
+        "noncomm_net": 18291,
+        "change_noncomm_long": -156,
+        "change_noncomm_short": 917,
+        "comm_long": 38139,
+        "comm_short": 69005,
+        "comm_net": -30866,
+        "change_comm_long": 4767,
+        "change_comm_short": 2350,
+        "nonrept_long": 25139,
+        "nonrept_short": 12564,
+        "nonrept_net": 12575
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 115652,
         "change_open_interest": 69,
@@ -4041,32 +4060,7 @@ window.COT_DATA = {
         "nonrept_short": 11696,
         "nonrept_net": 13919
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 115583,
-        "change_open_interest": -643,
-        "noncomm_long": 37002,
-        "noncomm_short": 15751,
-        "noncomm_spread": 21202,
-        "noncomm_net": 21251,
-        "change_noncomm_long": 1369,
-        "change_noncomm_short": -179,
-        "comm_long": 32218,
-        "comm_short": 66974,
-        "comm_net": -34756,
-        "change_comm_long": -2759,
-        "change_comm_short": -3690,
-        "nonrept_long": 25161,
-        "nonrept_short": 11656,
-        "nonrept_net": 13505
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 34016,
-          "long": 54535,
-          "short": 20519
-        },
         {
           "date": "2025-11-25",
           "net": 32188,
@@ -4372,9 +4366,25 @@ window.COT_DATA = {
           "net": 19364,
           "long": 36151,
           "short": 16787
+        },
+        {
+          "date": "2026-11-17",
+          "net": 18291,
+          "long": 35995,
+          "short": 17704
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 18291,
+          "noncomm_chg": -1073,
+          "comm_net": -30866,
+          "comm_chg": 2417,
+          "nonrept_net": 12575,
+          "nonrept_chg": -1344,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 19364,
@@ -4404,19 +4414,19 @@ window.COT_DATA = {
           "nonrept_net": 15984,
           "nonrept_chg": -1397,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 19795,
-          "noncomm_chg": -2836,
-          "comm_net": -37176,
-          "comm_chg": 2266,
-          "nonrept_net": 17381,
-          "nonrept_chg": 570,
-          "cot_idx": 0.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 18291,
+          "noncomm_chg": -1073,
+          "comm_net": -30866,
+          "comm_chg": 2417,
+          "nonrept_net": 12575,
+          "nonrept_chg": -1344,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 19364,
@@ -4926,16 +4936,6 @@ window.COT_DATA = {
           "nonrept_net": 21080,
           "nonrept_chg": 1670,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 34016,
-          "noncomm_chg": 1030,
-          "comm_net": -53426,
-          "comm_chg": -1210,
-          "nonrept_net": 19410,
-          "nonrept_chg": 180,
-          "cot_idx": 3.0
         }
       ],
       "rank": 5
@@ -4949,24 +4949,43 @@ window.COT_DATA = {
       "market_name": "USD INDEX - ICE FUTURES U.S.",
       "cftc_code": "098662",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": 13813,
-      "prev_net_position": 14190,
-      "weekly_change": -377,
-      "change_noncomm_long": 1722,
-      "change_noncomm_short": 2099,
+      "latest_date": "2026-11-17",
+      "net_position": 13345,
+      "prev_net_position": 13813,
+      "weekly_change": -468,
+      "change_noncomm_long": 1820,
+      "change_noncomm_short": 2288,
       "min_52w": -16347,
       "max_52w": 22499,
-      "cot_index_52w": 77.6,
-      "cot_index_3y": 77.6,
+      "cot_index_52w": 76.4,
+      "cot_index_3y": 76.4,
       "bias": "BULLISH",
       "intensity": "NEUTRAL",
       "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
       "tactical_state": "RANGING",
-      "latest_long": 34776,
-      "latest_short": 20963,
-      "open_interest": 51440,
+      "latest_long": 36596,
+      "latest_short": 23251,
+      "open_interest": 55775,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 55775,
+        "change_open_interest": 4335,
+        "noncomm_long": 36596,
+        "noncomm_short": 23251,
+        "noncomm_spread": 1222,
+        "noncomm_net": 13345,
+        "change_noncomm_long": 1820,
+        "change_noncomm_short": 2288,
+        "comm_long": 13807,
+        "comm_short": 29688,
+        "comm_net": -15881,
+        "change_comm_long": 2668,
+        "change_comm_short": 2292,
+        "nonrept_long": 4150,
+        "nonrept_short": 1614,
+        "nonrept_net": 2536
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 51440,
         "change_open_interest": 2349,
@@ -4985,32 +5004,7 @@ window.COT_DATA = {
         "nonrept_short": 1665,
         "nonrept_net": 2444
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 49091,
-        "change_open_interest": 828,
-        "noncomm_long": 33054,
-        "noncomm_short": 18864,
-        "noncomm_spread": 1261,
-        "noncomm_net": 14190,
-        "change_noncomm_long": 1800,
-        "change_noncomm_short": 1731,
-        "comm_long": 11048,
-        "comm_short": 27462,
-        "comm_net": -16414,
-        "change_comm_long": -644,
-        "change_comm_short": -318,
-        "nonrept_long": 3728,
-        "nonrept_short": 1504,
-        "nonrept_net": 2224
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": -16108,
-          "long": 16893,
-          "short": 33001
-        },
         {
           "date": "2025-11-25",
           "net": -16347,
@@ -5316,9 +5310,25 @@ window.COT_DATA = {
           "net": 13813,
           "long": 34776,
           "short": 20963
+        },
+        {
+          "date": "2026-11-17",
+          "net": 13345,
+          "long": 36596,
+          "short": 23251
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -5348,19 +5358,19 @@ window.COT_DATA = {
           "nonrept_net": 1967,
           "nonrept_chg": -3,
           "cot_idx": 78.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 15044,
-          "noncomm_chg": 2125,
-          "comm_net": -17014,
-          "comm_chg": -2186,
-          "nonrept_net": 1970,
-          "nonrept_chg": 61,
-          "cot_idx": 80.8
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -5870,16 +5880,6 @@ window.COT_DATA = {
           "nonrept_net": 464,
           "nonrept_chg": -513,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -16108,
-          "noncomm_chg": -481,
-          "comm_net": 15131,
-          "comm_chg": -41,
-          "nonrept_net": 977,
-          "nonrept_chg": 522,
-          "cot_idx": 0.1
         }
       ],
       "rank": 6
@@ -5893,24 +5893,43 @@ window.COT_DATA = {
       "market_name": "SO AFRICAN RAND - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "122741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": 11176,
-      "prev_net_position": 11146,
-      "weekly_change": 30,
-      "change_noncomm_long": 382,
-      "change_noncomm_short": 352,
+      "latest_date": "2026-11-17",
+      "net_position": 8476,
+      "prev_net_position": 11176,
+      "weekly_change": -2700,
+      "change_noncomm_long": -1164,
+      "change_noncomm_short": 1536,
       "min_52w": 2837,
       "max_52w": 17200,
-      "cot_index_52w": 58.1,
-      "cot_index_3y": 41.9,
+      "cot_index_52w": 39.3,
+      "cot_index_3y": 35.5,
       "bias": "BULLISH",
       "intensity": "NEUTRAL",
-      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
-      "tactical_state": "TREND CONTINUATION",
-      "latest_long": 15444,
-      "latest_short": 4268,
-      "open_interest": 37849,
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 14280,
+      "latest_short": 5804,
+      "open_interest": 37912,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 37912,
+        "change_open_interest": 63,
+        "noncomm_long": 14280,
+        "noncomm_short": 5804,
+        "noncomm_spread": 519,
+        "noncomm_net": 8476,
+        "change_noncomm_long": -1164,
+        "change_noncomm_short": 1536,
+        "comm_long": 20606,
+        "comm_short": 29955,
+        "comm_net": -9349,
+        "change_comm_long": 1254,
+        "change_comm_short": -1491,
+        "nonrept_long": 2507,
+        "nonrept_short": 1634,
+        "nonrept_net": 873
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 37849,
         "change_open_interest": 1377,
@@ -5929,32 +5948,7 @@ window.COT_DATA = {
         "nonrept_short": 1631,
         "nonrept_net": 918
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 36472,
-        "change_open_interest": -1324,
-        "noncomm_long": 15062,
-        "noncomm_short": 3916,
-        "noncomm_spread": 504,
-        "noncomm_net": 11146,
-        "change_noncomm_long": -2237,
-        "change_noncomm_short": -547,
-        "comm_long": 17902,
-        "comm_short": 30410,
-        "comm_net": -12508,
-        "change_comm_long": 741,
-        "change_comm_short": -1038,
-        "nonrept_long": 3004,
-        "nonrept_short": 1642,
-        "nonrept_net": 1362
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 7521,
-          "long": 14185,
-          "short": 6664
-        },
         {
           "date": "2025-11-25",
           "net": 7439,
@@ -6260,9 +6254,25 @@ window.COT_DATA = {
           "net": 11176,
           "long": 15444,
           "short": 4268
+        },
+        {
+          "date": "2026-11-17",
+          "net": 8476,
+          "long": 14280,
+          "short": 5804
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 8476,
+          "noncomm_chg": -2700,
+          "comm_net": -9349,
+          "comm_chg": 2745,
+          "nonrept_net": 873,
+          "nonrept_chg": -45,
+          "cot_idx": 39.3
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 11176,
@@ -6292,19 +6302,19 @@ window.COT_DATA = {
           "nonrept_net": 1451,
           "nonrept_chg": 326,
           "cot_idx": 69.6
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 12928,
-          "noncomm_chg": 418,
-          "comm_net": -14053,
-          "comm_chg": -213,
-          "nonrept_net": 1125,
-          "nonrept_chg": -205,
-          "cot_idx": 70.3
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 8476,
+          "noncomm_chg": -2700,
+          "comm_net": -9349,
+          "comm_chg": 2745,
+          "nonrept_net": 873,
+          "nonrept_chg": -45,
+          "cot_idx": 39.3
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 11176,
@@ -6814,16 +6824,6 @@ window.COT_DATA = {
           "nonrept_net": 891,
           "nonrept_chg": 659,
           "cot_idx": 33.8
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 7521,
-          "noncomm_chg": 1,
-          "comm_net": -7753,
-          "comm_chg": -433,
-          "nonrept_net": 232,
-          "nonrept_chg": 432,
-          "cot_idx": 33.8
         }
       ],
       "rank": 7
@@ -6837,24 +6837,43 @@ window.COT_DATA = {
       "market_name": "BITCOIN - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "133741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": 2375,
-      "prev_net_position": 2230,
-      "weekly_change": 145,
-      "change_noncomm_long": 299,
-      "change_noncomm_short": 154,
+      "latest_date": "2026-11-17",
+      "net_position": 1528,
+      "prev_net_position": 2375,
+      "weekly_change": -847,
+      "change_noncomm_long": -818,
+      "change_noncomm_short": 29,
       "min_52w": -734,
       "max_52w": 3904,
-      "cot_index_52w": 67.0,
-      "cot_index_3y": 76.1,
+      "cot_index_52w": 48.8,
+      "cot_index_3y": 62.8,
       "bias": "BULLISH",
       "intensity": "NEUTRAL",
-      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
-      "tactical_state": "TREND CONTINUATION",
-      "latest_long": 15943,
-      "latest_short": 13568,
-      "open_interest": 19265,
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 15125,
+      "latest_short": 13597,
+      "open_interest": 19257,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 19257,
+        "change_open_interest": -8,
+        "noncomm_long": 15125,
+        "noncomm_short": 13597,
+        "noncomm_spread": 2651,
+        "noncomm_net": 1528,
+        "change_noncomm_long": -818,
+        "change_noncomm_short": 29,
+        "comm_long": 546,
+        "comm_short": 1980,
+        "comm_net": -1434,
+        "change_comm_long": 170,
+        "change_comm_short": -561,
+        "nonrept_long": 935,
+        "nonrept_short": 1029,
+        "nonrept_net": -94
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 19265,
         "change_open_interest": 1738,
@@ -6873,32 +6892,7 @@ window.COT_DATA = {
         "nonrept_short": 1071,
         "nonrept_net": -210
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 17527,
-        "change_open_interest": -3264,
-        "noncomm_long": 15644,
-        "noncomm_short": 13414,
-        "noncomm_spread": 1121,
-        "noncomm_net": 2230,
-        "change_noncomm_long": -1336,
-        "change_noncomm_short": -846,
-        "comm_long": 0,
-        "comm_short": 2123,
-        "comm_net": -2123,
-        "change_comm_long": -131,
-        "change_comm_short": -888,
-        "nonrept_long": 762,
-        "nonrept_short": 869,
-        "nonrept_net": -107
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": -312,
-          "long": 22767,
-          "short": 23079
-        },
         {
           "date": "2025-11-25",
           "net": -83,
@@ -7204,9 +7198,25 @@ window.COT_DATA = {
           "net": 2375,
           "long": 15943,
           "short": 13568
+        },
+        {
+          "date": "2026-11-17",
+          "net": 1528,
+          "long": 15125,
+          "short": 13597
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 1528,
+          "noncomm_chg": -847,
+          "comm_net": -1434,
+          "comm_chg": 731,
+          "nonrept_net": -94,
+          "nonrept_chg": 116,
+          "cot_idx": 48.8
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 2375,
@@ -7236,19 +7246,19 @@ window.COT_DATA = {
           "nonrept_net": 160,
           "nonrept_chg": -147,
           "cot_idx": 74.5
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 2418,
-          "noncomm_chg": -116,
-          "comm_net": -2725,
-          "comm_chg": 10,
-          "nonrept_net": 307,
-          "nonrept_chg": 106,
-          "cot_idx": 68.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 1528,
+          "noncomm_chg": -847,
+          "comm_net": -1434,
+          "comm_chg": 731,
+          "nonrept_net": -94,
+          "nonrept_chg": 116,
+          "cot_idx": 48.8
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 2375,
@@ -7758,16 +7768,6 @@ window.COT_DATA = {
           "nonrept_net": 345,
           "nonrept_chg": 194,
           "cot_idx": 55.5
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -312,
-          "noncomm_chg": -440,
-          "comm_net": 161,
-          "comm_chg": 260,
-          "nonrept_net": 151,
-          "nonrept_chg": 180,
-          "cot_idx": 50.2
         }
       ],
       "rank": 8
@@ -7781,24 +7781,43 @@ window.COT_DATA = {
       "market_name": "ETHER CASH SETTLED - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "146021",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": 1293,
-      "prev_net_position": 1189,
-      "weekly_change": 104,
-      "change_noncomm_long": -121,
-      "change_noncomm_short": -225,
+      "latest_date": "2026-11-17",
+      "net_position": 1078,
+      "prev_net_position": 1293,
+      "weekly_change": -215,
+      "change_noncomm_long": -198,
+      "change_noncomm_short": 17,
       "min_52w": 436,
       "max_52w": 5281,
-      "cot_index_52w": 17.7,
-      "cot_index_3y": 41.7,
+      "cot_index_52w": 13.3,
+      "cot_index_3y": 38.5,
       "bias": "BULLISH",
       "intensity": "NEUTRAL",
-      "flow": "ACCUMULATING LONG (สถาบันเร่งซื้อสะสม)",
-      "tactical_state": "TREND CONTINUATION",
-      "latest_long": 19667,
-      "latest_short": 18374,
-      "open_interest": 24610,
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 19469,
+      "latest_short": 18391,
+      "open_interest": 27443,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 27443,
+        "change_open_interest": 2833,
+        "noncomm_long": 19469,
+        "noncomm_short": 18391,
+        "noncomm_spread": 6355,
+        "noncomm_net": 1078,
+        "change_noncomm_long": -198,
+        "change_noncomm_short": 17,
+        "comm_long": 1077,
+        "comm_short": 2196,
+        "comm_net": -1119,
+        "change_comm_long": -281,
+        "change_comm_short": -588,
+        "nonrept_long": 542,
+        "nonrept_short": 501,
+        "nonrept_net": 41
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 24610,
         "change_open_interest": 1741,
@@ -7817,32 +7836,7 @@ window.COT_DATA = {
         "nonrept_short": 507,
         "nonrept_net": 133
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 22869,
-        "change_open_interest": -5199,
-        "noncomm_long": 19788,
-        "noncomm_short": 18599,
-        "noncomm_spread": 1298,
-        "noncomm_net": 1189,
-        "change_noncomm_long": -2523,
-        "change_noncomm_short": -1935,
-        "comm_long": 1171,
-        "comm_short": 2389,
-        "comm_net": -1218,
-        "change_comm_long": 456,
-        "change_comm_short": -291,
-        "nonrept_long": 612,
-        "nonrept_short": 583,
-        "nonrept_net": 29
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 3232,
-          "long": 29956,
-          "short": 26724
-        },
         {
           "date": "2025-11-25",
           "net": 2940,
@@ -8148,9 +8142,25 @@ window.COT_DATA = {
           "net": 1293,
           "long": 19667,
           "short": 18374
+        },
+        {
+          "date": "2026-11-17",
+          "net": 1078,
+          "long": 19469,
+          "short": 18391
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 1078,
+          "noncomm_chg": -215,
+          "comm_net": -1119,
+          "comm_chg": 307,
+          "nonrept_net": 41,
+          "nonrept_chg": -92,
+          "cot_idx": 13.3
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 1293,
@@ -8180,19 +8190,19 @@ window.COT_DATA = {
           "nonrept_net": 188,
           "nonrept_chg": -92,
           "cot_idx": 27.7
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 1947,
-          "noncomm_chg": -460,
-          "comm_net": -2227,
-          "comm_chg": 387,
-          "nonrept_net": 280,
-          "nonrept_chg": 73,
-          "cot_idx": 31.2
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 1078,
+          "noncomm_chg": -215,
+          "comm_net": -1119,
+          "comm_chg": 307,
+          "nonrept_net": 41,
+          "nonrept_chg": -92,
+          "cot_idx": 13.3
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 1293,
@@ -8702,16 +8712,6 @@ window.COT_DATA = {
           "nonrept_net": 414,
           "nonrept_chg": 181,
           "cot_idx": 80.5
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 3232,
-          "noncomm_chg": -797,
-          "comm_net": -3465,
-          "comm_chg": 906,
-          "nonrept_net": 233,
-          "nonrept_chg": -109,
-          "cot_idx": 85.7
         }
       ],
       "rank": 9
@@ -8725,24 +8725,43 @@ window.COT_DATA = {
       "market_name": "SWISS FRANC - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "092741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": -9153,
-      "prev_net_position": -16589,
-      "weekly_change": 7436,
-      "change_noncomm_long": 3132,
-      "change_noncomm_short": -4304,
+      "latest_date": "2026-11-17",
+      "net_position": -8281,
+      "prev_net_position": -9153,
+      "weekly_change": 872,
+      "change_noncomm_long": 842,
+      "change_noncomm_short": -30,
       "min_52w": -44198,
-      "max_52w": -9153,
+      "max_52w": -8281,
       "cot_index_52w": 100.0,
       "cot_index_3y": 100.0,
       "bias": "BEARISH",
       "intensity": "NEUTRAL",
-      "flow": "SHORT-COVERING (สถาบันปิดชอร์ตทำกำไร)",
-      "tactical_state": "RALLY RISK",
-      "latest_long": 32614,
-      "latest_short": 41767,
-      "open_interest": 126378,
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 33456,
+      "latest_short": 41737,
+      "open_interest": 126410,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 126410,
+        "change_open_interest": 32,
+        "noncomm_long": 33456,
+        "noncomm_short": 41737,
+        "noncomm_spread": 6519,
+        "noncomm_net": -8281,
+        "change_noncomm_long": 842,
+        "change_noncomm_short": -30,
+        "comm_long": 74784,
+        "comm_short": 53946,
+        "comm_net": 20838,
+        "change_comm_long": -1623,
+        "change_comm_short": -1584,
+        "nonrept_long": 11651,
+        "nonrept_short": 24208,
+        "nonrept_net": -12557
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 126378,
         "change_open_interest": -6784,
@@ -8761,32 +8780,7 @@ window.COT_DATA = {
         "nonrept_short": 22275,
         "nonrept_net": -11724
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 133162,
-        "change_open_interest": -2327,
-        "noncomm_long": 29482,
-        "noncomm_short": 46071,
-        "noncomm_spread": 8651,
-        "noncomm_net": -16589,
-        "change_noncomm_long": 3228,
-        "change_noncomm_short": -232,
-        "comm_long": 85043,
-        "comm_short": 55251,
-        "comm_net": 29792,
-        "change_comm_long": -3296,
-        "change_comm_short": 545,
-        "nonrept_long": 9986,
-        "nonrept_short": 23189,
-        "nonrept_net": -13203
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": -32185,
-          "long": 8746,
-          "short": 40931
-        },
         {
           "date": "2025-11-25",
           "net": -35360,
@@ -9092,9 +9086,25 @@ window.COT_DATA = {
           "net": -9153,
           "long": 32614,
           "short": 41767
+        },
+        {
+          "date": "2026-11-17",
+          "net": -8281,
+          "long": 33456,
+          "short": 41737
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -8281,
+          "noncomm_chg": 872,
+          "comm_net": 20838,
+          "comm_chg": -39,
+          "nonrept_net": -12557,
+          "nonrept_chg": -833,
+          "cot_idx": 100.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -9153,
@@ -9124,19 +9134,19 @@ window.COT_DATA = {
           "nonrept_net": -13584,
           "nonrept_chg": 2283,
           "cot_idx": 92.7
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -18150,
-          "noncomm_chg": 3928,
-          "comm_net": 34017,
-          "comm_chg": -2255,
-          "nonrept_net": -15867,
-          "nonrept_chg": -1673,
-          "cot_idx": 100.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -8281,
+          "noncomm_chg": 872,
+          "comm_net": 20838,
+          "comm_chg": -39,
+          "nonrept_net": -12557,
+          "nonrept_chg": -833,
+          "cot_idx": 100.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -9153,
@@ -9646,963 +9656,9 @@ window.COT_DATA = {
           "nonrept_net": -3754,
           "nonrept_chg": -1070,
           "cot_idx": 33.3
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -32185,
-          "noncomm_chg": 3864,
-          "comm_net": 34869,
-          "comm_chg": -8337,
-          "nonrept_net": -2684,
-          "nonrept_chg": 4473,
-          "cot_idx": 47.1
         }
       ],
       "rank": 10
-    },
-    {
-      "code": "CAD",
-      "name": "Canadian Dollar",
-      "flag": "🇨🇦",
-      "contract": "CANADIAN DOLLAR",
-      "category": "Major FX",
-      "market_name": "CANADIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE",
-      "cftc_code": "090741",
-      "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": -32592,
-      "prev_net_position": -41775,
-      "weekly_change": 9183,
-      "change_noncomm_long": 8469,
-      "change_noncomm_short": -714,
-      "min_52w": -179095,
-      "max_52w": 36159,
-      "cot_index_52w": 68.1,
-      "cot_index_3y": 68.7,
-      "bias": "BEARISH",
-      "intensity": "MODERATE",
-      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
-      "tactical_state": "RANGING",
-      "latest_long": 107703,
-      "latest_short": 140295,
-      "open_interest": 342677,
-      "raw_record": {
-        "date": "2026-11-10",
-        "open_interest": 342677,
-        "change_open_interest": -5983,
-        "noncomm_long": 107703,
-        "noncomm_short": 140295,
-        "noncomm_spread": 3698,
-        "noncomm_net": -32592,
-        "change_noncomm_long": 8469,
-        "change_noncomm_short": -714,
-        "comm_long": 203664,
-        "comm_short": 161803,
-        "comm_net": 41861,
-        "change_comm_long": -15844,
-        "change_comm_short": -8321,
-        "nonrept_long": 27612,
-        "nonrept_short": 36881,
-        "nonrept_net": -9269
-      },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 348660,
-        "change_open_interest": -12281,
-        "noncomm_long": 99234,
-        "noncomm_short": 141009,
-        "noncomm_spread": 3679,
-        "noncomm_net": -41775,
-        "change_noncomm_long": 9292,
-        "change_noncomm_short": -15357,
-        "comm_long": 219508,
-        "comm_short": 170124,
-        "comm_net": 49384,
-        "change_comm_long": -19885,
-        "change_comm_short": 4991,
-        "nonrept_long": 26239,
-        "nonrept_short": 33848,
-        "nonrept_net": -7609
-      },
-      "series": [
-        {
-          "date": "2025-11-18",
-          "net": -149099,
-          "long": 24252,
-          "short": 173351
-        },
-        {
-          "date": "2025-11-25",
-          "net": -150414,
-          "long": 21438,
-          "short": 171852
-        },
-        {
-          "date": "2025-12-02",
-          "net": -150047,
-          "long": 19047,
-          "short": 169094
-        },
-        {
-          "date": "2025-12-09",
-          "net": -130600,
-          "long": 15794,
-          "short": 146394
-        },
-        {
-          "date": "2025-12-16",
-          "net": -86640,
-          "long": 25653,
-          "short": 112293
-        },
-        {
-          "date": "2025-12-23",
-          "net": -55793,
-          "long": 41739,
-          "short": 97532
-        },
-        {
-          "date": "2025-12-30",
-          "net": -40511,
-          "long": 52787,
-          "short": 93298
-        },
-        {
-          "date": "2026-01-06",
-          "net": -40585,
-          "long": 56931,
-          "short": 97516
-        },
-        {
-          "date": "2026-01-13",
-          "net": -42250,
-          "long": 62705,
-          "short": 104955
-        },
-        {
-          "date": "2026-01-20",
-          "net": -41785,
-          "long": 59456,
-          "short": 101241
-        },
-        {
-          "date": "2026-01-27",
-          "net": -16046,
-          "long": 77169,
-          "short": 93215
-        },
-        {
-          "date": "2026-02-03",
-          "net": 2130,
-          "long": 77397,
-          "short": 75267
-        },
-        {
-          "date": "2026-02-10",
-          "net": 13276,
-          "long": 84554,
-          "short": 71278
-        },
-        {
-          "date": "2026-02-17",
-          "net": 25826,
-          "long": 89601,
-          "short": 63775
-        },
-        {
-          "date": "2026-02-24",
-          "net": 27578,
-          "long": 92812,
-          "short": 65234
-        },
-        {
-          "date": "2026-03-03",
-          "net": 21050,
-          "long": 94008,
-          "short": 72958
-        },
-        {
-          "date": "2026-03-10",
-          "net": 36159,
-          "long": 93899,
-          "short": 57740
-        },
-        {
-          "date": "2026-03-17",
-          "net": 886,
-          "long": 66507,
-          "short": 65621
-        },
-        {
-          "date": "2026-03-24",
-          "net": -1602,
-          "long": 62382,
-          "short": 63984
-        },
-        {
-          "date": "2026-03-31",
-          "net": -32684,
-          "long": 56421,
-          "short": 89105
-        },
-        {
-          "date": "2026-04-07",
-          "net": -55648,
-          "long": 60714,
-          "short": 116362
-        },
-        {
-          "date": "2026-04-14",
-          "net": -78272,
-          "long": 54249,
-          "short": 132521
-        },
-        {
-          "date": "2026-04-21",
-          "net": -58834,
-          "long": 60889,
-          "short": 119723
-        },
-        {
-          "date": "2026-04-28",
-          "net": -38476,
-          "long": 66517,
-          "short": 104993
-        },
-        {
-          "date": "2026-05-05",
-          "net": -14659,
-          "long": 73650,
-          "short": 88309
-        },
-        {
-          "date": "2026-05-12",
-          "net": -16242,
-          "long": 77042,
-          "short": 93284
-        },
-        {
-          "date": "2026-05-19",
-          "net": -31231,
-          "long": 72674,
-          "short": 103905
-        },
-        {
-          "date": "2026-05-26",
-          "net": -68882,
-          "long": 53676,
-          "short": 122558
-        },
-        {
-          "date": "2026-06-02",
-          "net": -94111,
-          "long": 37723,
-          "short": 131834
-        },
-        {
-          "date": "2026-06-09",
-          "net": -119999,
-          "long": 37944,
-          "short": 157943
-        },
-        {
-          "date": "2026-06-16",
-          "net": -132901,
-          "long": 39686,
-          "short": 172587
-        },
-        {
-          "date": "2026-06-23",
-          "net": -146792,
-          "long": 39429,
-          "short": 186221
-        },
-        {
-          "date": "2026-06-30",
-          "net": -150806,
-          "long": 37989,
-          "short": 188795
-        },
-        {
-          "date": "2026-07-07",
-          "net": -173126,
-          "long": 31566,
-          "short": 204692
-        },
-        {
-          "date": "2026-07-14",
-          "net": -176279,
-          "long": 29712,
-          "short": 205991
-        },
-        {
-          "date": "2026-07-21",
-          "net": -174448,
-          "long": 27007,
-          "short": 201455
-        },
-        {
-          "date": "2026-07-28",
-          "net": -176310,
-          "long": 22500,
-          "short": 198810
-        },
-        {
-          "date": "2026-08-04",
-          "net": -179095,
-          "long": 13514,
-          "short": 192609
-        },
-        {
-          "date": "2026-08-11",
-          "net": -173362,
-          "long": 12854,
-          "short": 186216
-        },
-        {
-          "date": "2026-08-18",
-          "net": -158166,
-          "long": 22985,
-          "short": 181151
-        },
-        {
-          "date": "2026-08-25",
-          "net": -121522,
-          "long": 36266,
-          "short": 157788
-        },
-        {
-          "date": "2026-09-01",
-          "net": -108143,
-          "long": 36262,
-          "short": 144405
-        },
-        {
-          "date": "2026-09-08",
-          "net": -70499,
-          "long": 54444,
-          "short": 124943
-        },
-        {
-          "date": "2026-09-15",
-          "net": -37577,
-          "long": 73950,
-          "short": 111527
-        },
-        {
-          "date": "2026-09-22",
-          "net": -53210,
-          "long": 86030,
-          "short": 139240
-        },
-        {
-          "date": "2026-09-29",
-          "net": -78671,
-          "long": 85047,
-          "short": 163718
-        },
-        {
-          "date": "2026-10-06",
-          "net": -90163,
-          "long": 91109,
-          "short": 181272
-        },
-        {
-          "date": "2026-10-13",
-          "net": -94765,
-          "long": 89986,
-          "short": 184751
-        },
-        {
-          "date": "2026-10-20",
-          "net": -74709,
-          "long": 101653,
-          "short": 176362
-        },
-        {
-          "date": "2026-10-27",
-          "net": -66424,
-          "long": 89942,
-          "short": 156366
-        },
-        {
-          "date": "2026-11-03",
-          "net": -41775,
-          "long": 99234,
-          "short": 141009
-        },
-        {
-          "date": "2026-11-10",
-          "net": -32592,
-          "long": 107703,
-          "short": 140295
-        }
-      ],
-      "weekly_changes_4w": [
-        {
-          "date": "2026-11-10",
-          "noncomm_net": -32592,
-          "noncomm_chg": 9183,
-          "comm_net": 41861,
-          "comm_chg": -7523,
-          "nonrept_net": -9269,
-          "nonrept_chg": -1660,
-          "cot_idx": 68.1
-        },
-        {
-          "date": "2026-11-03",
-          "noncomm_net": -41775,
-          "noncomm_chg": 24649,
-          "comm_net": 49384,
-          "comm_chg": -24876,
-          "nonrept_net": -7609,
-          "nonrept_chg": 227,
-          "cot_idx": 63.8
-        },
-        {
-          "date": "2026-10-27",
-          "noncomm_net": -66424,
-          "noncomm_chg": 8285,
-          "comm_net": 74260,
-          "comm_chg": -12588,
-          "nonrept_net": -7836,
-          "nonrept_chg": 4303,
-          "cot_idx": 52.3
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -74709,
-          "noncomm_chg": 20056,
-          "comm_net": 86848,
-          "comm_chg": -18765,
-          "nonrept_net": -12139,
-          "nonrept_chg": -1291,
-          "cot_idx": 48.5
-        }
-      ],
-      "weekly_changes_52w": [
-        {
-          "date": "2026-11-10",
-          "noncomm_net": -32592,
-          "noncomm_chg": 9183,
-          "comm_net": 41861,
-          "comm_chg": -7523,
-          "nonrept_net": -9269,
-          "nonrept_chg": -1660,
-          "cot_idx": 68.1
-        },
-        {
-          "date": "2026-11-03",
-          "noncomm_net": -41775,
-          "noncomm_chg": 24649,
-          "comm_net": 49384,
-          "comm_chg": -24876,
-          "nonrept_net": -7609,
-          "nonrept_chg": 227,
-          "cot_idx": 63.8
-        },
-        {
-          "date": "2026-10-27",
-          "noncomm_net": -66424,
-          "noncomm_chg": 8285,
-          "comm_net": 74260,
-          "comm_chg": -12588,
-          "nonrept_net": -7836,
-          "nonrept_chg": 4303,
-          "cot_idx": 52.3
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -74709,
-          "noncomm_chg": 20056,
-          "comm_net": 86848,
-          "comm_chg": -18765,
-          "nonrept_net": -12139,
-          "nonrept_chg": -1291,
-          "cot_idx": 48.5
-        },
-        {
-          "date": "2026-10-13",
-          "noncomm_net": -94765,
-          "noncomm_chg": -4602,
-          "comm_net": 105613,
-          "comm_chg": 2111,
-          "nonrept_net": -10848,
-          "nonrept_chg": 2491,
-          "cot_idx": 39.2
-        },
-        {
-          "date": "2026-10-06",
-          "noncomm_net": -90163,
-          "noncomm_chg": -11492,
-          "comm_net": 103502,
-          "comm_chg": 13938,
-          "nonrept_net": -13339,
-          "nonrept_chg": -2446,
-          "cot_idx": 41.3
-        },
-        {
-          "date": "2026-09-29",
-          "noncomm_net": -78671,
-          "noncomm_chg": -25461,
-          "comm_net": 89564,
-          "comm_chg": 33566,
-          "nonrept_net": -10893,
-          "nonrept_chg": -8105,
-          "cot_idx": 46.7
-        },
-        {
-          "date": "2026-09-22",
-          "noncomm_net": -53210,
-          "noncomm_chg": -15633,
-          "comm_net": 55998,
-          "comm_chg": 9075,
-          "nonrept_net": -2788,
-          "nonrept_chg": 6558,
-          "cot_idx": 58.5
-        },
-        {
-          "date": "2026-09-15",
-          "noncomm_net": -37577,
-          "noncomm_chg": 32922,
-          "comm_net": 46923,
-          "comm_chg": -27506,
-          "nonrept_net": -9346,
-          "nonrept_chg": -5416,
-          "cot_idx": 65.7
-        },
-        {
-          "date": "2026-09-08",
-          "noncomm_net": -70499,
-          "noncomm_chg": 37644,
-          "comm_net": 74429,
-          "comm_chg": -40853,
-          "nonrept_net": -3930,
-          "nonrept_chg": 3209,
-          "cot_idx": 50.5
-        },
-        {
-          "date": "2026-09-01",
-          "noncomm_net": -108143,
-          "noncomm_chg": 13379,
-          "comm_net": 115282,
-          "comm_chg": -7949,
-          "nonrept_net": -7139,
-          "nonrept_chg": -5430,
-          "cot_idx": 33.0
-        },
-        {
-          "date": "2026-08-25",
-          "noncomm_net": -121522,
-          "noncomm_chg": 36644,
-          "comm_net": 123231,
-          "comm_chg": -38148,
-          "nonrept_net": -1709,
-          "nonrept_chg": 1504,
-          "cot_idx": 26.7
-        },
-        {
-          "date": "2026-08-18",
-          "noncomm_net": -158166,
-          "noncomm_chg": 15196,
-          "comm_net": 161379,
-          "comm_chg": -18307,
-          "nonrept_net": -3213,
-          "nonrept_chg": 3111,
-          "cot_idx": 9.7
-        },
-        {
-          "date": "2026-08-11",
-          "noncomm_net": -173362,
-          "noncomm_chg": 5733,
-          "comm_net": 179686,
-          "comm_chg": -7322,
-          "nonrept_net": -6324,
-          "nonrept_chg": 1589,
-          "cot_idx": 2.7
-        },
-        {
-          "date": "2026-08-04",
-          "noncomm_net": -179095,
-          "noncomm_chg": -2785,
-          "comm_net": 187008,
-          "comm_chg": -2013,
-          "nonrept_net": -7913,
-          "nonrept_chg": 4798,
-          "cot_idx": 0.0
-        },
-        {
-          "date": "2026-07-28",
-          "noncomm_net": -176310,
-          "noncomm_chg": -1862,
-          "comm_net": 189021,
-          "comm_chg": 2020,
-          "nonrept_net": -12711,
-          "nonrept_chg": -158,
-          "cot_idx": 0.0
-        },
-        {
-          "date": "2026-07-21",
-          "noncomm_net": -174448,
-          "noncomm_chg": 1831,
-          "comm_net": 187001,
-          "comm_chg": 283,
-          "nonrept_net": -12553,
-          "nonrept_chg": -2114,
-          "cot_idx": 0.9
-        },
-        {
-          "date": "2026-07-14",
-          "noncomm_net": -176279,
-          "noncomm_chg": -3153,
-          "comm_net": 186718,
-          "comm_chg": 4722,
-          "nonrept_net": -10439,
-          "nonrept_chg": -1569,
-          "cot_idx": 0.0
-        },
-        {
-          "date": "2026-07-07",
-          "noncomm_net": -173126,
-          "noncomm_chg": -22320,
-          "comm_net": 181996,
-          "comm_chg": 22669,
-          "nonrept_net": -8870,
-          "nonrept_chg": -349,
-          "cot_idx": 0.0
-        },
-        {
-          "date": "2026-06-30",
-          "noncomm_net": -150806,
-          "noncomm_chg": -4014,
-          "comm_net": 159327,
-          "comm_chg": 3538,
-          "nonrept_net": -8521,
-          "nonrept_chg": 476,
-          "cot_idx": 4.4
-        },
-        {
-          "date": "2026-06-23",
-          "noncomm_net": -146792,
-          "noncomm_chg": -13891,
-          "comm_net": 155789,
-          "comm_chg": 12383,
-          "nonrept_net": -8997,
-          "nonrept_chg": 1508,
-          "cot_idx": 6.5
-        },
-        {
-          "date": "2026-06-16",
-          "noncomm_net": -132901,
-          "noncomm_chg": -12902,
-          "comm_net": 143406,
-          "comm_chg": 14594,
-          "nonrept_net": -10505,
-          "nonrept_chg": -1692,
-          "cot_idx": 13.6
-        },
-        {
-          "date": "2026-06-09",
-          "noncomm_net": -119999,
-          "noncomm_chg": -25888,
-          "comm_net": 128812,
-          "comm_chg": 29206,
-          "nonrept_net": -8813,
-          "nonrept_chg": -3318,
-          "cot_idx": 20.2
-        },
-        {
-          "date": "2026-06-02",
-          "noncomm_net": -94111,
-          "noncomm_chg": -25229,
-          "comm_net": 99606,
-          "comm_chg": 27761,
-          "nonrept_net": -5495,
-          "nonrept_chg": -2532,
-          "cot_idx": 33.4
-        },
-        {
-          "date": "2026-05-26",
-          "noncomm_net": -68882,
-          "noncomm_chg": -37651,
-          "comm_net": 71845,
-          "comm_chg": 36121,
-          "nonrept_net": -2963,
-          "nonrept_chg": 1530,
-          "cot_idx": 46.3
-        },
-        {
-          "date": "2026-05-19",
-          "noncomm_net": -31231,
-          "noncomm_chg": -14989,
-          "comm_net": 35724,
-          "comm_chg": 22007,
-          "nonrept_net": -4493,
-          "nonrept_chg": -7018,
-          "cot_idx": 65.6
-        },
-        {
-          "date": "2026-05-12",
-          "noncomm_net": -16242,
-          "noncomm_chg": -1583,
-          "comm_net": 13717,
-          "comm_chg": 923,
-          "nonrept_net": 2525,
-          "nonrept_chg": 660,
-          "cot_idx": 73.2
-        },
-        {
-          "date": "2026-05-05",
-          "noncomm_net": -14659,
-          "noncomm_chg": 23817,
-          "comm_net": 12794,
-          "comm_chg": -24349,
-          "nonrept_net": 1865,
-          "nonrept_chg": 532,
-          "cot_idx": 74.0
-        },
-        {
-          "date": "2026-04-28",
-          "noncomm_net": -38476,
-          "noncomm_chg": 20358,
-          "comm_net": 37143,
-          "comm_chg": -22078,
-          "nonrept_net": 1333,
-          "nonrept_chg": 1720,
-          "cot_idx": 61.9
-        },
-        {
-          "date": "2026-04-21",
-          "noncomm_net": -58834,
-          "noncomm_chg": 19438,
-          "comm_net": 59221,
-          "comm_chg": -19156,
-          "nonrept_net": -387,
-          "nonrept_chg": -282,
-          "cot_idx": 51.5
-        },
-        {
-          "date": "2026-04-14",
-          "noncomm_net": -78272,
-          "noncomm_chg": -22624,
-          "comm_net": 78377,
-          "comm_chg": 20339,
-          "nonrept_net": -105,
-          "nonrept_chg": 2285,
-          "cot_idx": 41.5
-        },
-        {
-          "date": "2026-04-07",
-          "noncomm_net": -55648,
-          "noncomm_chg": -22964,
-          "comm_net": 58038,
-          "comm_chg": 24052,
-          "nonrept_net": -2390,
-          "nonrept_chg": -1088,
-          "cot_idx": 53.1
-        },
-        {
-          "date": "2026-03-31",
-          "noncomm_net": -32684,
-          "noncomm_chg": -31082,
-          "comm_net": 33986,
-          "comm_chg": 35357,
-          "nonrept_net": -1302,
-          "nonrept_chg": -4275,
-          "cot_idx": 64.8
-        },
-        {
-          "date": "2026-03-24",
-          "noncomm_net": -1602,
-          "noncomm_chg": -2488,
-          "comm_net": -1371,
-          "comm_chg": 4835,
-          "nonrept_net": 2973,
-          "nonrept_chg": -2347,
-          "cot_idx": 80.7
-        },
-        {
-          "date": "2026-03-17",
-          "noncomm_net": 886,
-          "noncomm_chg": -35273,
-          "comm_net": -6206,
-          "comm_chg": 38154,
-          "nonrept_net": 5320,
-          "nonrept_chg": -2881,
-          "cot_idx": 82.0
-        },
-        {
-          "date": "2026-03-10",
-          "noncomm_net": 36159,
-          "noncomm_chg": 15109,
-          "comm_net": -44360,
-          "comm_chg": -20304,
-          "nonrept_net": 8201,
-          "nonrept_chg": 5195,
-          "cot_idx": 100.0
-        },
-        {
-          "date": "2026-03-03",
-          "noncomm_net": 21050,
-          "noncomm_chg": -6528,
-          "comm_net": -24056,
-          "comm_chg": 6204,
-          "nonrept_net": 3006,
-          "nonrept_chg": 324,
-          "cot_idx": 96.5
-        },
-        {
-          "date": "2026-02-24",
-          "noncomm_net": 27578,
-          "noncomm_chg": 1752,
-          "comm_net": -30260,
-          "comm_chg": 114,
-          "nonrept_net": 2682,
-          "nonrept_chg": -1866,
-          "cot_idx": 100.0
-        },
-        {
-          "date": "2026-02-17",
-          "noncomm_net": 25826,
-          "noncomm_chg": 12550,
-          "comm_net": -30374,
-          "comm_chg": -10186,
-          "nonrept_net": 4548,
-          "nonrept_chg": -2364,
-          "cot_idx": 100.0
-        },
-        {
-          "date": "2026-02-10",
-          "noncomm_net": 13276,
-          "noncomm_chg": 11146,
-          "comm_net": -20188,
-          "comm_chg": -12272,
-          "nonrept_net": 6912,
-          "nonrept_chg": 1126,
-          "cot_idx": 100.0
-        },
-        {
-          "date": "2026-02-03",
-          "noncomm_net": 2130,
-          "noncomm_chg": 18176,
-          "comm_net": -7916,
-          "comm_chg": -21650,
-          "nonrept_net": 5786,
-          "nonrept_chg": 3474,
-          "cot_idx": 100.0
-        },
-        {
-          "date": "2026-01-27",
-          "noncomm_net": -16046,
-          "noncomm_chg": 25739,
-          "comm_net": 13734,
-          "comm_chg": -32256,
-          "nonrept_net": 2312,
-          "nonrept_chg": 6517,
-          "cot_idx": 100.0
-        },
-        {
-          "date": "2026-01-20",
-          "noncomm_net": -41785,
-          "noncomm_chg": 465,
-          "comm_net": 45990,
-          "comm_chg": 175,
-          "nonrept_net": -4205,
-          "nonrept_chg": -640,
-          "cot_idx": 98.9
-        },
-        {
-          "date": "2026-01-13",
-          "noncomm_net": -42250,
-          "noncomm_chg": -1665,
-          "comm_net": 45815,
-          "comm_chg": 9753,
-          "nonrept_net": -3565,
-          "nonrept_chg": -8088,
-          "cot_idx": 98.6
-        },
-        {
-          "date": "2026-01-06",
-          "noncomm_net": -40585,
-          "noncomm_chg": -74,
-          "comm_net": 36062,
-          "comm_chg": -26,
-          "nonrept_net": 4523,
-          "nonrept_chg": 100,
-          "cot_idx": 99.9
-        },
-        {
-          "date": "2025-12-30",
-          "noncomm_net": -40511,
-          "noncomm_chg": 15282,
-          "comm_net": 36088,
-          "comm_chg": -21102,
-          "nonrept_net": 4423,
-          "nonrept_chg": 5820,
-          "cot_idx": 100.0
-        },
-        {
-          "date": "2025-12-23",
-          "noncomm_net": -55793,
-          "noncomm_chg": 30847,
-          "comm_net": 57190,
-          "comm_chg": -35048,
-          "nonrept_net": -1397,
-          "nonrept_chg": 4201,
-          "cot_idx": 97.9
-        },
-        {
-          "date": "2025-12-16",
-          "noncomm_net": -86640,
-          "noncomm_chg": 43960,
-          "comm_net": 92238,
-          "comm_chg": -46485,
-          "nonrept_net": -5598,
-          "nonrept_chg": 2525,
-          "cot_idx": 73.3
-        },
-        {
-          "date": "2025-12-09",
-          "noncomm_net": -130600,
-          "noncomm_chg": 19447,
-          "comm_net": 138723,
-          "comm_chg": -20427,
-          "nonrept_net": -8123,
-          "nonrept_chg": 980,
-          "cot_idx": 39.9
-        },
-        {
-          "date": "2025-12-02",
-          "noncomm_net": -150047,
-          "noncomm_chg": 367,
-          "comm_net": 159150,
-          "comm_chg": -4310,
-          "nonrept_net": -9103,
-          "nonrept_chg": 3943,
-          "cot_idx": 24.8
-        },
-        {
-          "date": "2025-11-25",
-          "noncomm_net": -150414,
-          "noncomm_chg": -1315,
-          "comm_net": 163460,
-          "comm_chg": 1790,
-          "nonrept_net": -13046,
-          "nonrept_chg": -475,
-          "cot_idx": 24.5
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -149099,
-          "noncomm_chg": 8536,
-          "comm_net": 161670,
-          "comm_chg": -12208,
-          "nonrept_net": -12571,
-          "nonrept_chg": 3672,
-          "cot_idx": 25.6
-        }
-      ],
-      "rank": 11
     },
     {
       "code": "GBP",
@@ -10613,24 +9669,43 @@ window.COT_DATA = {
       "market_name": "BRITISH POUND - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "096742",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": -43216,
-      "prev_net_position": -59821,
-      "weekly_change": 16605,
-      "change_noncomm_long": -1775,
-      "change_noncomm_short": -18380,
+      "latest_date": "2026-11-17",
+      "net_position": -32304,
+      "prev_net_position": -43216,
+      "weekly_change": 10912,
+      "change_noncomm_long": 8994,
+      "change_noncomm_short": -1918,
       "min_52w": -106964,
       "max_52w": -13911,
-      "cot_index_52w": 68.5,
-      "cot_index_3y": 31.9,
+      "cot_index_52w": 80.2,
+      "cot_index_3y": 38.7,
       "bias": "BEARISH",
       "intensity": "MODERATE",
-      "flow": "SHORT-COVERING (สถาบันปิดชอร์ตทำกำไร)",
-      "tactical_state": "RALLY RISK",
-      "latest_long": 62005,
-      "latest_short": 105221,
-      "open_interest": 219869,
+      "flow": "NEUTRAL FLOW (สถาบันดูเชิง)",
+      "tactical_state": "RANGING",
+      "latest_long": 70999,
+      "latest_short": 103303,
+      "open_interest": 233499,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 233499,
+        "change_open_interest": 13630,
+        "noncomm_long": 70999,
+        "noncomm_short": 103303,
+        "noncomm_spread": 5992,
+        "noncomm_net": -32304,
+        "change_noncomm_long": 8994,
+        "change_noncomm_short": -1918,
+        "comm_long": 133018,
+        "comm_short": 88164,
+        "comm_net": 44854,
+        "change_comm_long": 3519,
+        "change_comm_short": 11887,
+        "nonrept_long": 23490,
+        "nonrept_short": 36040,
+        "nonrept_net": -12550
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 219869,
         "change_open_interest": -25721,
@@ -10649,32 +9724,7 @@ window.COT_DATA = {
         "nonrept_short": 34743,
         "nonrept_net": -10006
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 245590,
-        "change_open_interest": -8347,
-        "noncomm_long": 63780,
-        "noncomm_short": 123601,
-        "noncomm_spread": 4559,
-        "noncomm_net": -59821,
-        "change_noncomm_long": 7135,
-        "change_noncomm_short": -12458,
-        "comm_long": 152021,
-        "comm_short": 83022,
-        "comm_net": 68999,
-        "change_comm_long": -18962,
-        "change_comm_short": 1937,
-        "nonrept_long": 25230,
-        "nonrept_short": 34408,
-        "nonrept_net": -9178
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": -79257,
-          "long": 53189,
-          "short": 132446
-        },
         {
           "date": "2025-11-25",
           "net": -93221,
@@ -10980,9 +10030,25 @@ window.COT_DATA = {
           "net": -43216,
           "long": 62005,
           "short": 105221
+        },
+        {
+          "date": "2026-11-17",
+          "net": -32304,
+          "long": 70999,
+          "short": 103303
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -32304,
+          "noncomm_chg": 10912,
+          "comm_net": 44854,
+          "comm_chg": -8368,
+          "nonrept_net": -12550,
+          "nonrept_chg": -2544,
+          "cot_idx": 80.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -43216,
@@ -11012,19 +10078,19 @@ window.COT_DATA = {
           "nonrept_net": -10484,
           "nonrept_chg": 4604,
           "cot_idx": 29.6
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -80420,
-          "noncomm_chg": 26544,
-          "comm_net": 95508,
-          "comm_chg": -25936,
-          "nonrept_net": -15088,
-          "nonrept_chg": -608,
-          "cot_idx": 28.5
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -32304,
+          "noncomm_chg": 10912,
+          "comm_net": 44854,
+          "comm_chg": -8368,
+          "nonrept_net": -12550,
+          "nonrept_chg": -2544,
+          "cot_idx": 80.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -43216,
@@ -11534,16 +10600,950 @@ window.COT_DATA = {
           "nonrept_net": -8779,
           "nonrept_chg": 5060,
           "cot_idx": 0.0
+        }
+      ],
+      "rank": 11
+    },
+    {
+      "code": "CAD",
+      "name": "Canadian Dollar",
+      "flag": "🇨🇦",
+      "contract": "CANADIAN DOLLAR",
+      "category": "Major FX",
+      "market_name": "CANADIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE",
+      "cftc_code": "090741",
+      "commodity_group": "FINANCIAL INSTRUMENTS",
+      "latest_date": "2026-11-17",
+      "net_position": -45048,
+      "prev_net_position": -32592,
+      "weekly_change": -12456,
+      "change_noncomm_long": 3888,
+      "change_noncomm_short": 16344,
+      "min_52w": -179095,
+      "max_52w": 36159,
+      "cot_index_52w": 62.3,
+      "cot_index_3y": 63.0,
+      "bias": "BEARISH",
+      "intensity": "MODERATE",
+      "flow": "ACCUMULATING SHORT (สถาบันเทขายเพิ่ม)",
+      "tactical_state": "DOWNSIDE PRESSURE",
+      "latest_long": 111591,
+      "latest_short": 156639,
+      "open_interest": 358186,
+      "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 358186,
+        "change_open_interest": 15509,
+        "noncomm_long": 111591,
+        "noncomm_short": 156639,
+        "noncomm_spread": 3442,
+        "noncomm_net": -45048,
+        "change_noncomm_long": 3888,
+        "change_noncomm_short": 16344,
+        "comm_long": 214098,
+        "comm_short": 157878,
+        "comm_net": 56220,
+        "change_comm_long": 10434,
+        "change_comm_short": -3925,
+        "nonrept_long": 29055,
+        "nonrept_short": 40227,
+        "nonrept_net": -11172
+      },
+      "prev_raw_record": {
+        "date": "2026-11-10",
+        "open_interest": 342677,
+        "change_open_interest": -5983,
+        "noncomm_long": 107703,
+        "noncomm_short": 140295,
+        "noncomm_spread": 3698,
+        "noncomm_net": -32592,
+        "change_noncomm_long": 8469,
+        "change_noncomm_short": -714,
+        "comm_long": 203664,
+        "comm_short": 161803,
+        "comm_net": 41861,
+        "change_comm_long": -15844,
+        "change_comm_short": -8321,
+        "nonrept_long": 27612,
+        "nonrept_short": 36881,
+        "nonrept_net": -9269
+      },
+      "series": [
+        {
+          "date": "2025-11-25",
+          "net": -150414,
+          "long": 21438,
+          "short": 171852
         },
         {
-          "date": "2025-11-18",
-          "noncomm_net": -79257,
-          "noncomm_chg": 1747,
-          "comm_net": 93096,
-          "comm_chg": 693,
-          "nonrept_net": -13839,
-          "nonrept_chg": -2440,
-          "cot_idx": 1.3
+          "date": "2025-12-02",
+          "net": -150047,
+          "long": 19047,
+          "short": 169094
+        },
+        {
+          "date": "2025-12-09",
+          "net": -130600,
+          "long": 15794,
+          "short": 146394
+        },
+        {
+          "date": "2025-12-16",
+          "net": -86640,
+          "long": 25653,
+          "short": 112293
+        },
+        {
+          "date": "2025-12-23",
+          "net": -55793,
+          "long": 41739,
+          "short": 97532
+        },
+        {
+          "date": "2025-12-30",
+          "net": -40511,
+          "long": 52787,
+          "short": 93298
+        },
+        {
+          "date": "2026-01-06",
+          "net": -40585,
+          "long": 56931,
+          "short": 97516
+        },
+        {
+          "date": "2026-01-13",
+          "net": -42250,
+          "long": 62705,
+          "short": 104955
+        },
+        {
+          "date": "2026-01-20",
+          "net": -41785,
+          "long": 59456,
+          "short": 101241
+        },
+        {
+          "date": "2026-01-27",
+          "net": -16046,
+          "long": 77169,
+          "short": 93215
+        },
+        {
+          "date": "2026-02-03",
+          "net": 2130,
+          "long": 77397,
+          "short": 75267
+        },
+        {
+          "date": "2026-02-10",
+          "net": 13276,
+          "long": 84554,
+          "short": 71278
+        },
+        {
+          "date": "2026-02-17",
+          "net": 25826,
+          "long": 89601,
+          "short": 63775
+        },
+        {
+          "date": "2026-02-24",
+          "net": 27578,
+          "long": 92812,
+          "short": 65234
+        },
+        {
+          "date": "2026-03-03",
+          "net": 21050,
+          "long": 94008,
+          "short": 72958
+        },
+        {
+          "date": "2026-03-10",
+          "net": 36159,
+          "long": 93899,
+          "short": 57740
+        },
+        {
+          "date": "2026-03-17",
+          "net": 886,
+          "long": 66507,
+          "short": 65621
+        },
+        {
+          "date": "2026-03-24",
+          "net": -1602,
+          "long": 62382,
+          "short": 63984
+        },
+        {
+          "date": "2026-03-31",
+          "net": -32684,
+          "long": 56421,
+          "short": 89105
+        },
+        {
+          "date": "2026-04-07",
+          "net": -55648,
+          "long": 60714,
+          "short": 116362
+        },
+        {
+          "date": "2026-04-14",
+          "net": -78272,
+          "long": 54249,
+          "short": 132521
+        },
+        {
+          "date": "2026-04-21",
+          "net": -58834,
+          "long": 60889,
+          "short": 119723
+        },
+        {
+          "date": "2026-04-28",
+          "net": -38476,
+          "long": 66517,
+          "short": 104993
+        },
+        {
+          "date": "2026-05-05",
+          "net": -14659,
+          "long": 73650,
+          "short": 88309
+        },
+        {
+          "date": "2026-05-12",
+          "net": -16242,
+          "long": 77042,
+          "short": 93284
+        },
+        {
+          "date": "2026-05-19",
+          "net": -31231,
+          "long": 72674,
+          "short": 103905
+        },
+        {
+          "date": "2026-05-26",
+          "net": -68882,
+          "long": 53676,
+          "short": 122558
+        },
+        {
+          "date": "2026-06-02",
+          "net": -94111,
+          "long": 37723,
+          "short": 131834
+        },
+        {
+          "date": "2026-06-09",
+          "net": -119999,
+          "long": 37944,
+          "short": 157943
+        },
+        {
+          "date": "2026-06-16",
+          "net": -132901,
+          "long": 39686,
+          "short": 172587
+        },
+        {
+          "date": "2026-06-23",
+          "net": -146792,
+          "long": 39429,
+          "short": 186221
+        },
+        {
+          "date": "2026-06-30",
+          "net": -150806,
+          "long": 37989,
+          "short": 188795
+        },
+        {
+          "date": "2026-07-07",
+          "net": -173126,
+          "long": 31566,
+          "short": 204692
+        },
+        {
+          "date": "2026-07-14",
+          "net": -176279,
+          "long": 29712,
+          "short": 205991
+        },
+        {
+          "date": "2026-07-21",
+          "net": -174448,
+          "long": 27007,
+          "short": 201455
+        },
+        {
+          "date": "2026-07-28",
+          "net": -176310,
+          "long": 22500,
+          "short": 198810
+        },
+        {
+          "date": "2026-08-04",
+          "net": -179095,
+          "long": 13514,
+          "short": 192609
+        },
+        {
+          "date": "2026-08-11",
+          "net": -173362,
+          "long": 12854,
+          "short": 186216
+        },
+        {
+          "date": "2026-08-18",
+          "net": -158166,
+          "long": 22985,
+          "short": 181151
+        },
+        {
+          "date": "2026-08-25",
+          "net": -121522,
+          "long": 36266,
+          "short": 157788
+        },
+        {
+          "date": "2026-09-01",
+          "net": -108143,
+          "long": 36262,
+          "short": 144405
+        },
+        {
+          "date": "2026-09-08",
+          "net": -70499,
+          "long": 54444,
+          "short": 124943
+        },
+        {
+          "date": "2026-09-15",
+          "net": -37577,
+          "long": 73950,
+          "short": 111527
+        },
+        {
+          "date": "2026-09-22",
+          "net": -53210,
+          "long": 86030,
+          "short": 139240
+        },
+        {
+          "date": "2026-09-29",
+          "net": -78671,
+          "long": 85047,
+          "short": 163718
+        },
+        {
+          "date": "2026-10-06",
+          "net": -90163,
+          "long": 91109,
+          "short": 181272
+        },
+        {
+          "date": "2026-10-13",
+          "net": -94765,
+          "long": 89986,
+          "short": 184751
+        },
+        {
+          "date": "2026-10-20",
+          "net": -74709,
+          "long": 101653,
+          "short": 176362
+        },
+        {
+          "date": "2026-10-27",
+          "net": -66424,
+          "long": 89942,
+          "short": 156366
+        },
+        {
+          "date": "2026-11-03",
+          "net": -41775,
+          "long": 99234,
+          "short": 141009
+        },
+        {
+          "date": "2026-11-10",
+          "net": -32592,
+          "long": 107703,
+          "short": 140295
+        },
+        {
+          "date": "2026-11-17",
+          "net": -45048,
+          "long": 111591,
+          "short": 156639
+        }
+      ],
+      "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -45048,
+          "noncomm_chg": -12456,
+          "comm_net": 56220,
+          "comm_chg": 14359,
+          "nonrept_net": -11172,
+          "nonrept_chg": -1903,
+          "cot_idx": 62.3
+        },
+        {
+          "date": "2026-11-10",
+          "noncomm_net": -32592,
+          "noncomm_chg": 9183,
+          "comm_net": 41861,
+          "comm_chg": -7523,
+          "nonrept_net": -9269,
+          "nonrept_chg": -1660,
+          "cot_idx": 68.1
+        },
+        {
+          "date": "2026-11-03",
+          "noncomm_net": -41775,
+          "noncomm_chg": 24649,
+          "comm_net": 49384,
+          "comm_chg": -24876,
+          "nonrept_net": -7609,
+          "nonrept_chg": 227,
+          "cot_idx": 63.8
+        },
+        {
+          "date": "2026-10-27",
+          "noncomm_net": -66424,
+          "noncomm_chg": 8285,
+          "comm_net": 74260,
+          "comm_chg": -12588,
+          "nonrept_net": -7836,
+          "nonrept_chg": 4303,
+          "cot_idx": 52.3
+        }
+      ],
+      "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -45048,
+          "noncomm_chg": -12456,
+          "comm_net": 56220,
+          "comm_chg": 14359,
+          "nonrept_net": -11172,
+          "nonrept_chg": -1903,
+          "cot_idx": 62.3
+        },
+        {
+          "date": "2026-11-10",
+          "noncomm_net": -32592,
+          "noncomm_chg": 9183,
+          "comm_net": 41861,
+          "comm_chg": -7523,
+          "nonrept_net": -9269,
+          "nonrept_chg": -1660,
+          "cot_idx": 68.1
+        },
+        {
+          "date": "2026-11-03",
+          "noncomm_net": -41775,
+          "noncomm_chg": 24649,
+          "comm_net": 49384,
+          "comm_chg": -24876,
+          "nonrept_net": -7609,
+          "nonrept_chg": 227,
+          "cot_idx": 63.8
+        },
+        {
+          "date": "2026-10-27",
+          "noncomm_net": -66424,
+          "noncomm_chg": 8285,
+          "comm_net": 74260,
+          "comm_chg": -12588,
+          "nonrept_net": -7836,
+          "nonrept_chg": 4303,
+          "cot_idx": 52.3
+        },
+        {
+          "date": "2026-10-20",
+          "noncomm_net": -74709,
+          "noncomm_chg": 20056,
+          "comm_net": 86848,
+          "comm_chg": -18765,
+          "nonrept_net": -12139,
+          "nonrept_chg": -1291,
+          "cot_idx": 48.5
+        },
+        {
+          "date": "2026-10-13",
+          "noncomm_net": -94765,
+          "noncomm_chg": -4602,
+          "comm_net": 105613,
+          "comm_chg": 2111,
+          "nonrept_net": -10848,
+          "nonrept_chg": 2491,
+          "cot_idx": 39.2
+        },
+        {
+          "date": "2026-10-06",
+          "noncomm_net": -90163,
+          "noncomm_chg": -11492,
+          "comm_net": 103502,
+          "comm_chg": 13938,
+          "nonrept_net": -13339,
+          "nonrept_chg": -2446,
+          "cot_idx": 41.3
+        },
+        {
+          "date": "2026-09-29",
+          "noncomm_net": -78671,
+          "noncomm_chg": -25461,
+          "comm_net": 89564,
+          "comm_chg": 33566,
+          "nonrept_net": -10893,
+          "nonrept_chg": -8105,
+          "cot_idx": 46.7
+        },
+        {
+          "date": "2026-09-22",
+          "noncomm_net": -53210,
+          "noncomm_chg": -15633,
+          "comm_net": 55998,
+          "comm_chg": 9075,
+          "nonrept_net": -2788,
+          "nonrept_chg": 6558,
+          "cot_idx": 58.5
+        },
+        {
+          "date": "2026-09-15",
+          "noncomm_net": -37577,
+          "noncomm_chg": 32922,
+          "comm_net": 46923,
+          "comm_chg": -27506,
+          "nonrept_net": -9346,
+          "nonrept_chg": -5416,
+          "cot_idx": 65.7
+        },
+        {
+          "date": "2026-09-08",
+          "noncomm_net": -70499,
+          "noncomm_chg": 37644,
+          "comm_net": 74429,
+          "comm_chg": -40853,
+          "nonrept_net": -3930,
+          "nonrept_chg": 3209,
+          "cot_idx": 50.5
+        },
+        {
+          "date": "2026-09-01",
+          "noncomm_net": -108143,
+          "noncomm_chg": 13379,
+          "comm_net": 115282,
+          "comm_chg": -7949,
+          "nonrept_net": -7139,
+          "nonrept_chg": -5430,
+          "cot_idx": 33.0
+        },
+        {
+          "date": "2026-08-25",
+          "noncomm_net": -121522,
+          "noncomm_chg": 36644,
+          "comm_net": 123231,
+          "comm_chg": -38148,
+          "nonrept_net": -1709,
+          "nonrept_chg": 1504,
+          "cot_idx": 26.7
+        },
+        {
+          "date": "2026-08-18",
+          "noncomm_net": -158166,
+          "noncomm_chg": 15196,
+          "comm_net": 161379,
+          "comm_chg": -18307,
+          "nonrept_net": -3213,
+          "nonrept_chg": 3111,
+          "cot_idx": 9.7
+        },
+        {
+          "date": "2026-08-11",
+          "noncomm_net": -173362,
+          "noncomm_chg": 5733,
+          "comm_net": 179686,
+          "comm_chg": -7322,
+          "nonrept_net": -6324,
+          "nonrept_chg": 1589,
+          "cot_idx": 2.7
+        },
+        {
+          "date": "2026-08-04",
+          "noncomm_net": -179095,
+          "noncomm_chg": -2785,
+          "comm_net": 187008,
+          "comm_chg": -2013,
+          "nonrept_net": -7913,
+          "nonrept_chg": 4798,
+          "cot_idx": 0.0
+        },
+        {
+          "date": "2026-07-28",
+          "noncomm_net": -176310,
+          "noncomm_chg": -1862,
+          "comm_net": 189021,
+          "comm_chg": 2020,
+          "nonrept_net": -12711,
+          "nonrept_chg": -158,
+          "cot_idx": 0.0
+        },
+        {
+          "date": "2026-07-21",
+          "noncomm_net": -174448,
+          "noncomm_chg": 1831,
+          "comm_net": 187001,
+          "comm_chg": 283,
+          "nonrept_net": -12553,
+          "nonrept_chg": -2114,
+          "cot_idx": 0.9
+        },
+        {
+          "date": "2026-07-14",
+          "noncomm_net": -176279,
+          "noncomm_chg": -3153,
+          "comm_net": 186718,
+          "comm_chg": 4722,
+          "nonrept_net": -10439,
+          "nonrept_chg": -1569,
+          "cot_idx": 0.0
+        },
+        {
+          "date": "2026-07-07",
+          "noncomm_net": -173126,
+          "noncomm_chg": -22320,
+          "comm_net": 181996,
+          "comm_chg": 22669,
+          "nonrept_net": -8870,
+          "nonrept_chg": -349,
+          "cot_idx": 0.0
+        },
+        {
+          "date": "2026-06-30",
+          "noncomm_net": -150806,
+          "noncomm_chg": -4014,
+          "comm_net": 159327,
+          "comm_chg": 3538,
+          "nonrept_net": -8521,
+          "nonrept_chg": 476,
+          "cot_idx": 4.4
+        },
+        {
+          "date": "2026-06-23",
+          "noncomm_net": -146792,
+          "noncomm_chg": -13891,
+          "comm_net": 155789,
+          "comm_chg": 12383,
+          "nonrept_net": -8997,
+          "nonrept_chg": 1508,
+          "cot_idx": 6.5
+        },
+        {
+          "date": "2026-06-16",
+          "noncomm_net": -132901,
+          "noncomm_chg": -12902,
+          "comm_net": 143406,
+          "comm_chg": 14594,
+          "nonrept_net": -10505,
+          "nonrept_chg": -1692,
+          "cot_idx": 13.6
+        },
+        {
+          "date": "2026-06-09",
+          "noncomm_net": -119999,
+          "noncomm_chg": -25888,
+          "comm_net": 128812,
+          "comm_chg": 29206,
+          "nonrept_net": -8813,
+          "nonrept_chg": -3318,
+          "cot_idx": 20.2
+        },
+        {
+          "date": "2026-06-02",
+          "noncomm_net": -94111,
+          "noncomm_chg": -25229,
+          "comm_net": 99606,
+          "comm_chg": 27761,
+          "nonrept_net": -5495,
+          "nonrept_chg": -2532,
+          "cot_idx": 33.4
+        },
+        {
+          "date": "2026-05-26",
+          "noncomm_net": -68882,
+          "noncomm_chg": -37651,
+          "comm_net": 71845,
+          "comm_chg": 36121,
+          "nonrept_net": -2963,
+          "nonrept_chg": 1530,
+          "cot_idx": 46.3
+        },
+        {
+          "date": "2026-05-19",
+          "noncomm_net": -31231,
+          "noncomm_chg": -14989,
+          "comm_net": 35724,
+          "comm_chg": 22007,
+          "nonrept_net": -4493,
+          "nonrept_chg": -7018,
+          "cot_idx": 65.6
+        },
+        {
+          "date": "2026-05-12",
+          "noncomm_net": -16242,
+          "noncomm_chg": -1583,
+          "comm_net": 13717,
+          "comm_chg": 923,
+          "nonrept_net": 2525,
+          "nonrept_chg": 660,
+          "cot_idx": 73.2
+        },
+        {
+          "date": "2026-05-05",
+          "noncomm_net": -14659,
+          "noncomm_chg": 23817,
+          "comm_net": 12794,
+          "comm_chg": -24349,
+          "nonrept_net": 1865,
+          "nonrept_chg": 532,
+          "cot_idx": 74.0
+        },
+        {
+          "date": "2026-04-28",
+          "noncomm_net": -38476,
+          "noncomm_chg": 20358,
+          "comm_net": 37143,
+          "comm_chg": -22078,
+          "nonrept_net": 1333,
+          "nonrept_chg": 1720,
+          "cot_idx": 61.9
+        },
+        {
+          "date": "2026-04-21",
+          "noncomm_net": -58834,
+          "noncomm_chg": 19438,
+          "comm_net": 59221,
+          "comm_chg": -19156,
+          "nonrept_net": -387,
+          "nonrept_chg": -282,
+          "cot_idx": 51.5
+        },
+        {
+          "date": "2026-04-14",
+          "noncomm_net": -78272,
+          "noncomm_chg": -22624,
+          "comm_net": 78377,
+          "comm_chg": 20339,
+          "nonrept_net": -105,
+          "nonrept_chg": 2285,
+          "cot_idx": 41.5
+        },
+        {
+          "date": "2026-04-07",
+          "noncomm_net": -55648,
+          "noncomm_chg": -22964,
+          "comm_net": 58038,
+          "comm_chg": 24052,
+          "nonrept_net": -2390,
+          "nonrept_chg": -1088,
+          "cot_idx": 53.1
+        },
+        {
+          "date": "2026-03-31",
+          "noncomm_net": -32684,
+          "noncomm_chg": -31082,
+          "comm_net": 33986,
+          "comm_chg": 35357,
+          "nonrept_net": -1302,
+          "nonrept_chg": -4275,
+          "cot_idx": 64.8
+        },
+        {
+          "date": "2026-03-24",
+          "noncomm_net": -1602,
+          "noncomm_chg": -2488,
+          "comm_net": -1371,
+          "comm_chg": 4835,
+          "nonrept_net": 2973,
+          "nonrept_chg": -2347,
+          "cot_idx": 80.7
+        },
+        {
+          "date": "2026-03-17",
+          "noncomm_net": 886,
+          "noncomm_chg": -35273,
+          "comm_net": -6206,
+          "comm_chg": 38154,
+          "nonrept_net": 5320,
+          "nonrept_chg": -2881,
+          "cot_idx": 82.0
+        },
+        {
+          "date": "2026-03-10",
+          "noncomm_net": 36159,
+          "noncomm_chg": 15109,
+          "comm_net": -44360,
+          "comm_chg": -20304,
+          "nonrept_net": 8201,
+          "nonrept_chg": 5195,
+          "cot_idx": 100.0
+        },
+        {
+          "date": "2026-03-03",
+          "noncomm_net": 21050,
+          "noncomm_chg": -6528,
+          "comm_net": -24056,
+          "comm_chg": 6204,
+          "nonrept_net": 3006,
+          "nonrept_chg": 324,
+          "cot_idx": 96.5
+        },
+        {
+          "date": "2026-02-24",
+          "noncomm_net": 27578,
+          "noncomm_chg": 1752,
+          "comm_net": -30260,
+          "comm_chg": 114,
+          "nonrept_net": 2682,
+          "nonrept_chg": -1866,
+          "cot_idx": 100.0
+        },
+        {
+          "date": "2026-02-17",
+          "noncomm_net": 25826,
+          "noncomm_chg": 12550,
+          "comm_net": -30374,
+          "comm_chg": -10186,
+          "nonrept_net": 4548,
+          "nonrept_chg": -2364,
+          "cot_idx": 100.0
+        },
+        {
+          "date": "2026-02-10",
+          "noncomm_net": 13276,
+          "noncomm_chg": 11146,
+          "comm_net": -20188,
+          "comm_chg": -12272,
+          "nonrept_net": 6912,
+          "nonrept_chg": 1126,
+          "cot_idx": 100.0
+        },
+        {
+          "date": "2026-02-03",
+          "noncomm_net": 2130,
+          "noncomm_chg": 18176,
+          "comm_net": -7916,
+          "comm_chg": -21650,
+          "nonrept_net": 5786,
+          "nonrept_chg": 3474,
+          "cot_idx": 100.0
+        },
+        {
+          "date": "2026-01-27",
+          "noncomm_net": -16046,
+          "noncomm_chg": 25739,
+          "comm_net": 13734,
+          "comm_chg": -32256,
+          "nonrept_net": 2312,
+          "nonrept_chg": 6517,
+          "cot_idx": 100.0
+        },
+        {
+          "date": "2026-01-20",
+          "noncomm_net": -41785,
+          "noncomm_chg": 465,
+          "comm_net": 45990,
+          "comm_chg": 175,
+          "nonrept_net": -4205,
+          "nonrept_chg": -640,
+          "cot_idx": 98.9
+        },
+        {
+          "date": "2026-01-13",
+          "noncomm_net": -42250,
+          "noncomm_chg": -1665,
+          "comm_net": 45815,
+          "comm_chg": 9753,
+          "nonrept_net": -3565,
+          "nonrept_chg": -8088,
+          "cot_idx": 98.6
+        },
+        {
+          "date": "2026-01-06",
+          "noncomm_net": -40585,
+          "noncomm_chg": -74,
+          "comm_net": 36062,
+          "comm_chg": -26,
+          "nonrept_net": 4523,
+          "nonrept_chg": 100,
+          "cot_idx": 99.9
+        },
+        {
+          "date": "2025-12-30",
+          "noncomm_net": -40511,
+          "noncomm_chg": 15282,
+          "comm_net": 36088,
+          "comm_chg": -21102,
+          "nonrept_net": 4423,
+          "nonrept_chg": 5820,
+          "cot_idx": 100.0
+        },
+        {
+          "date": "2025-12-23",
+          "noncomm_net": -55793,
+          "noncomm_chg": 30847,
+          "comm_net": 57190,
+          "comm_chg": -35048,
+          "nonrept_net": -1397,
+          "nonrept_chg": 4201,
+          "cot_idx": 97.9
+        },
+        {
+          "date": "2025-12-16",
+          "noncomm_net": -86640,
+          "noncomm_chg": 43960,
+          "comm_net": 92238,
+          "comm_chg": -46485,
+          "nonrept_net": -5598,
+          "nonrept_chg": 2525,
+          "cot_idx": 73.3
+        },
+        {
+          "date": "2025-12-09",
+          "noncomm_net": -130600,
+          "noncomm_chg": 19447,
+          "comm_net": 138723,
+          "comm_chg": -20427,
+          "nonrept_net": -8123,
+          "nonrept_chg": 980,
+          "cot_idx": 39.9
+        },
+        {
+          "date": "2025-12-02",
+          "noncomm_net": -150047,
+          "noncomm_chg": 367,
+          "comm_net": 159150,
+          "comm_chg": -4310,
+          "nonrept_net": -9103,
+          "nonrept_chg": 3943,
+          "cot_idx": 24.8
+        },
+        {
+          "date": "2025-11-25",
+          "noncomm_net": -150414,
+          "noncomm_chg": -1315,
+          "comm_net": 163460,
+          "comm_chg": 1790,
+          "nonrept_net": -13046,
+          "nonrept_chg": -475,
+          "cot_idx": 24.5
         }
       ],
       "rank": 12
@@ -11557,24 +11557,43 @@ window.COT_DATA = {
       "market_name": "NZ DOLLAR - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "112741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": -55366,
-      "prev_net_position": -60015,
-      "weekly_change": 4649,
-      "change_noncomm_long": -588,
-      "change_noncomm_short": -5237,
+      "latest_date": "2026-11-17",
+      "net_position": -63245,
+      "prev_net_position": -55366,
+      "weekly_change": -7879,
+      "change_noncomm_long": -590,
+      "change_noncomm_short": 7289,
       "min_52w": -65189,
       "max_52w": 10518,
-      "cot_index_52w": 13.0,
-      "cot_index_3y": 13.0,
+      "cot_index_52w": 2.6,
+      "cot_index_3y": 2.6,
       "bias": "BEARISH",
       "intensity": "STRONG",
-      "flow": "SHORT-COVERING (สถาบันปิดชอร์ตทำกำไร)",
-      "tactical_state": "RALLY RISK",
-      "latest_long": 17881,
-      "latest_short": 73247,
-      "open_interest": 131926,
+      "flow": "ACCUMULATING SHORT (สถาบันเทขายเพิ่ม)",
+      "tactical_state": "DOWNSIDE PRESSURE",
+      "latest_long": 17291,
+      "latest_short": 80536,
+      "open_interest": 137149,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 137149,
+        "change_open_interest": 5223,
+        "noncomm_long": 17291,
+        "noncomm_short": 80536,
+        "noncomm_spread": 1021,
+        "noncomm_net": -63245,
+        "change_noncomm_long": -590,
+        "change_noncomm_short": 7289,
+        "comm_long": 114207,
+        "comm_short": 48525,
+        "comm_net": 65682,
+        "change_comm_long": 4690,
+        "change_comm_short": -2844,
+        "nonrept_long": 4630,
+        "nonrept_short": 7067,
+        "nonrept_net": -2437
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 131926,
         "change_open_interest": -624,
@@ -11593,32 +11612,7 @@ window.COT_DATA = {
         "nonrept_short": 6646,
         "nonrept_net": -2782
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 132550,
-        "change_open_interest": 3497,
-        "noncomm_long": 18469,
-        "noncomm_short": 78484,
-        "noncomm_spread": 463,
-        "noncomm_net": -60015,
-        "change_noncomm_long": 407,
-        "change_noncomm_short": 2732,
-        "comm_long": 109563,
-        "comm_short": 46834,
-        "comm_net": 62729,
-        "change_comm_long": 3239,
-        "change_comm_short": 56,
-        "nonrept_long": 4055,
-        "nonrept_short": 6769,
-        "nonrept_net": -2714
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": -49257,
-          "long": 24211,
-          "short": 73468
-        },
         {
           "date": "2025-11-25",
           "net": -52071,
@@ -11924,9 +11918,25 @@ window.COT_DATA = {
           "net": -55366,
           "long": 17881,
           "short": 73247
+        },
+        {
+          "date": "2026-11-17",
+          "net": -63245,
+          "long": 17291,
+          "short": 80536
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -63245,
+          "noncomm_chg": -7879,
+          "comm_net": 65682,
+          "comm_chg": 7534,
+          "nonrept_net": -2437,
+          "nonrept_chg": 345,
+          "cot_idx": 2.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -55366,
@@ -11956,19 +11966,19 @@ window.COT_DATA = {
           "nonrept_net": -1856,
           "nonrept_chg": 417,
           "cot_idx": 9.9
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -58149,
-          "noncomm_chg": -11148,
-          "comm_net": 60422,
-          "comm_chg": 11447,
-          "nonrept_net": -2273,
-          "nonrept_chg": -299,
-          "cot_idx": 9.3
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -63245,
+          "noncomm_chg": -7879,
+          "comm_net": 65682,
+          "comm_chg": 7534,
+          "nonrept_net": -2437,
+          "nonrept_chg": 345,
+          "cot_idx": 2.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -55366,
@@ -12478,16 +12488,6 @@ window.COT_DATA = {
           "nonrept_net": -2034,
           "nonrept_chg": 197,
           "cot_idx": 6.1
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -49257,
-          "noncomm_chg": -5188,
-          "comm_net": 51488,
-          "comm_chg": 5403,
-          "nonrept_net": -2231,
-          "nonrept_chg": -215,
-          "cot_idx": 10.7
         }
       ],
       "rank": 13
@@ -12501,24 +12501,43 @@ window.COT_DATA = {
       "market_name": "EURO FX - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "099741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": -136396,
-      "prev_net_position": -157791,
-      "weekly_change": 21395,
-      "change_noncomm_long": -1905,
-      "change_noncomm_short": -23300,
+      "latest_date": "2026-11-17",
+      "net_position": -142710,
+      "prev_net_position": -136396,
+      "weekly_change": -6314,
+      "change_noncomm_long": 2596,
+      "change_noncomm_short": 8910,
       "min_52w": -157791,
       "max_52w": 180305,
-      "cot_index_52w": 6.3,
-      "cot_index_3y": 6.3,
+      "cot_index_52w": 4.5,
+      "cot_index_3y": 4.5,
       "bias": "BEARISH",
       "intensity": "STRONG",
-      "flow": "SHORT-COVERING (สถาบันปิดชอร์ตทำกำไร)",
-      "tactical_state": "RALLY RISK",
-      "latest_long": 227478,
-      "latest_short": 363874,
-      "open_interest": 854705,
+      "flow": "ACCUMULATING SHORT (สถาบันเทขายเพิ่ม)",
+      "tactical_state": "DOWNSIDE PRESSURE",
+      "latest_long": 230074,
+      "latest_short": 372784,
+      "open_interest": 866032,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 866032,
+        "change_open_interest": 11327,
+        "noncomm_long": 230074,
+        "noncomm_short": 372784,
+        "noncomm_spread": 51851,
+        "noncomm_net": -142710,
+        "change_noncomm_long": 2596,
+        "change_noncomm_short": 8910,
+        "comm_long": 494278,
+        "comm_short": 384986,
+        "comm_net": 109292,
+        "change_comm_long": 5446,
+        "change_comm_short": 776,
+        "nonrept_long": 89829,
+        "nonrept_short": 56411,
+        "nonrept_net": 33418
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 854705,
         "change_open_interest": -21417,
@@ -12537,32 +12556,7 @@ window.COT_DATA = {
         "nonrept_short": 55031,
         "nonrept_net": 31774
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 876122,
-        "change_open_interest": 7934,
-        "noncomm_long": 229383,
-        "noncomm_short": 387174,
-        "noncomm_spread": 54058,
-        "noncomm_net": -157791,
-        "change_noncomm_long": -1263,
-        "change_noncomm_short": 12634,
-        "comm_long": 507069,
-        "comm_short": 382218,
-        "comm_net": 124851,
-        "change_comm_long": 2218,
-        "change_comm_short": -8149,
-        "nonrept_long": 85612,
-        "nonrept_short": 52672,
-        "nonrept_net": 32940
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": 99007,
-          "long": 243961,
-          "short": 144954
-        },
         {
           "date": "2025-11-25",
           "net": 94071,
@@ -12868,9 +12862,25 @@ window.COT_DATA = {
           "net": -136396,
           "long": 227478,
           "short": 363874
+        },
+        {
+          "date": "2026-11-17",
+          "net": -142710,
+          "long": 230074,
+          "short": 372784
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -142710,
+          "noncomm_chg": -6314,
+          "comm_net": 109292,
+          "comm_chg": 4670,
+          "nonrept_net": 33418,
+          "nonrept_chg": 1644,
+          "cot_idx": 4.5
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -136396,
@@ -12900,19 +12910,19 @@ window.COT_DATA = {
           "nonrept_net": 29410,
           "nonrept_chg": -219,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -134524,
-          "noncomm_chg": 3049,
-          "comm_net": 104895,
-          "comm_chg": -6330,
-          "nonrept_net": 29629,
-          "nonrept_chg": 3281,
-          "cot_idx": 1.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -142710,
+          "noncomm_chg": -6314,
+          "comm_net": 109292,
+          "comm_chg": 4670,
+          "nonrept_net": 33418,
+          "nonrept_chg": 1644,
+          "cot_idx": 4.5
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -136396,
@@ -13422,16 +13432,6 @@ window.COT_DATA = {
           "nonrept_net": 42905,
           "nonrept_chg": 1762,
           "cot_idx": 83.2
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 99007,
-          "noncomm_chg": 25418,
-          "comm_net": -140150,
-          "comm_chg": -28777,
-          "nonrept_net": 41143,
-          "nonrept_chg": 3359,
-          "cot_idx": 85.7
         }
       ],
       "rank": 14
@@ -13445,13 +13445,13 @@ window.COT_DATA = {
       "market_name": "AUSTRALIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE",
       "cftc_code": "232741",
       "commodity_group": "FINANCIAL INSTRUMENTS",
-      "latest_date": "2026-11-10",
-      "net_position": -151753,
-      "prev_net_position": -129457,
-      "weekly_change": -22296,
-      "change_noncomm_long": -2646,
-      "change_noncomm_short": 19650,
-      "min_52w": -151753,
+      "latest_date": "2026-11-17",
+      "net_position": -182060,
+      "prev_net_position": -151753,
+      "weekly_change": -30307,
+      "change_noncomm_long": -17299,
+      "change_noncomm_short": 13008,
+      "min_52w": -182060,
       "max_52w": 85644,
       "cot_index_52w": 0.0,
       "cot_index_3y": 0.0,
@@ -13459,10 +13459,29 @@ window.COT_DATA = {
       "intensity": "STRONG",
       "flow": "ACCUMULATING SHORT (สถาบันเทขายเพิ่ม)",
       "tactical_state": "DOWNSIDE PRESSURE",
-      "latest_long": 98447,
-      "latest_short": 250200,
-      "open_interest": 352859,
+      "latest_long": 81148,
+      "latest_short": 263208,
+      "open_interest": 374281,
       "raw_record": {
+        "date": "2026-11-17",
+        "open_interest": 374281,
+        "change_open_interest": 21422,
+        "noncomm_long": 81148,
+        "noncomm_short": 263208,
+        "noncomm_spread": 4589,
+        "noncomm_net": -182060,
+        "change_noncomm_long": -17299,
+        "change_noncomm_short": 13008,
+        "comm_long": 260021,
+        "comm_short": 85514,
+        "comm_net": 174507,
+        "change_comm_long": 39464,
+        "change_comm_short": 3608,
+        "nonrept_long": 28523,
+        "nonrept_short": 20970,
+        "nonrept_net": 7553
+      },
+      "prev_raw_record": {
         "date": "2026-11-10",
         "open_interest": 352859,
         "change_open_interest": 24260,
@@ -13481,32 +13500,7 @@ window.COT_DATA = {
         "nonrept_short": 19078,
         "nonrept_net": 13102
       },
-      "prev_raw_record": {
-        "date": "2026-11-03",
-        "open_interest": 328599,
-        "change_open_interest": 3591,
-        "noncomm_long": 101093,
-        "noncomm_short": 230550,
-        "noncomm_spread": 1276,
-        "noncomm_net": -129457,
-        "change_noncomm_long": 36,
-        "change_noncomm_short": 1178,
-        "comm_long": 192945,
-        "comm_short": 80262,
-        "comm_net": 112683,
-        "change_comm_long": 2616,
-        "change_comm_short": 1168,
-        "nonrept_long": 33285,
-        "nonrept_short": 16511,
-        "nonrept_net": 16774
-      },
       "series": [
-        {
-          "date": "2025-11-18",
-          "net": -75856,
-          "long": 45721,
-          "short": 121577
-        },
         {
           "date": "2025-11-25",
           "net": -84176,
@@ -13812,9 +13806,25 @@ window.COT_DATA = {
           "net": -151753,
           "long": 98447,
           "short": 250200
+        },
+        {
+          "date": "2026-11-17",
+          "net": -182060,
+          "long": 81148,
+          "short": 263208
         }
       ],
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -182060,
+          "noncomm_chg": -30307,
+          "comm_net": 174507,
+          "comm_chg": 35856,
+          "nonrept_net": 7553,
+          "nonrept_chg": -5549,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -151753,
@@ -13844,19 +13854,19 @@ window.COT_DATA = {
           "nonrept_net": 17080,
           "nonrept_chg": 4713,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -127292,
-          "noncomm_chg": -9993,
-          "comm_net": 114925,
-          "comm_chg": 8555,
-          "nonrept_net": 12367,
-          "nonrept_chg": 1438,
-          "cot_idx": 0.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -182060,
+          "noncomm_chg": -30307,
+          "comm_net": 174507,
+          "comm_chg": 35856,
+          "nonrept_net": 7553,
+          "nonrept_chg": -5549,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -151753,
@@ -14366,16 +14376,6 @@ window.COT_DATA = {
           "nonrept_net": 8624,
           "nonrept_chg": -427,
           "cot_idx": 13.5
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -75856,
-          "noncomm_chg": 2771,
-          "comm_net": 66805,
-          "comm_chg": -3939,
-          "nonrept_net": 9051,
-          "nonrept_chg": 1168,
-          "cot_idx": 18.7
         }
       ],
       "rank": 15
@@ -14386,20 +14386,30 @@ window.COT_DATA = {
       "pair": "XAU/USD (Gold)",
       "base": "XAU",
       "quote": "USD",
-      "macro_bias": "BULLISH",
-      "recommendation": "🟢 โฟกัสหน้า BUY : 🎯 ย่อซื้อตามเทรนด์ (BUY ON DIPS)",
-      "phase": "TREND CONTINUATION (ขาขึ้นแข็งแกร่ง)",
-      "badge_color": "green",
-      "confidence": "HIGH (Paul's Confluent)",
-      "net_diff": 190107,
-      "cot_index_52w": 37.0,
-      "noncomm_net": 190107,
-      "comm_net": -217522,
-      "nonrept_net": 27415,
-      "noncomm_chg": 10559,
-      "comm_chg": -12620,
-      "nonrept_chg": 2061,
+      "macro_bias": "NEUTRAL / CONFLICT (Macro Caution)",
+      "recommendation": "⚠️ พักดูเชิง / สัญญาณขัดแย้ง (STAND ASIDE / CONFLICT)",
+      "phase": "INSTITUTIONAL UNWINDING & CONFLICT (ชะลอตัว / รอจังหวะคอนเฟิร์ม)",
+      "badge_color": "amber",
+      "confidence": "STAND ASIDE (Wait for Confirmation)",
+      "net_diff": 166132,
+      "cot_index_52w": 12.2,
+      "noncomm_net": 166132,
+      "comm_net": -193750,
+      "nonrept_net": 27618,
+      "noncomm_chg": -23975,
+      "comm_chg": 23772,
+      "nonrept_chg": 203,
       "weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 166132,
+          "noncomm_chg": -23975,
+          "comm_net": -193750,
+          "comm_chg": 23772,
+          "nonrept_net": 27618,
+          "nonrept_chg": 203,
+          "cot_idx": 12.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 190107,
@@ -14429,19 +14439,19 @@ window.COT_DATA = {
           "nonrept_net": 29173,
           "nonrept_chg": -6544,
           "cot_idx": 33.2
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 199865,
-          "noncomm_chg": -8014,
-          "comm_net": -235582,
-          "comm_chg": 6949,
-          "nonrept_net": 35717,
-          "nonrept_chg": 1065,
-          "cot_idx": 47.0
         }
       ],
       "weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 166132,
+          "noncomm_chg": -23975,
+          "comm_net": -193750,
+          "comm_chg": 23772,
+          "nonrept_net": 27618,
+          "nonrept_chg": 203,
+          "cot_idx": 12.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 190107,
@@ -14951,19 +14961,19 @@ window.COT_DATA = {
           "nonrept_net": 36815,
           "nonrept_chg": 1569,
           "cot_idx": 30.7
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 210339,
-          "noncomm_chg": 3270,
-          "comm_net": -245585,
-          "comm_chg": -762,
-          "nonrept_net": 35246,
-          "nonrept_chg": -2508,
-          "cot_idx": 34.8
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -15473,20 +15483,10 @@ window.COT_DATA = {
           "nonrept_net": 464,
           "nonrept_chg": -513,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -16108,
-          "noncomm_chg": -481,
-          "comm_net": 15131,
-          "comm_chg": -41,
-          "nonrept_net": 977,
-          "nonrept_chg": 522,
-          "cot_idx": 0.1
         }
       ],
-      "rationale": "สถาบันกำลังเติมเงิน Long อย่างต่อเนื่อง (+10,559 สัญญา, COT Index 37.0%) โฟกัสเปิดหน้า BUY เมื่อราคาย่อตัวแตะ EMA50",
-      "paul_rule": "รอราคาย่อแตะ EMA50 + ยืนยัน 3-Bar BOS ก่อนเปิดออเดอร์",
+      "rationale": "⚠️ แจ้งเตือนความขัดแย้งตามระบบ Paul 4-Gate: สถาบันมียอดสะสม Net Long (+166,132 สัญญา) แต่สัปดาห์ล่าสุดสถาบันได้ 'เทขายลดพอร์ตออกไป -23,975 สัญญา' และดัชนี COT 52W Index อยู่ที่ระดับ 12.2% (Low / Unwinding Zone <35%) ขณะที่ต้องรอโครงสร้างราคา H4 ยืนยันทิศทางชัดเจน กฎเหล็กของ Paul: 'ห้ามเปิด BUY สวนเทรนด์ขาลง และห้ามไล่ราคาโดยไม่รอ 3-Bar BOS ผ่านครบทั้ง 4 ด่าน'",
+      "paul_rule": "งดเปิด BUY สวนเทรนด์ขาลง! รอราคายืนยัน BOS และผ่านครบ 4 ด่านก่อนพิจารณา",
       "base_flag": "🥇",
       "quote_flag": "🇺🇸"
     },
@@ -15495,32 +15495,42 @@ window.COT_DATA = {
       "base": "EUR",
       "quote": "JPY",
       "macro_bias": "BEARISH",
-      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอราคาพักฐาน (WAIT FOR RETRACEMENT)",
-      "phase": "SHORT-COVERING PULLBACK",
-      "badge_color": "amber",
-      "confidence": "MODERATE",
-      "net_diff": -259509,
-      "base_cot_idx": 6.3,
-      "quote_cot_idx": 100.0,
-      "noncomm_net": -136396,
-      "comm_net": 104622,
-      "nonrept_net": 31774,
-      "noncomm_chg": 21395,
-      "comm_chg": -20229,
-      "nonrept_chg": -1166,
-      "base_noncomm_net": -136396,
-      "base_comm_net": 104622,
-      "base_nonrept_net": 31774,
-      "base_noncomm_chg": 21395,
-      "base_comm_chg": -20229,
-      "base_nonrept_chg": -1166,
-      "quote_noncomm_net": 123113,
-      "quote_comm_net": -115536,
-      "quote_nonrept_net": -7577,
-      "quote_noncomm_chg": 20792,
-      "quote_comm_chg": -12369,
-      "quote_nonrept_chg": -8423,
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -259027,
+      "base_cot_idx": 4.5,
+      "quote_cot_idx": 97.6,
+      "noncomm_net": -142710,
+      "comm_net": 109292,
+      "nonrept_net": 33418,
+      "noncomm_chg": -6314,
+      "comm_chg": 4670,
+      "nonrept_chg": 1644,
+      "base_noncomm_net": -142710,
+      "base_comm_net": 109292,
+      "base_nonrept_net": 33418,
+      "base_noncomm_chg": -6314,
+      "base_comm_chg": 4670,
+      "base_nonrept_chg": 1644,
+      "quote_noncomm_net": 116317,
+      "quote_comm_net": -111500,
+      "quote_nonrept_net": -4817,
+      "quote_noncomm_chg": -6796,
+      "quote_comm_chg": 4036,
+      "quote_nonrept_chg": 2760,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -142710,
+          "noncomm_chg": -6314,
+          "comm_net": 109292,
+          "comm_chg": 4670,
+          "nonrept_net": 33418,
+          "nonrept_chg": 1644,
+          "cot_idx": 4.5
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -136396,
@@ -15550,19 +15560,19 @@ window.COT_DATA = {
           "nonrept_net": 29410,
           "nonrept_chg": -219,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -134524,
-          "noncomm_chg": 3049,
-          "comm_net": 104895,
-          "comm_chg": -6330,
-          "nonrept_net": 29629,
-          "nonrept_chg": 3281,
-          "cot_idx": 1.0
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -15592,19 +15602,19 @@ window.COT_DATA = {
           "nonrept_net": 3499,
           "nonrept_chg": 2290,
           "cot_idx": 93.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 69878,
-          "noncomm_chg": 19671,
-          "comm_net": -71087,
-          "comm_chg": -22500,
-          "nonrept_net": 1209,
-          "nonrept_chg": 2829,
-          "cot_idx": 82.2
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -142710,
+          "noncomm_chg": -6314,
+          "comm_net": 109292,
+          "comm_chg": 4670,
+          "nonrept_net": 33418,
+          "nonrept_chg": 1644,
+          "cot_idx": 4.5
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -136396,
@@ -16114,19 +16124,19 @@ window.COT_DATA = {
           "nonrept_net": 42905,
           "nonrept_chg": 1762,
           "cot_idx": 83.2
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 99007,
-          "noncomm_chg": 25418,
-          "comm_net": -140150,
-          "comm_chg": -28777,
-          "nonrept_net": 41143,
-          "nonrept_chg": 3359,
-          "cot_idx": 85.7
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -16636,20 +16646,10 @@ window.COT_DATA = {
           "nonrept_net": 967,
           "nonrept_chg": 1597,
           "cot_idx": 26.8
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 31157,
-          "noncomm_chg": -17319,
-          "comm_net": -30527,
-          "comm_chg": 17496,
-          "nonrept_net": -630,
-          "nonrept_chg": -177,
-          "cot_idx": 29.0
         }
       ],
-      "rationale": "EUR สถาบันยัง Net Short แต่เริ่มมีการปิดทำกำไรบางส่วน ให้รอราคาเด้งขึ้นไปชนแนวต้านก่อน",
-      "paul_rule": "รอราคากระตุกขึ้นทดสอบแนวต้านแล้วดูสัญญาณหมดแรง",
+      "rationale": "ภาพรวม EUR สถาบัน Net Short หนาแน่น (-142,710) สวนทางกับ JPY ที่สถาบัน Net Long (+116,317) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาแตะ EMA50 + ยืนยัน 3-Bar Bearish BOS",
       "base_flag": "🇪🇺",
       "quote_flag": "🇯🇵"
     },
@@ -16662,28 +16662,38 @@ window.COT_DATA = {
       "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
       "badge_color": "red",
       "confidence": "HIGH (Confluent 100%)",
-      "net_diff": -274866,
+      "net_diff": -298377,
       "base_cot_idx": 0.0,
-      "quote_cot_idx": 100.0,
-      "noncomm_net": -151753,
-      "comm_net": 138651,
-      "nonrept_net": 13102,
-      "noncomm_chg": -22296,
-      "comm_chg": 25968,
-      "nonrept_chg": -3672,
-      "base_noncomm_net": -151753,
-      "base_comm_net": 138651,
-      "base_nonrept_net": 13102,
-      "base_noncomm_chg": -22296,
-      "base_comm_chg": 25968,
-      "base_nonrept_chg": -3672,
-      "quote_noncomm_net": 123113,
-      "quote_comm_net": -115536,
-      "quote_nonrept_net": -7577,
-      "quote_noncomm_chg": 20792,
-      "quote_comm_chg": -12369,
-      "quote_nonrept_chg": -8423,
+      "quote_cot_idx": 97.6,
+      "noncomm_net": -182060,
+      "comm_net": 174507,
+      "nonrept_net": 7553,
+      "noncomm_chg": -30307,
+      "comm_chg": 35856,
+      "nonrept_chg": -5549,
+      "base_noncomm_net": -182060,
+      "base_comm_net": 174507,
+      "base_nonrept_net": 7553,
+      "base_noncomm_chg": -30307,
+      "base_comm_chg": 35856,
+      "base_nonrept_chg": -5549,
+      "quote_noncomm_net": 116317,
+      "quote_comm_net": -111500,
+      "quote_nonrept_net": -4817,
+      "quote_noncomm_chg": -6796,
+      "quote_comm_chg": 4036,
+      "quote_nonrept_chg": 2760,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -182060,
+          "noncomm_chg": -30307,
+          "comm_net": 174507,
+          "comm_chg": 35856,
+          "nonrept_net": 7553,
+          "nonrept_chg": -5549,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -151753,
@@ -16713,19 +16723,19 @@ window.COT_DATA = {
           "nonrept_net": 17080,
           "nonrept_chg": 4713,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -127292,
-          "noncomm_chg": -9993,
-          "comm_net": 114925,
-          "comm_chg": 8555,
-          "nonrept_net": 12367,
-          "nonrept_chg": 1438,
-          "cot_idx": 0.0
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -16755,19 +16765,19 @@ window.COT_DATA = {
           "nonrept_net": 3499,
           "nonrept_chg": 2290,
           "cot_idx": 93.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 69878,
-          "noncomm_chg": 19671,
-          "comm_net": -71087,
-          "comm_chg": -22500,
-          "nonrept_net": 1209,
-          "nonrept_chg": 2829,
-          "cot_idx": 82.2
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -182060,
+          "noncomm_chg": -30307,
+          "comm_net": 174507,
+          "comm_chg": 35856,
+          "nonrept_net": 7553,
+          "nonrept_chg": -5549,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -151753,
@@ -17277,19 +17287,19 @@ window.COT_DATA = {
           "nonrept_net": 8624,
           "nonrept_chg": -427,
           "cot_idx": 13.5
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -75856,
-          "noncomm_chg": 2771,
-          "comm_net": 66805,
-          "comm_chg": -3939,
-          "nonrept_net": 9051,
-          "nonrept_chg": 1168,
-          "cot_idx": 18.7
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -17799,19 +17809,9 @@ window.COT_DATA = {
           "nonrept_net": 967,
           "nonrept_chg": 1597,
           "cot_idx": 26.8
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 31157,
-          "noncomm_chg": -17319,
-          "comm_net": -30527,
-          "comm_chg": 17496,
-          "nonrept_net": -630,
-          "nonrept_chg": -177,
-          "cot_idx": 29.0
         }
       ],
-      "rationale": "ภาพรวม AUD สถาบัน Net Short หนาแน่น (-151,753) สวนทางกับ JPY ที่สถาบัน Net Long (+123,113) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
+      "rationale": "ภาพรวม AUD สถาบัน Net Short หนาแน่น (-182,060) สวนทางกับ JPY ที่สถาบัน Net Long (+116,317) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
       "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาแตะ EMA50 + ยืนยัน 3-Bar Bearish BOS",
       "base_flag": "🇦🇺",
       "quote_flag": "🇯🇵"
@@ -17820,33 +17820,43 @@ window.COT_DATA = {
       "pair": "GBP/JPY",
       "base": "GBP",
       "quote": "JPY",
-      "macro_bias": "BEARISH",
-      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
-      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
-      "badge_color": "red",
-      "confidence": "HIGH (Confluent 100%)",
-      "net_diff": -166329,
-      "base_cot_idx": 68.5,
-      "quote_cot_idx": 100.0,
-      "noncomm_net": -43216,
-      "comm_net": 53222,
-      "nonrept_net": -10006,
-      "noncomm_chg": 16605,
-      "comm_chg": -15777,
-      "nonrept_chg": -828,
-      "base_noncomm_net": -43216,
-      "base_comm_net": 53222,
-      "base_nonrept_net": -10006,
-      "base_noncomm_chg": 16605,
-      "base_comm_chg": -15777,
-      "base_nonrept_chg": -828,
-      "quote_noncomm_net": 123113,
-      "quote_comm_net": -115536,
-      "quote_nonrept_net": -7577,
-      "quote_noncomm_chg": 20792,
-      "quote_comm_chg": -12369,
-      "quote_nonrept_chg": -8423,
+      "macro_bias": "NEUTRAL",
+      "recommendation": "⛔ งดเข้าเทรด / หลีกเลี่ยง (BASE SHORT SQUEEZE)",
+      "phase": "SHORT-COVERING PULLBACK",
+      "badge_color": "amber",
+      "confidence": "LOW (High Squeeze Risk)",
+      "net_diff": -148621,
+      "base_cot_idx": 80.2,
+      "quote_cot_idx": 97.6,
+      "noncomm_net": -32304,
+      "comm_net": 44854,
+      "nonrept_net": -12550,
+      "noncomm_chg": 10912,
+      "comm_chg": -8368,
+      "nonrept_chg": -2544,
+      "base_noncomm_net": -32304,
+      "base_comm_net": 44854,
+      "base_nonrept_net": -12550,
+      "base_noncomm_chg": 10912,
+      "base_comm_chg": -8368,
+      "base_nonrept_chg": -2544,
+      "quote_noncomm_net": 116317,
+      "quote_comm_net": -111500,
+      "quote_nonrept_net": -4817,
+      "quote_noncomm_chg": -6796,
+      "quote_comm_chg": 4036,
+      "quote_nonrept_chg": 2760,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -32304,
+          "noncomm_chg": 10912,
+          "comm_net": 44854,
+          "comm_chg": -8368,
+          "nonrept_net": -12550,
+          "nonrept_chg": -2544,
+          "cot_idx": 80.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -43216,
@@ -17876,19 +17886,19 @@ window.COT_DATA = {
           "nonrept_net": -10484,
           "nonrept_chg": 4604,
           "cot_idx": 29.6
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -80420,
-          "noncomm_chg": 26544,
-          "comm_net": 95508,
-          "comm_chg": -25936,
-          "nonrept_net": -15088,
-          "nonrept_chg": -608,
-          "cot_idx": 28.5
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -17918,19 +17928,19 @@ window.COT_DATA = {
           "nonrept_net": 3499,
           "nonrept_chg": 2290,
           "cot_idx": 93.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 69878,
-          "noncomm_chg": 19671,
-          "comm_net": -71087,
-          "comm_chg": -22500,
-          "nonrept_net": 1209,
-          "nonrept_chg": 2829,
-          "cot_idx": 82.2
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -32304,
+          "noncomm_chg": 10912,
+          "comm_net": 44854,
+          "comm_chg": -8368,
+          "nonrept_net": -12550,
+          "nonrept_chg": -2544,
+          "cot_idx": 80.2
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -43216,
@@ -18440,19 +18450,19 @@ window.COT_DATA = {
           "nonrept_net": -8779,
           "nonrept_chg": 5060,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -79257,
-          "noncomm_chg": 1747,
-          "comm_net": 93096,
-          "comm_chg": 693,
-          "nonrept_net": -13839,
-          "nonrept_chg": -2440,
-          "cot_idx": 1.3
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 116317,
+          "noncomm_chg": -6796,
+          "comm_net": -111500,
+          "comm_chg": 4036,
+          "nonrept_net": -4817,
+          "nonrept_chg": 2760,
+          "cot_idx": 97.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 123113,
@@ -18962,20 +18972,10 @@ window.COT_DATA = {
           "nonrept_net": 967,
           "nonrept_chg": 1597,
           "cot_idx": 26.8
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 31157,
-          "noncomm_chg": -17319,
-          "comm_net": -30527,
-          "comm_chg": 17496,
-          "nonrept_net": -630,
-          "nonrept_chg": -177,
-          "cot_idx": 29.0
         }
       ],
-      "rationale": "ภาพรวม GBP สถาบัน Net Short หนาแน่น (-43,216) สวนทางกับ JPY ที่สถาบัน Net Long (+123,113) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
-      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาแตะ EMA50 + ยืนยัน 3-Bar Bearish BOS",
+      "rationale": "แม้ภาพรวม GBP จะ Net Short (-32,304) แต่สัปดาห์นี้สถาบันได้ปิด Short หนีตายใน GBP ถึง +10,912 สัญญา ราคากำลังดีดตัวขึ้นแรง กฎของ Paul: 'หลีกเลี่ยงการเปิด Sell ในช่วงที่ตัวหน้ากำลังเกิด Short Squeeze'",
+      "paul_rule": "งดเปิดสถานะ! รอจนกว่าการปิด Short ของตัวหน้าจะจบลงและเกิด Rejection ที่แนวต้านใหญ่",
       "base_flag": "🇬🇧",
       "quote_flag": "🇯🇵"
     },
@@ -18983,33 +18983,43 @@ window.COT_DATA = {
       "pair": "EUR/USD",
       "base": "EUR",
       "quote": "USD",
-      "macro_bias": "NEUTRAL",
-      "recommendation": "⛔ งดเข้าเทรด / หลีกเลี่ยง (BASE SHORT SQUEEZE)",
-      "phase": "SHORT-COVERING PULLBACK",
-      "badge_color": "amber",
-      "confidence": "LOW (High Squeeze Risk)",
-      "net_diff": -150209,
-      "base_cot_idx": 6.3,
-      "quote_cot_idx": 77.6,
-      "noncomm_net": -136396,
-      "comm_net": 104622,
-      "nonrept_net": 31774,
-      "noncomm_chg": 21395,
-      "comm_chg": -20229,
-      "nonrept_chg": -1166,
-      "base_noncomm_net": -136396,
-      "base_comm_net": 104622,
-      "base_nonrept_net": 31774,
-      "base_noncomm_chg": 21395,
-      "base_comm_chg": -20229,
-      "base_nonrept_chg": -1166,
-      "quote_noncomm_net": 13813,
-      "quote_comm_net": -16257,
-      "quote_nonrept_net": 2444,
-      "quote_noncomm_chg": -377,
-      "quote_comm_chg": 157,
-      "quote_nonrept_chg": 220,
+      "macro_bias": "BEARISH",
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -156055,
+      "base_cot_idx": 4.5,
+      "quote_cot_idx": 76.4,
+      "noncomm_net": -142710,
+      "comm_net": 109292,
+      "nonrept_net": 33418,
+      "noncomm_chg": -6314,
+      "comm_chg": 4670,
+      "nonrept_chg": 1644,
+      "base_noncomm_net": -142710,
+      "base_comm_net": 109292,
+      "base_nonrept_net": 33418,
+      "base_noncomm_chg": -6314,
+      "base_comm_chg": 4670,
+      "base_nonrept_chg": 1644,
+      "quote_noncomm_net": 13345,
+      "quote_comm_net": -15881,
+      "quote_nonrept_net": 2536,
+      "quote_noncomm_chg": -468,
+      "quote_comm_chg": 376,
+      "quote_nonrept_chg": 92,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -142710,
+          "noncomm_chg": -6314,
+          "comm_net": 109292,
+          "comm_chg": 4670,
+          "nonrept_net": 33418,
+          "nonrept_chg": 1644,
+          "cot_idx": 4.5
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -136396,
@@ -19039,19 +19049,19 @@ window.COT_DATA = {
           "nonrept_net": 29410,
           "nonrept_chg": -219,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -134524,
-          "noncomm_chg": 3049,
-          "comm_net": 104895,
-          "comm_chg": -6330,
-          "nonrept_net": 29629,
-          "nonrept_chg": 3281,
-          "cot_idx": 1.0
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -19081,19 +19091,19 @@ window.COT_DATA = {
           "nonrept_net": 1967,
           "nonrept_chg": -3,
           "cot_idx": 78.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 15044,
-          "noncomm_chg": 2125,
-          "comm_net": -17014,
-          "comm_chg": -2186,
-          "nonrept_net": 1970,
-          "nonrept_chg": 61,
-          "cot_idx": 80.8
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -142710,
+          "noncomm_chg": -6314,
+          "comm_net": 109292,
+          "comm_chg": 4670,
+          "nonrept_net": 33418,
+          "nonrept_chg": 1644,
+          "cot_idx": 4.5
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -136396,
@@ -19603,19 +19613,19 @@ window.COT_DATA = {
           "nonrept_net": 42905,
           "nonrept_chg": 1762,
           "cot_idx": 83.2
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": 99007,
-          "noncomm_chg": 25418,
-          "comm_net": -140150,
-          "comm_chg": -28777,
-          "nonrept_net": 41143,
-          "nonrept_chg": 3359,
-          "cot_idx": 85.7
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -20125,20 +20135,10 @@ window.COT_DATA = {
           "nonrept_net": 464,
           "nonrept_chg": -513,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -16108,
-          "noncomm_chg": -481,
-          "comm_net": 15131,
-          "comm_chg": -41,
-          "nonrept_net": 977,
-          "nonrept_chg": 522,
-          "cot_idx": 0.1
         }
       ],
-      "rationale": "แม้ภาพรวม EUR จะ Net Short (-136,396) แต่สัปดาห์นี้สถาบันได้ปิด Short หนีตายใน EUR ถึง +21,395 สัญญา ราคากำลังดีดตัวขึ้นแรง กฎของ Paul: 'หลีกเลี่ยงการเปิด Sell ในช่วงที่ตัวหน้ากำลังเกิด Short Squeeze'",
-      "paul_rule": "งดเปิดสถานะ! รอจนกว่าการปิด Short ของตัวหน้าจะจบลงและเกิด Rejection ที่แนวต้านใหญ่",
+      "rationale": "ภาพรวม EUR สถาบัน Net Short หนาแน่น (-142,710) สวนทางกับ USD ที่สถาบัน Net Long (+13,345) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาแตะ EMA50 + ยืนยัน 3-Bar Bearish BOS",
       "base_flag": "🇪🇺",
       "quote_flag": "🇺🇸"
     },
@@ -20151,28 +20151,38 @@ window.COT_DATA = {
       "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
       "badge_color": "red",
       "confidence": "HIGH (Confluent 100%)",
-      "net_diff": -165566,
+      "net_diff": -195405,
       "base_cot_idx": 0.0,
-      "quote_cot_idx": 77.6,
-      "noncomm_net": -151753,
-      "comm_net": 138651,
-      "nonrept_net": 13102,
-      "noncomm_chg": -22296,
-      "comm_chg": 25968,
-      "nonrept_chg": -3672,
-      "base_noncomm_net": -151753,
-      "base_comm_net": 138651,
-      "base_nonrept_net": 13102,
-      "base_noncomm_chg": -22296,
-      "base_comm_chg": 25968,
-      "base_nonrept_chg": -3672,
-      "quote_noncomm_net": 13813,
-      "quote_comm_net": -16257,
-      "quote_nonrept_net": 2444,
-      "quote_noncomm_chg": -377,
-      "quote_comm_chg": 157,
-      "quote_nonrept_chg": 220,
+      "quote_cot_idx": 76.4,
+      "noncomm_net": -182060,
+      "comm_net": 174507,
+      "nonrept_net": 7553,
+      "noncomm_chg": -30307,
+      "comm_chg": 35856,
+      "nonrept_chg": -5549,
+      "base_noncomm_net": -182060,
+      "base_comm_net": 174507,
+      "base_nonrept_net": 7553,
+      "base_noncomm_chg": -30307,
+      "base_comm_chg": 35856,
+      "base_nonrept_chg": -5549,
+      "quote_noncomm_net": 13345,
+      "quote_comm_net": -15881,
+      "quote_nonrept_net": 2536,
+      "quote_noncomm_chg": -468,
+      "quote_comm_chg": 376,
+      "quote_nonrept_chg": 92,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -182060,
+          "noncomm_chg": -30307,
+          "comm_net": 174507,
+          "comm_chg": 35856,
+          "nonrept_net": 7553,
+          "nonrept_chg": -5549,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -151753,
@@ -20202,19 +20212,19 @@ window.COT_DATA = {
           "nonrept_net": 17080,
           "nonrept_chg": 4713,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -127292,
-          "noncomm_chg": -9993,
-          "comm_net": 114925,
-          "comm_chg": 8555,
-          "nonrept_net": 12367,
-          "nonrept_chg": 1438,
-          "cot_idx": 0.0
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -20244,19 +20254,19 @@ window.COT_DATA = {
           "nonrept_net": 1967,
           "nonrept_chg": -3,
           "cot_idx": 78.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 15044,
-          "noncomm_chg": 2125,
-          "comm_net": -17014,
-          "comm_chg": -2186,
-          "nonrept_net": 1970,
-          "nonrept_chg": 61,
-          "cot_idx": 80.8
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -182060,
+          "noncomm_chg": -30307,
+          "comm_net": 174507,
+          "comm_chg": 35856,
+          "nonrept_net": 7553,
+          "nonrept_chg": -5549,
+          "cot_idx": 0.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -151753,
@@ -20766,19 +20776,19 @@ window.COT_DATA = {
           "nonrept_net": 8624,
           "nonrept_chg": -427,
           "cot_idx": 13.5
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -75856,
-          "noncomm_chg": 2771,
-          "comm_net": 66805,
-          "comm_chg": -3939,
-          "nonrept_net": 9051,
-          "nonrept_chg": 1168,
-          "cot_idx": 18.7
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -21288,19 +21298,9 @@ window.COT_DATA = {
           "nonrept_net": 464,
           "nonrept_chg": -513,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -16108,
-          "noncomm_chg": -481,
-          "comm_net": 15131,
-          "comm_chg": -41,
-          "nonrept_net": 977,
-          "nonrept_chg": 522,
-          "cot_idx": 0.1
         }
       ],
-      "rationale": "ภาพรวม AUD สถาบัน Net Short หนาแน่น (-151,753) สวนทางกับ USD ที่สถาบัน Net Long (+13,813) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
+      "rationale": "ภาพรวม AUD สถาบัน Net Short หนาแน่น (-182,060) สวนทางกับ USD ที่สถาบัน Net Long (+13,345) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
       "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาแตะ EMA50 + ยืนยัน 3-Bar Bearish BOS",
       "base_flag": "🇦🇺",
       "quote_flag": "🇺🇸"
@@ -21310,32 +21310,42 @@ window.COT_DATA = {
       "base": "NZD",
       "quote": "USD",
       "macro_bias": "BEARISH",
-      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอราคาพักฐาน (WAIT FOR RETRACEMENT)",
-      "phase": "SHORT-COVERING PULLBACK",
-      "badge_color": "amber",
-      "confidence": "MODERATE",
-      "net_diff": -69179,
-      "base_cot_idx": 13.0,
-      "quote_cot_idx": 77.6,
-      "noncomm_net": -55366,
-      "comm_net": 58148,
-      "nonrept_net": -2782,
-      "noncomm_chg": 4649,
-      "comm_chg": -4581,
-      "nonrept_chg": -68,
-      "base_noncomm_net": -55366,
-      "base_comm_net": 58148,
-      "base_nonrept_net": -2782,
-      "base_noncomm_chg": 4649,
-      "base_comm_chg": -4581,
-      "base_nonrept_chg": -68,
-      "quote_noncomm_net": 13813,
-      "quote_comm_net": -16257,
-      "quote_nonrept_net": 2444,
-      "quote_noncomm_chg": -377,
-      "quote_comm_chg": 157,
-      "quote_nonrept_chg": 220,
+      "recommendation": "🔴 โฟกัสหน้า SELL : ⏳ รอเด้งชนแนวต้าน (SELL ON RALLIES)",
+      "phase": "DOWNSIDE EXPANSION (ขาลงได้เปรียบ)",
+      "badge_color": "red",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": -76590,
+      "base_cot_idx": 2.6,
+      "quote_cot_idx": 76.4,
+      "noncomm_net": -63245,
+      "comm_net": 65682,
+      "nonrept_net": -2437,
+      "noncomm_chg": -7879,
+      "comm_chg": 7534,
+      "nonrept_chg": 345,
+      "base_noncomm_net": -63245,
+      "base_comm_net": 65682,
+      "base_nonrept_net": -2437,
+      "base_noncomm_chg": -7879,
+      "base_comm_chg": 7534,
+      "base_nonrept_chg": 345,
+      "quote_noncomm_net": 13345,
+      "quote_comm_net": -15881,
+      "quote_nonrept_net": 2536,
+      "quote_noncomm_chg": -468,
+      "quote_comm_chg": 376,
+      "quote_nonrept_chg": 92,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -63245,
+          "noncomm_chg": -7879,
+          "comm_net": 65682,
+          "comm_chg": 7534,
+          "nonrept_net": -2437,
+          "nonrept_chg": 345,
+          "cot_idx": 2.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -55366,
@@ -21365,19 +21375,19 @@ window.COT_DATA = {
           "nonrept_net": -1856,
           "nonrept_chg": 417,
           "cot_idx": 9.9
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -58149,
-          "noncomm_chg": -11148,
-          "comm_net": 60422,
-          "comm_chg": 11447,
-          "nonrept_net": -2273,
-          "nonrept_chg": -299,
-          "cot_idx": 9.3
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -21407,19 +21417,19 @@ window.COT_DATA = {
           "nonrept_net": 1967,
           "nonrept_chg": -3,
           "cot_idx": 78.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 15044,
-          "noncomm_chg": 2125,
-          "comm_net": -17014,
-          "comm_chg": -2186,
-          "nonrept_net": 1970,
-          "nonrept_chg": 61,
-          "cot_idx": 80.8
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -63245,
+          "noncomm_chg": -7879,
+          "comm_net": 65682,
+          "comm_chg": 7534,
+          "nonrept_net": -2437,
+          "nonrept_chg": 345,
+          "cot_idx": 2.6
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -55366,
@@ -21929,19 +21939,19 @@ window.COT_DATA = {
           "nonrept_net": -2034,
           "nonrept_chg": 197,
           "cot_idx": 6.1
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -49257,
-          "noncomm_chg": -5188,
-          "comm_net": 51488,
-          "comm_chg": 5403,
-          "nonrept_net": -2231,
-          "nonrept_chg": -215,
-          "cot_idx": 10.7
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -22451,20 +22461,10 @@ window.COT_DATA = {
           "nonrept_net": 464,
           "nonrept_chg": -513,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -16108,
-          "noncomm_chg": -481,
-          "comm_net": 15131,
-          "comm_chg": -41,
-          "nonrept_net": 977,
-          "nonrept_chg": 522,
-          "cot_idx": 0.1
         }
       ],
-      "rationale": "NZD สถาบันยัง Net Short แต่เริ่มมีการปิดทำกำไรบางส่วน ให้รอราคาเด้งขึ้นไปชนแนวต้านก่อน",
-      "paul_rule": "รอราคากระตุกขึ้นทดสอบแนวต้านแล้วดูสัญญาณหมดแรง",
+      "rationale": "ภาพรวม NZD สถาบัน Net Short หนาแน่น (-63,245) สวนทางกับ USD ที่สถาบัน Net Long (+13,345) เม็ดเงินสถาบันหนุนทิศทางขาลงชัดเจน กฎของ Paul: 'มองหน้า SELL แน่นอน แต่ให้รอราคาเด้งขึ้นไปทดสอบแนวต้านก่อน แล้วค่อยกด Sell'",
+      "paul_rule": "หาจังหวะ Sell เมื่อราคาเด้งขึ้นมาแตะ EMA50 + ยืนยัน 3-Bar Bearish BOS",
       "base_flag": "🇳🇿",
       "quote_flag": "🇺🇸"
     },
@@ -22473,32 +22473,42 @@ window.COT_DATA = {
       "base": "USD",
       "quote": "CAD",
       "macro_bias": "BULLISH",
-      "recommendation": "🟢 โฟกัสหน้า BUY : ⏳ รอจังหวะย่อตัว (WAIT FOR PULLBACK)",
-      "phase": "MOMENTUM CHOP (กำลังสะสมพลัง)",
-      "badge_color": "amber",
-      "confidence": "MODERATE",
-      "net_diff": 46405,
-      "base_cot_idx": 77.6,
-      "quote_cot_idx": 68.1,
-      "noncomm_net": 13813,
-      "comm_net": -16257,
-      "nonrept_net": 2444,
-      "noncomm_chg": -377,
-      "comm_chg": 157,
-      "nonrept_chg": 220,
-      "base_noncomm_net": 13813,
-      "base_comm_net": -16257,
-      "base_nonrept_net": 2444,
-      "base_noncomm_chg": -377,
-      "base_comm_chg": 157,
-      "base_nonrept_chg": 220,
-      "quote_noncomm_net": -32592,
-      "quote_comm_net": 41861,
-      "quote_nonrept_net": -9269,
-      "quote_noncomm_chg": 9183,
-      "quote_comm_chg": -7523,
-      "quote_nonrept_chg": -1660,
+      "recommendation": "🟢 โฟกัสหน้า BUY : ⏳ รอย่อแตะแนวรับ (BUY ON DIPS)",
+      "phase": "UPSIDE EXPANSION (ขาขึ้นได้เปรียบ)",
+      "badge_color": "green",
+      "confidence": "HIGH (Confluent 100%)",
+      "net_diff": 58393,
+      "base_cot_idx": 76.4,
+      "quote_cot_idx": 62.3,
+      "noncomm_net": 13345,
+      "comm_net": -15881,
+      "nonrept_net": 2536,
+      "noncomm_chg": -468,
+      "comm_chg": 376,
+      "nonrept_chg": 92,
+      "base_noncomm_net": 13345,
+      "base_comm_net": -15881,
+      "base_nonrept_net": 2536,
+      "base_noncomm_chg": -468,
+      "base_comm_chg": 376,
+      "base_nonrept_chg": 92,
+      "quote_noncomm_net": -45048,
+      "quote_comm_net": 56220,
+      "quote_nonrept_net": -11172,
+      "quote_noncomm_chg": -12456,
+      "quote_comm_chg": 14359,
+      "quote_nonrept_chg": -1903,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -22528,19 +22538,19 @@ window.COT_DATA = {
           "nonrept_net": 1967,
           "nonrept_chg": -3,
           "cot_idx": 78.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 15044,
-          "noncomm_chg": 2125,
-          "comm_net": -17014,
-          "comm_chg": -2186,
-          "nonrept_net": 1970,
-          "nonrept_chg": 61,
-          "cot_idx": 80.8
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -45048,
+          "noncomm_chg": -12456,
+          "comm_net": 56220,
+          "comm_chg": 14359,
+          "nonrept_net": -11172,
+          "nonrept_chg": -1903,
+          "cot_idx": 62.3
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -32592,
@@ -22570,19 +22580,19 @@ window.COT_DATA = {
           "nonrept_net": -7836,
           "nonrept_chg": 4303,
           "cot_idx": 52.3
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -74709,
-          "noncomm_chg": 20056,
-          "comm_net": 86848,
-          "comm_chg": -18765,
-          "nonrept_net": -12139,
-          "nonrept_chg": -1291,
-          "cot_idx": 48.5
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -23092,19 +23102,19 @@ window.COT_DATA = {
           "nonrept_net": 464,
           "nonrept_chg": -513,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -16108,
-          "noncomm_chg": -481,
-          "comm_net": 15131,
-          "comm_chg": -41,
-          "nonrept_net": 977,
-          "nonrept_chg": 522,
-          "cot_idx": 0.1
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -45048,
+          "noncomm_chg": -12456,
+          "comm_net": 56220,
+          "comm_chg": 14359,
+          "nonrept_net": -11172,
+          "nonrept_chg": -1903,
+          "cot_idx": 62.3
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -32592,
@@ -23614,20 +23624,10 @@ window.COT_DATA = {
           "nonrept_net": -13046,
           "nonrept_chg": -475,
           "cot_idx": 24.5
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -149099,
-          "noncomm_chg": 8536,
-          "comm_net": 161670,
-          "comm_chg": -12208,
-          "nonrept_net": -12571,
-          "nonrept_chg": 3672,
-          "cot_idx": 25.6
         }
       ],
-      "rationale": "โมเมนตัมของทั้งสองฝั่งยังสูสีกัน แม้เทรนด์ใหญ่จะได้เปรียบแต่ต้องรอการย่อตัวที่ชัดเจน",
-      "paul_rule": "รอสัญญาณ Price Action กลับตัวที่แนวรับ",
+      "rationale": "ภาพรวม USD สถาบัน Net Long (+13,345) สวนทางกับ CAD ที่ Net Short (-45,048) เม็ดเงินสถาบันหนุนทิศทางขาขึ้น กฎของ Paul: 'มองหน้า BUY แน่นอน แต่ให้รอราคาย่อตัวลงมาแตะแนวรับก่อน แล้วค่อยกด Buy'",
+      "paul_rule": "รอราคาย่อตัวลงมาแตะ EMA50 + ยืนยัน 3-Bar Bullish BOS แล้วค่อย Buy",
       "base_flag": "🇺🇸",
       "quote_flag": "🇨🇦"
     },
@@ -23640,28 +23640,38 @@ window.COT_DATA = {
       "phase": "MOMENTUM CHOP (กำลังสะสมพลัง)",
       "badge_color": "amber",
       "confidence": "MODERATE",
-      "net_diff": 22966,
-      "base_cot_idx": 77.6,
+      "net_diff": 21626,
+      "base_cot_idx": 76.4,
       "quote_cot_idx": 100.0,
-      "noncomm_net": 13813,
-      "comm_net": -16257,
-      "nonrept_net": 2444,
-      "noncomm_chg": -377,
-      "comm_chg": 157,
-      "nonrept_chg": 220,
-      "base_noncomm_net": 13813,
-      "base_comm_net": -16257,
-      "base_nonrept_net": 2444,
-      "base_noncomm_chg": -377,
-      "base_comm_chg": 157,
-      "base_nonrept_chg": 220,
-      "quote_noncomm_net": -9153,
-      "quote_comm_net": 20877,
-      "quote_nonrept_net": -11724,
-      "quote_noncomm_chg": 7436,
-      "quote_comm_chg": -8915,
-      "quote_nonrept_chg": 1479,
+      "noncomm_net": 13345,
+      "comm_net": -15881,
+      "nonrept_net": 2536,
+      "noncomm_chg": -468,
+      "comm_chg": 376,
+      "nonrept_chg": 92,
+      "base_noncomm_net": 13345,
+      "base_comm_net": -15881,
+      "base_nonrept_net": 2536,
+      "base_noncomm_chg": -468,
+      "base_comm_chg": 376,
+      "base_nonrept_chg": 92,
+      "quote_noncomm_net": -8281,
+      "quote_comm_net": 20838,
+      "quote_nonrept_net": -12557,
+      "quote_noncomm_chg": 872,
+      "quote_comm_chg": -39,
+      "quote_nonrept_chg": -833,
       "base_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -23691,19 +23701,19 @@ window.COT_DATA = {
           "nonrept_net": 1967,
           "nonrept_chg": -3,
           "cot_idx": 78.4
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": 15044,
-          "noncomm_chg": 2125,
-          "comm_net": -17014,
-          "comm_chg": -2186,
-          "nonrept_net": 1970,
-          "nonrept_chg": 61,
-          "cot_idx": 80.8
         }
       ],
       "quote_weekly_changes_4w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -8281,
+          "noncomm_chg": 872,
+          "comm_net": 20838,
+          "comm_chg": -39,
+          "nonrept_net": -12557,
+          "nonrept_chg": -833,
+          "cot_idx": 100.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -9153,
@@ -23733,19 +23743,19 @@ window.COT_DATA = {
           "nonrept_net": -13584,
           "nonrept_chg": 2283,
           "cot_idx": 92.7
-        },
-        {
-          "date": "2026-10-20",
-          "noncomm_net": -18150,
-          "noncomm_chg": 3928,
-          "comm_net": 34017,
-          "comm_chg": -2255,
-          "nonrept_net": -15867,
-          "nonrept_chg": -1673,
-          "cot_idx": 100.0
         }
       ],
       "base_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": 13345,
+          "noncomm_chg": -468,
+          "comm_net": -15881,
+          "comm_chg": 376,
+          "nonrept_net": 2536,
+          "nonrept_chg": 92,
+          "cot_idx": 76.4
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": 13813,
@@ -24255,19 +24265,19 @@ window.COT_DATA = {
           "nonrept_net": 464,
           "nonrept_chg": -513,
           "cot_idx": 0.0
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -16108,
-          "noncomm_chg": -481,
-          "comm_net": 15131,
-          "comm_chg": -41,
-          "nonrept_net": 977,
-          "nonrept_chg": 522,
-          "cot_idx": 0.1
         }
       ],
       "quote_weekly_changes_52w": [
+        {
+          "date": "2026-11-17",
+          "noncomm_net": -8281,
+          "noncomm_chg": 872,
+          "comm_net": 20838,
+          "comm_chg": -39,
+          "nonrept_net": -12557,
+          "nonrept_chg": -833,
+          "cot_idx": 100.0
+        },
         {
           "date": "2026-11-10",
           "noncomm_net": -9153,
@@ -24777,16 +24787,6 @@ window.COT_DATA = {
           "nonrept_net": -3754,
           "nonrept_chg": -1070,
           "cot_idx": 33.3
-        },
-        {
-          "date": "2025-11-18",
-          "noncomm_net": -32185,
-          "noncomm_chg": 3864,
-          "comm_net": 34869,
-          "comm_chg": -8337,
-          "nonrept_net": -2684,
-          "nonrept_chg": 4473,
-          "cot_idx": 47.1
         }
       ],
       "rationale": "โมเมนตัมของทั้งสองฝั่งยังสูสีกัน แม้เทรนด์ใหญ่จะได้เปรียบแต่ต้องรอการย่อตัวที่ชัดเจน",
