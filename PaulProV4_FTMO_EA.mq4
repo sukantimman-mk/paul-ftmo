@@ -739,10 +739,12 @@ bool IsActiveInstitutionalSession()
    if(!EnforceInstitutionalHrs)
       return true;
 
-   datetime nowUtc = TimeGMT();
-   int utcHour = TimeHour(nowUtc);
+   // Check the start hour (UTC) of the just-closed H4 candle (4 hours prior to now)
+   // Active institutional window covers 04:00..19:59 UTC (closes 08:00..23:59 UTC = 15:00..06:59 TH)
+   datetime closedBarUtc = TimeGMT() - (4 * 3600);
+   int closedUtcHour = TimeHour(closedBarUtc);
 
-   if(utcHour >= 4 && utcHour <= 21)
+   if(closedUtcHour >= 4 && closedUtcHour <= 19)
       return true;
 
    return false;

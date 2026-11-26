@@ -54,9 +54,11 @@ def compute_atr(df, period=14):
     return tr.rolling(period).mean()
 
 def clean_df(df):
+    if df is None or df.empty:
+        return pd.DataFrame(columns=['Open', 'High', 'Low', 'Close', 'Volume'])
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
-    if df.index.tz is not None:
+    if isinstance(df.index, pd.DatetimeIndex) and df.index.tz is not None:
         df.index = df.index.tz_convert('UTC').tz_localize(None)
     return df.dropna(subset=['Open', 'High', 'Low', 'Close'])
 
@@ -205,6 +207,8 @@ def simulate_asset_v4(symbol, name, cot_contract, is_usd_base, dec, pip_val, cot
     ticker = yf.Ticker(symbol)
     period_h = '120d' if live_only else '730d'
     df_h = clean_df(ticker.history(period=period_h, interval='1h'))
+    if df_h.empty:
+        df_h = clean_df(ticker.history(period=period_h, interval='1h'))
 
     df_h4 = df_h.resample('4h').agg({
         'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last', 'Volume': 'sum'
