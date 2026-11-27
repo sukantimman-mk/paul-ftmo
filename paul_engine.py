@@ -452,33 +452,39 @@ def simulate_asset_v4(symbol, name, cot_contract, is_usd_base, dec, pip_val, cot
     # =========================================================================
     # BUILD REAL-TIME LIVE TRADING COMMAND CENTER STATE (LATEST 80 H4 CANDLES)
     # =========================================================================
-    live_slice_len = min(80, len(df_h4))
-    live_start = len(df_h4) - live_slice_len
+    # Evaluate Live 1-2-3-4 Gates strictly on the latest COMPLETED H4 bar (matching MT4 shift=1 & backtest)
+    now_utc_naive = pd.Timestamp.now('UTC').tz_localize(None)
+    eval_h4 = df_h4.iloc[:-1] if (len(df_h4) >= 2 and now_utc_naive < (df_h4.index[-1] + pd.Timedelta(hours=4))) else df_h4
+    eval_ef = ef.iloc[:-1] if len(eval_h4) < len(df_h4) else ef
+    eval_es = es.iloc[:-1] if len(eval_h4) < len(df_h4) else es
+
+    live_slice_len = min(80, len(eval_h4))
+    live_start = len(eval_h4) - live_slice_len
     live_candles = []
-    for k in range(live_start, len(df_h4)):
-        ts = df_h4.index[k].strftime('%Y-%m-%d %H:%M')
-        o_k = round(float(df_h4['Open'].iloc[k]), dec)
-        h_k = round(float(df_h4['High'].iloc[k]), dec)
-        l_k = round(float(df_h4['Low'].iloc[k]), dec)
-        c_k = round(float(df_h4['Close'].iloc[k]), dec)
-        r_k = round(float(df_h4['RSI'].iloc[k]), 1) if not pd.isna(df_h4['RSI'].iloc[k]) else 50.0
-        e50_k = round(float(ef.iloc[k]), dec)
-        e200_k = round(float(es.iloc[k]), dec)
+    for k in range(live_start, len(eval_h4)):
+        ts = eval_h4.index[k].strftime('%Y-%m-%d %H:%M')
+        o_k = round(float(eval_h4['Open'].iloc[k]), dec)
+        h_k = round(float(eval_h4['High'].iloc[k]), dec)
+        l_k = round(float(eval_h4['Low'].iloc[k]), dec)
+        c_k = round(float(eval_h4['Close'].iloc[k]), dec)
+        r_k = round(float(eval_h4['RSI'].iloc[k]), 1) if not pd.isna(eval_h4['RSI'].iloc[k]) else 50.0
+        e50_k = round(float(eval_ef.iloc[k]), dec)
+        e200_k = round(float(eval_es.iloc[k]), dec)
         live_candles.append([ts, o_k, h_k, l_k, c_k, r_k, e50_k, e200_k])
 
-    last_t = df_h4.index[-1]
-    latest_o = round(float(df_h4['Open'].iloc[-1]), dec)
-    latest_h = round(float(df_h4['High'].iloc[-1]), dec)
-    latest_l = round(float(df_h4['Low'].iloc[-1]), dec)
-    latest_c = round(float(df_h4['Close'].iloc[-1]), dec)
-    latest_ef = round(float(ef.iloc[-1]), dec)
-    latest_es = round(float(es.iloc[-1]), dec)
-    latest_atr = round(float(df_h4['ATR'].iloc[-1]), dec)
-    latest_rsi = round(float(df_h4['RSI'].iloc[-1]), 1)
+    last_t = eval_h4.index[-1]
+    latest_o = round(float(eval_h4['Open'].iloc[-1]), dec)
+    latest_h = round(float(eval_h4['High'].iloc[-1]), dec)
+    latest_l = round(float(eval_h4['Low'].iloc[-1]), dec)
+    latest_c = round(float(eval_h4['Close'].iloc[-1]), dec)
+    latest_ef = round(float(eval_ef.iloc[-1]), dec)
+    latest_es = round(float(eval_es.iloc[-1]), dec)
+    latest_atr = round(float(eval_h4['ATR'].iloc[-1]), dec)
+    latest_rsi = round(float(eval_h4['RSI'].iloc[-1]), 1)
 
-    # Prior 3 completed bars before the latest bar ([-4:-1])
-    bos_h_now = round(float(df_h4['High'].iloc[-4:-1].max()), dec)
-    bos_l_now = round(float(df_h4['Low'].iloc[-4:-1].min()), dec)
+    # Prior 3 completed bars before the latest completed bar ([-4:-1])
+    bos_h_now = round(float(eval_h4['High'].iloc[-4:-1].max()), dec)
+    bos_l_now = round(float(eval_h4['Low'].iloc[-4:-1].min()), dec)
     is_bull_now = latest_ef > latest_es
     trend_now = 'BULLISH' if is_bull_now else 'BEARISH'
     planned_dir = 'BUY' if is_bull_now else 'SELL'
@@ -509,24 +515,24 @@ def simulate_asset_v4(symbol, name, cot_contract, is_usd_base, dec, pip_val, cot
         except Exception:
             pass
 
-    bars_since_exit = (len(df_h4) - 1) - last_exit_i
+    bars_since_exit = (len(eval_h4) - 1) - last_exit_i
     cooldown_ok = (not ledger_trade) and (bars_since_exit >= cooldown)
-    pb_lows_live = df_h4['Low'].iloc[-11:-1]
-    pb_highs_live = df_h4['High'].iloc[-11:-1]
-    pb_efs_live = ef.iloc[-11:-1]
+    pb_lows_live = eval_h4['Low'].iloc[-11:-1]
+    pb_highs_live = eval_h4['High'].iloc[-11:-1]
+    pb_efs_live = eval_ef.iloc[-11:-1]
     touched_ema_live = bool((pb_lows_live <= pb_efs_live * 1.001).any() if is_bull_now else (pb_highs_live >= pb_efs_live * 0.999).any())
     gate2_pass = bool(cooldown_ok and touched_ema_live)
 
-    # Gate 3: 3-Bar BOS + RSI + Active Session
+    # Gate 3: 3-Bar BOS + RSI + Active Institutional Session
     bos_broken_now = bool((latest_c > bos_h_now and latest_c > latest_o) if is_bull_now else (latest_c < bos_l_now and latest_c < latest_o))
     rsi_live_ok = bool((45 <= latest_rsi <= 68) if is_bull_now else (32 <= latest_rsi <= 55))
     session_live_ok = bool(last_t.hour in [4, 8, 12, 16])
-    gate3_pass = bool(bos_broken_now and rsi_live_ok)
+    gate3_pass = bool(bos_broken_now and rsi_live_ok and session_live_ok)
 
     # Gate 4: Planned or Active Order Levels
     trigger_entry = latest_c if bos_broken_now else (bos_h_now if is_bull_now else bos_l_now)
     if is_bull_now:
-        raw_sl_live = float(df_h4['Low'].iloc[-4:].min()) - 0.25 * latest_atr
+        raw_sl_live = float(eval_h4['Low'].iloc[-4:].min()) - 0.25 * latest_atr
         r_dist_live = max(0.8 * latest_atr, min(sl_atr_mult * latest_atr, max(0.8 * latest_atr, trigger_entry - raw_sl_live)))
         p_sl = round(trigger_entry - r_dist_live, dec)
         p_tp1 = round(trigger_entry + 1.5 * r_dist_live, dec)
@@ -535,7 +541,7 @@ def simulate_asset_v4(symbol, name, cot_contract, is_usd_base, dec, pip_val, cot
         p_lock2 = round(trigger_entry + 1.5 * r_dist_live, dec)
         p_tp2 = round(trigger_entry + 3.5 * r_dist_live, dec)
     else:
-        raw_sl_live = float(df_h4['High'].iloc[-4:].max()) + 0.25 * latest_atr
+        raw_sl_live = float(eval_h4['High'].iloc[-4:].max()) + 0.25 * latest_atr
         r_dist_live = max(0.8 * latest_atr, min(sl_atr_mult * latest_atr, max(0.8 * latest_atr, raw_sl_live - trigger_entry)))
         p_sl = round(trigger_entry + r_dist_live, dec)
         p_tp1 = round(trigger_entry - 1.5 * r_dist_live, dec)
